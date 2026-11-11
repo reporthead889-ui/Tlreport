@@ -25,7 +25,6 @@
 
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); margin: 0; padding: 0; color: var(--text-main); }
         
-        /* Modern Top Navigation */
         .top-nav { background: var(--primary); padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; color: white; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         .top-nav h1 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: 0.5px; }
         .nav-tabs { display: flex; gap: 10px; overflow-x: auto; }
@@ -38,36 +37,30 @@
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Premium Cards */
         .card { background: var(--card-bg); border-radius: 12px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); margin-bottom: 24px; border: 1px solid var(--border); }
         .card-header { font-size: 16px; font-weight: 700; color: var(--primary); border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
         
-        /* Inputs & Grid */
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
         .form-group { display: flex; flex-direction: column; gap: 6px; }
         label { font-size: 13px; font-weight: 600; color: #475569; }
         input, select { padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-family: 'Inter', sans-serif; transition: border-color 0.2s; outline: none;}
         input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
         
-        /* Buttons */
         .btn { padding: 10px 20px; font-size: 14px; font-weight: 600; border-radius: 8px; cursor: pointer; border: none; color: white; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
         .btn-primary { background: var(--accent); } .btn-primary:hover { background: #1d4ed8; }
         .btn-success { background: var(--success); } .btn-success:hover { background: #15803d; }
         .btn-danger { background: var(--danger); } .btn-danger:hover { background: #b91c1c; }
         
-        /* Executive List Styling */
         .exec-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
         .exec-item { border: 1px solid var(--border); padding: 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; }
         .exec-info h4 { margin: 0 0 4px 0; color: var(--primary); font-size: 15px; }
         .exec-info p { margin: 0; font-size: 12px; color: #64748b; font-weight: 500; }
         
-        /* Modern Table */
         .modern-table { width: 100%; border-collapse: collapse; font-size: 13px; }
         .modern-table th { background: #f8fafc; padding: 12px; text-align: left; color: #475569; font-weight: 600; border-bottom: 2px solid var(--border); }
         .modern-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
-        .modern-table input { padding: 8px 10px; width: 100%; margin: 0; }
+        .modern-table input { padding: 8px 10px; width: 100%; margin: 0; box-sizing: border-box;}
 
-        /* Report Dashboard UI (Mirrors previous design) */
         .report-board { display: none; margin-top: 20px; }
         .pdf-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-bottom: 24px; }
         .pdf-card { border: 1px solid var(--border); border-radius: 10px; text-align: center; overflow: hidden; background: white; }
@@ -79,15 +72,12 @@
         .c-completed { color: var(--success); background: #f0fdf4; border-color: #bbf7d0; } .c-completed .lbl { background: var(--success); }
         .c-pending { color: #ea580c; background: #fff7ed; border-color: #fed7aa; } .c-pending .lbl { background: #ea580c; }
 
-        /* Print Settings */
         #print-section { display: none; }
         @media print {
             body * { visibility: hidden; }
             #print-section, #print-section * { visibility: visible; }
             #print-section { display: block; position: absolute; left: 0; top: 0; width: 100%; padding: 20px; background: white; font-family: Arial, sans-serif;}
         }
-
-        /* Mobile adjustments */
         @media (max-width: 600px) {
             .form-grid { grid-template-columns: 1fr; }
             .top-nav { flex-direction: column; gap: 15px; }
@@ -111,7 +101,7 @@
         <div class="card">
             <div class="card-header"><i class="fa-solid fa-user-plus"></i> Add or Edit Executive</div>
             <div class="form-grid">
-                <div class="form-group"><label>Executive Name</label><input type="text" id="exec-name" placeholder="Ex: K. MURALI KRISHNA"></div>
+                <div class="form-group"><label>Executive Name</label><input type="text" id="exec-name" placeholder="Ex: K MURALI KRISHNA"></div>
                 <div class="form-group"><label>Passcode (PIN)</label><input type="number" id="exec-pin" placeholder="Ex: 1234"></div>
             </div>
             <button class="btn btn-primary" onclick="saveExecutive()"><i class="fa-solid fa-cloud-arrow-up"></i> Save Executive to Database</button>
@@ -223,7 +213,7 @@
         }
 
         // ==========================================
-        // 1. MANAGE EXECUTIVES (WITH ERROR HANDLING)
+        // 1. MANAGE EXECUTIVES 
         // ==========================================
         function loadExecutives() {
             db.ref('Executives').on('value', snap => {
@@ -247,7 +237,7 @@
                             </li>`;
                     });
                 } else {
-                    list.innerHTML = '<li style="grid-column: 1/-1; text-align:center; color:#64748b; padding:20px;">No Executives found.</li>';
+                    list.innerHTML = '<li style="grid-column: 1/-1; text-align:center; color:#64748b; padding:20px;">No Executives found. Add one above.</li>';
                 }
 
                 selects.forEach(sel => {
@@ -255,22 +245,29 @@
                     if(current) sel.value = current;
                 });
             }, error => {
-                alert("Database Error: " + error.message + "\n\nPlease check Firebase Rules.");
+                alert("Database Error: " + error.message);
             });
         }
 
         function saveExecutive() {
-            let name = document.getElementById('exec-name').value.trim().toUpperCase();
+            let rawName = document.getElementById('exec-name').value.trim().toUpperCase();
             let pin = document.getElementById('exec-pin').value.trim();
-            if(!name || !pin) return alert("Please enter Name and Passcode!");
             
-            // Added catch for error handling
-            db.ref('Executives/' + name).set({ pin: pin }).then(() => {
-                alert(`✅ Executive ${name} saved successfully!`);
+            if(!rawName || !pin) return alert("Please enter Name and Passcode!");
+            
+            // FIREBASE FIX: Remove dots (.) and other invalid characters from the name
+            let safeName = rawName.replace(/[.#$\[\]]/g, '').replace(/\s+/g, ' ').trim();
+            
+            if(safeName !== rawName) {
+                alert("Note: Special characters like dots (.) are not allowed. Name will be saved as: " + safeName);
+            }
+
+            db.ref('Executives/' + safeName).set({ pin: pin }).then(() => {
+                alert(`✅ Executive ${safeName} saved successfully!`);
                 document.getElementById('exec-name').value = '';
                 document.getElementById('exec-pin').value = '';
             }).catch(error => {
-                alert("❌ Failed to save! Error: " + error.message + "\n\nDid you update Firebase Rules to true?");
+                alert("❌ Failed to save! Error: " + error.message);
             });
         }
 
@@ -415,13 +412,14 @@
                             totalAssigned += data.summary.assigned || 0;
                             totalComp += data.summary.completed || 0;
                             totalPend += data.summary.pending || 0;
-                            lockC += data.summary.lockC || 0;
-                            pcrC += data.summary.pcrC || 0;
-                            qrC += data.summary.qrC || 0;
-                            seizC += data.summary.seizingC || 0;
+                            lockC += data.summary.lockCount || 0;
+                            pcrC += data.summary.pcrCount || 0;
+                            qrC += data.summary.qrCount || 0;
+                            seizC += data.summary.seizingCount || 0;
                             grandAmt += data.summary.totalAmt || 0;
 
                             if(data.details) {
+                                // Add dynamic rows based on actual data structure saved by Executive
                                 data.details.forEach(item => {
                                     let row = `<tr>
                                         <td style="font-weight:600; color:#475569;">${item.status}</td>
