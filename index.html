@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TL Management Dashboard</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #eef2f7; margin: 0; padding: 0; }
+        
+        /* Navigation */
+        .navbar { background: #003366; display: flex; overflow-x: auto; white-space: nowrap; padding: 10px; }
+        .nav-btn { background: none; border: none; color: white; padding: 10px 15px; font-size: 15px; cursor: pointer; font-weight: bold; border-radius: 5px; }
+        .nav-btn.active { background: #28a745; }
+        
+        .container { max-width: 800px; margin: 20px auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        h2 { color: #003366; text-align: center; border-bottom: 2px solid #ccc; padding-bottom: 10px; margin-top: 0; }
+        h3 { background: #0056b3; color: white; padding: 10px; border-radius: 5px; font-size: 15px; margin-top: 20px; }
+        label { font-weight: bold; font-size: 13px; color: #444; display: block; margin-top: 10px; }
+        input, select { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ced4da; border-radius: 5px; font-size: 14px; }
+        .row { display: flex; gap: 15px; margin-bottom: 10px; }
+        .col { flex: 1; }
+        
+        .btn { padding: 12px; font-size: 15px; border-radius: 5px; font-weight: bold; cursor: pointer; border: none; color: white; width: 100%; margin-top: 15px; transition: 0.3s;}
+        .btn-blue { background: #003366; } .btn-green { background: #28a745; } .btn-red { background: #dc3545; } .btn-info { background: #17a2b8; }
+        
+        /* Table UI */
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; text-align: center; }
+        .data-table th { background: #e9ecef; padding: 10px; border: 1px solid #ccc; color:#003366; }
+        .data-table td { padding: 8px; border: 1px solid #ccc; }
+        .data-table input { padding: 6px; font-size: 13px; margin: 0; text-align: center;}
+        
+        .exec-list { list-style: none; padding: 0; }
+        .exec-list li { background: #f8f9fa; margin: 8px 0; padding: 12px; border: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; border-radius: 5px;}
+        
+        /* Report Dashboard UI (Mirrors Executive PDF design) */
+        .report-board { display: none; margin-top: 20px; border: 1px solid #b3d4fc; padding: 15px; border-radius: 8px; background: white;}
+        .pdf-cards { display: flex; gap: 8px; margin-bottom: 20px; width: 100%; flex-wrap: wrap;}
+        .pdf-card { flex: 1; border: 1px solid #ccc; border-radius: 8px; text-align: center; overflow: hidden; background: white; min-width: 100px; }
+        .pdf-card i { font-size: 20px; margin-top: 10px; }
+        .pdf-card .val { font-size: 22px; font-weight: bold; padding: 5px 0; }
+        .pdf-card .lbl { color: white; padding: 5px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .c-assigned { border-color: #0056b3; color: #0056b3; background: #e6f2ff; } .c-assigned .lbl { background: #0056b3; }
+        .c-completed { border-color: #28a745; color: #28a745; background: #e6ffe6; } .c-completed .lbl { background: #28a745; }
+        .c-pending { border-color: #fd7e14; color: #fd7e14; background: #fff3e6; } .c-pending .lbl { background: #fd7e14; }
+        .c-lock { border-color: #002244; color: #002244; background: #e6e9f0; } .c-lock .lbl { background: #002244; }
+        .c-pcr { border-color: #007bff; color: #007bff; background: #e6f7ff; } .c-pcr .lbl { background: #007bff; }
+        .c-seizing { border-color: #6f42c1; color: #6f42c1; background: #f2e6ff; } .c-seizing .lbl { background: #6f42c1; }
+
+        /* Print Specifics */
+        #print-section { display: none; font-family: Arial, sans-serif; color: black; background: white;}
+        @media print {
+            body * { visibility: hidden; }
+            #print-section, #print-section * { visibility: visible; }
+            #print-section { display: block; position: absolute; left: 0; top: 0; width: 100%; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TL Navigation Tabs -->
+    <div class="navbar">
+        <button class="nav-btn active" onclick="switchTab('tab-manage')"><i class="fa-solid fa-users-gear"></i> Executives</button>
+        <button class="nav-btn" onclick="switchTab('tab-assign')"><i class="fa-solid fa-list-check"></i> Assign Accounts</button>
+        <button class="nav-btn" onclick="switchTab('tab-reports')"><i class="fa-solid fa-chart-bar"></i> Performance Report</button>
+    </div>
+
+    <!-- 1. MANAGE EXECUTIVES -->
+    <div id="tab-manage" class="container tab-content active">
+        <h2>Manage Executives</h2>
+        <p style="font-size:13px; color:#666; text-align:center;">Add or Edit Executives. Data is stored securely in Firebase.</p>
+        
+        <div class="row">
+            <div class="col"><label>Executive Name:</label><input type="text" id="exec-name" placeholder="Ex: K. MURALI KRISHNA"></div>
+            <div class="col"><label>Passcode (PIN):</label><input type="number" id="exec-pin" placeholder="Ex: 1234"></div>
+        </div>
+        <button class="btn btn-green" onclick="saveExecutive()"><i class="fa-solid fa-user-plus"></i> Add / Edit Executive</button>
+
+        <h3 style="margin-top: 30px;">Active Executives List</h3>
+        <ul id="exec-list-ui" class="exec-list">
+            <!-- Firebase data loads here -->
+            <li style="text-align:center; color:#888;">Loading database...</li>
+        </ul>
+    </div>
+
+    <!-- 2. ASSIGN ACCOUNTS -->
+    <div id="tab-assign" class="container tab-content">
+        <h2>Assign Accounts</h2>
+        
+        <div class="row">
+            <div class="col"><label>Assignment Date:</label><input type="date" id="assign-date"></div>
+            <div class="col">
+                <label>Select Executive:</label>
+                <select id="assign-exec-select" class="exec-dropdown"></select>
+            </div>
+        </div>
+
+        <h3>Input Counts</h3>
+        <div class="row">
+            <div class="col"><label>Regular Accounts Count:</label><input type="number" id="reg-count" placeholder="0" value="0"></div>
+            <div class="col"><label>Matured Accounts Count:</label><input type="number" id="mat-count" placeholder="0" value="0"></div>
+        </div>
+        <button class="btn btn-blue" onclick="generateAssignTable()">Generate Fields</button>
+
+        <div id="assign-table-container" style="display:none; margin-top:20px;">
+            <table class="data-table" id="assignment-table">
+                <thead><tr><th>Type</th><th>Account No</th><th>Installments</th><th>Target Amount (₹)</th></tr></thead>
+                <tbody id="assign-tbody"></tbody>
+            </table>
+            
+            <div class="row" style="margin-top:20px;">
+                <div class="col"><button class="btn btn-green" onclick="saveAssignmentsToFirebase()">☁️ Save to Database</button></div>
+                <div class="col"><button class="btn btn-info" onclick="printAssistantReport()">🖨️ Print Assistant Report</button></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. PERFORMANCE REPORTS -->
+    <div id="tab-reports" class="container tab-content">
+        <h2>Overall Performance Report</h2>
+        
+        <div class="row">
+            <div class="col"><label>Select Executive:</label><select id="report-exec-select" class="exec-dropdown"></select></div>
+        </div>
+        <div class="row">
+            <div class="col"><label>From Date:</label><input type="date" id="from-date"></div>
+            <div class="col"><label>To Date:</label><input type="date" id="to-date"></div>
+        </div>
+        <button class="btn btn-blue" onclick="generateReport()"><i class="fa-solid fa-search"></i> Search Performance</button>
+
+        <!-- REPORT VISUAL BOARD -->
+        <div id="report-board" class="report-board">
+            <h3 style="background:#003366; text-align:center; margin-top:0;">DAILY COLLECTION & SEIZING PERFORMANCE REPORT</h3>
+            <div style="display:flex; justify-content:space-between; font-weight:bold; color:#003366; margin-bottom:15px; border-bottom:2px solid #ccc; padding-bottom:10px;">
+                <div><i class="fa-regular fa-calendar-days"></i> <span id="r-dates"></span></div>
+                <div><i class="fa-solid fa-user"></i> <span id="r-name"></span></div>
+            </div>
+
+            <div class="pdf-cards">
+                <div class="pdf-card c-assigned"><i class="fa-solid fa-users"></i><div class="val" id="r-assigned">0</div><div class="lbl">Assigned</div></div>
+                <div class="pdf-card c-completed"><i class="fa-solid fa-circle-check"></i><div class="val" id="r-completed">0</div><div class="lbl">Completed</div></div>
+                <div class="pdf-card c-pending"><i class="fa-regular fa-clock"></i><div class="val" id="r-pending">0</div><div class="lbl">Pending</div></div>
+                <div class="pdf-card c-lock"><i class="fa-solid fa-lock"></i><div class="val" id="r-lock">0</div><div class="lbl">Lock</div></div>
+                <div class="pdf-card c-pcr"><i class="fa-solid fa-file-invoice"></i><div class="val" id="r-pcr">0</div><div class="lbl">PCR</div></div>
+                <div class="pdf-card c-seizing"><i class="fa-solid fa-gavel"></i><div class="val" id="r-seizing">0</div><div class="lbl">Seizing</div></div>
+            </div>
+
+            <h4 style="background:#e9ecef; padding:8px; border-radius:5px; color:#003366;">Collection Performance</h4>
+            <table class="data-table">
+                <thead><tr><th>Category</th><th>Account No. & Status</th><th>Amount (₹)</th></tr></thead>
+                <tbody id="r-table-body">
+                    <!-- Data injected here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- HIDDEN PRINT ASSISTANT REPORT AREA -->
+    <div id="print-section"></div>
+
+    <script>
+        // ==========================================
+        // FIREBASE SETUP
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI",
+            databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
+            projectId: "sri-vishnu-priya-finance-c591f",
+            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
+            appId: "1:184676228358:android:7ef47b55ab678bb0dfd287"
+        };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        document.getElementById('assign-date').valueAsDate = new Date();
+        document.getElementById('from-date').valueAsDate = new Date();
+        document.getElementById('to-date').valueAsDate = new Date();
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // ==========================================
+        // 1. MANAGE EXECUTIVES (100% FIREBASE)
+        // ==========================================
+        function loadExecutives() {
+            db.ref('Executives').on('value', snap => {
+                let list = document.getElementById('exec-list-ui');
+                let selects = document.querySelectorAll('.exec-dropdown');
+                
+                list.innerHTML = '';
+                let optionsHTML = '<option value="">-- Select Executive --</option>';
+                
+                if(snap.exists()) {
+                    snap.forEach(child => {
+                        let name = child.key;
+                        let pin = child.val().pin;
+                        
+                        optionsHTML += `<option value="${name}">${name}</option>`;
+                        list.innerHTML += `
+                            <li>
+                                <div><b>${name}</b> <br><small style="color:#666;">Passcode: ${pin}</small></div>
+                                <div>
+                                    <button onclick="editExec('${name}', '${pin}')" style="background:#0056b3; color:white; border:none; padding:6px 12px; border-radius:4px; cursor:pointer;"><i class="fa-solid fa-pen"></i></button>
+                                    <button onclick="deleteExec('${name}')" style="background:#dc3545; color:white; border:none; padding:6px 12px; border-radius:4px; cursor:pointer; margin-left:5px;"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </li>`;
+                    });
+                } else {
+                    list.innerHTML = '<li style="text-align:center; color:red;">No Executives Found. Add one above.</li>';
+                }
+
+                selects.forEach(sel => {
+                    let current = sel.value;
+                    sel.innerHTML = optionsHTML;
+                    if(current) sel.value = current;
+                });
+            });
+        }
+
+        function saveExecutive() {
+            let name = document.getElementById('exec-name').value.trim().toUpperCase();
+            let pin = document.getElementById('exec-pin').value.trim();
+            if(!name || !pin) return alert("Please enter Name and Passcode!");
+            
+            db.ref('Executives/' + name).set({ pin: pin }).then(() => {
+                alert("Executive Saved to Database!");
+                document.getElementById('exec-name').value = '';
+                document.getElementById('exec-pin').value = '';
+            });
+        }
+
+        function editExec(name, pin) {
+            document.getElementById('exec-name').value = name;
+            document.getElementById('exec-pin').value = pin;
+            window.scrollTo(0,0);
+        }
+
+        function deleteExec(name) {
+            if(confirm(`Are you sure you want to permanently delete ${name}?`)) {
+                db.ref('Executives/' + name).remove();
+            }
+        }
+        
+        loadExecutives(); // Init
+
+        // ==========================================
+        // 2. ASSIGN ACCOUNTS LOGIC
+        // ==========================================
+        function generateAssignTable() {
+            let reg = parseInt(document.getElementById('reg-count').value) || 0;
+            let mat = parseInt(document.getElementById('mat-count').value) || 0;
+            let tbody = document.getElementById('assign-tbody');
+            tbody.innerHTML = '';
+            
+            if(reg === 0 && mat === 0) return alert("Enter Accounts count!");
+
+            for(let i=0; i<reg; i++) {
+                tbody.innerHTML += `<tr>
+                    <td style="color:blue; font-weight:bold;">Regular<input type="hidden" class="a-type" value="Regular"></td>
+                    <td><input type="text" class="a-acc" placeholder="Account No"></td>
+                    <td><input type="text" class="a-inst" placeholder="Ex: 1/5"></td>
+                    <td><input type="number" class="a-amt" placeholder="Amount"></td>
+                </tr>`;
+            }
+            for(let i=0; i<mat; i++) {
+                tbody.innerHTML += `<tr>
+                    <td style="color:red; font-weight:bold;">Matured<input type="hidden" class="a-type" value="Matured"></td>
+                    <td><input type="text" class="a-acc" placeholder="Account No"></td>
+                    <td><input type="text" class="a-inst" value="Matured" readonly style="background:#eee;"></td>
+                    <td><input type="number" class="a-amt" placeholder="Amount"></td>
+                </tr>`;
+            }
+            document.getElementById('assign-table-container').style.display = 'block';
+        }
+
+        function saveAssignmentsToFirebase() {
+            let date = document.getElementById('assign-date').value;
+            let exec = document.getElementById('assign-exec-select').value;
+            if(!exec) return alert("Select Executive!");
+
+            let data = [];
+            document.querySelectorAll('#assign-tbody tr').forEach(row => {
+                let acc = row.querySelector('.a-acc').value;
+                if(acc) {
+                    data.push({
+                        type: row.querySelector('.a-type').value,
+                        accNo: acc,
+                        installments: row.querySelector('.a-inst').value,
+                        targetAmt: row.querySelector('.a-amt').value || "0"
+                    });
+                }
+            });
+
+            if(data.length === 0) return alert("Fill at least one Account No!");
+
+            db.ref(`Assignments/${date}/${exec}`).set(data).then(() => {
+                alert(`Successfully Assigned ${data.length} accounts to ${exec} for ${date}!`);
+            });
+        }
+
+        function printAssistantReport() {
+            let date = document.getElementById('assign-date').value;
+            let dateFormatted = date.split('-').reverse().join('-'); // DD-MM-YYYY
+            let name = document.getElementById('assign-exec-select').value;
+            if(!name) return alert("Select Executive to Print!");
+
+            // Exactly as requested layout
+            let html = `
+                <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:18px; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px;">
+                    <span style="flex:1;">Name: ${name}</span>
+                    <span style="flex:1; text-align:center; font-size:22px; color:#003366;">ASSISTANT REPORT</span>
+                    <span style="flex:1; text-align:right;">Date: ${dateFormatted}</span>
+                </div>
+                
+                <h3 style="margin-top:0; font-size:16px;">Assigned Accounts List:</h3>
+                <table style="width:100%; border-collapse:collapse; text-align:center; font-size:16px;">
+                    <tr style="background:#f0f0f0;">
+                        <th style="border:1px solid #000; padding:8px;">Type</th>
+                        <th style="border:1px solid #000; padding:8px;">Account No</th>
+                        <th style="border:1px solid #000; padding:8px;">Installments</th>
+                        <th style="border:1px solid #000; padding:8px;">Target Amount</th>
+                    </tr>
+            `;
+
+            let assignedCount = 0;
+            document.querySelectorAll('#assign-tbody tr').forEach(row => {
+                let acc = row.querySelector('.a-acc').value;
+                if(acc) {
+                    assignedCount++;
+                    let type = row.querySelector('.a-type').value;
+                    let inst = row.querySelector('.a-inst').value;
+                    let amt = row.querySelector('.a-amt').value || "0";
+                    let color = type === "Regular" ? "blue" : "red";
+                    html += `<tr>
+                        <td style="border:1px solid #000; padding:8px; font-weight:bold; color:${color};">${type}</td>
+                        <td style="border:1px solid #000; padding:8px; font-weight:bold;">${acc}</td>
+                        <td style="border:1px solid #000; padding:8px;">${inst}</td>
+                        <td style="border:1px solid #000; padding:8px;">₹ ${amt}</td>
+                    </tr>`;
+                }
+            });
+
+            html += `</table>
+            <div style="margin-top: 15px; font-size: 16px; font-weight:bold;">Total Accounts Assigned: ${assignedCount}</div>`;
+
+            let pArea = document.getElementById('print-section');
+            pArea.innerHTML = html;
+            
+            // Hide main UI, Print, then Show main UI
+            document.querySelectorAll('.container').forEach(c => c.style.display = 'none');
+            document.querySelector('.navbar').style.display = 'none';
+            pArea.style.display = 'block';
+            
+            window.print();
+            
+            pArea.style.display = 'none';
+            document.querySelectorAll('.container').forEach(c => c.style.display = ''); // Restore CSS
+            document.querySelector('.navbar').style.display = 'flex';
+            switchTab('tab-assign');
+        }
+
+        // ==========================================
+        // 3. PERFORMANCE REPORT (FROM-TO DATE)
+        // ==========================================
+        function generateReport() {
+            let exec = document.getElementById('report-exec-select').value;
+            let fromD = document.getElementById('from-date').value;
+            let toD = document.getElementById('to-date').value;
+            
+            if(!exec || !fromD || !toD) return alert("Select Executive and Date Range!");
+
+            // For this logic, we assume the Executive app saves their final daily report 
+            // under "DailyReports/Date/ExecName"
+            db.ref('DailyReports').once('value').then(snap => {
+                if(!snap.exists()) {
+                    alert("No Collection Reports found in Database!");
+                    return;
+                }
+
+                let totalAssigned = 0; let totalComp = 0; let totalPend = 0;
+                let lockC = 0; let pcrC = 0; let qrC = 0; let seizC = 0;
+                let grandAmt = 0;
+                
+                let regRows = ""; let matRows = "";
+
+                snap.forEach(dateNode => {
+                    let rDate = dateNode.key;
+                    // Check if date falls within From-To range
+                    if(rDate >= fromD && rDate <= toD) {
+                        if(dateNode.hasChild(exec)) {
+                            let data = dateNode.child(exec).val();
+                            
+                            // Summing up metrics (assuming executive app saves these summaries)
+                            totalAssigned += data.summary.assigned || 0;
+                            totalComp += data.summary.completed || 0;
+                            totalPend += data.summary.pending || 0;
+                            lockC += data.summary.lockC || 0;
+                            pcrC += data.summary.pcrC || 0;
+                            qrC += data.summary.qrC || 0;
+                            seizC += data.summary.seizingC || 0;
+                            grandAmt += data.summary.totalAmt || 0;
+
+                            // Rebuilding Table rows (Assuming details array saved in DB)
+                            if(data.details) {
+                                data.details.forEach(item => {
+                                    let row = `<tr>
+                                        <td>${item.status}</td>
+                                        <td><b>${item.accNo}</b> <i style="color:#777;">(${rDate})</i></td>
+                                        <td>${item.status === 'Seizing' ? '-' : '₹' + item.amt}</td>
+                                    </tr>`;
+                                    if(item.type === 'Regular') regRows += row;
+                                    else matRows += row;
+                                });
+                            }
+                        }
+                    }
+                });
+
+                if(totalAssigned === 0) {
+                    alert(`No entries found for ${exec} between ${fromD} and ${toD}`);
+                    return;
+                }
+
+                // Update UI Visuals
+                document.getElementById('r-name').innerText = exec;
+                document.getElementById('r-dates').innerText = `${fromD.split('-').reverse().join('-')} to ${toD.split('-').reverse().join('-')}`;
+                
+                document.getElementById('r-assigned').innerText = totalAssigned;
+                document.getElementById('r-completed').innerText = totalComp;
+                document.getElementById('r-pending').innerText = totalPend;
+                document.getElementById('r-lock').innerText = lockC;
+                document.getElementById('r-pcr').innerText = pcrC;
+                document.getElementById('r-seizing').innerText = seizC;
+
+                let tableHTML = "";
+                if(regRows) tableHTML += `<tr style="background:#e6e6e6;"><td colspan="3" style="text-align:left; font-weight:bold; color:blue;">REGULAR ACCOUNTS</td></tr>` + regRows;
+                if(matRows) tableHTML += `<tr style="background:#e6e6e6;"><td colspan="3" style="text-align:left; font-weight:bold; color:red;">MATURED ACCOUNTS</td></tr>` + matRows;
+                tableHTML += `<tr style="background:#003366; color:white; font-weight:bold;">
+                    <td style="text-align:left;">Total Range Collection</td>
+                    <td>${totalComp} Completed Accounts</td>
+                    <td>₹ ${grandAmt.toLocaleString('en-IN')}</td>
+                </tr>`;
+
+                document.getElementById('r-table-body').innerHTML = tableHTML;
+                document.getElementById('report-board').style.display = 'block';
+            });
+        }
+    </script>
+</body>
+</html>
