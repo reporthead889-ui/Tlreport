@@ -122,9 +122,15 @@
             <div class="form-grid">
                 <div class="form-group"><label>Date</label><input type="date" id="assign-date"></div>
                 <div class="form-group"><label>Select Executive</label><select id="assign-exec-select" class="exec-dropdown"></select></div>
+            </div>
+            
+            <div class="form-grid" style="background:#f8fafc; padding:15px; border-radius:8px; border:1px solid var(--border);">
                 <div class="form-group"><label>Regular Accounts Count</label><input type="number" id="reg-count" value="0"></div>
                 <div class="form-group"><label>Matured Accounts Count</label><input type="number" id="mat-count" value="0"></div>
+                <!-- Default Installments Box -->
+                <div class="form-group" style="grid-column: 1 / -1;"><label>Default Installments (Optional)</label><input type="text" id="def-inst" placeholder="Ex: 1" value="1"></div>
             </div>
+            
             <button class="btn btn-primary" onclick="generateAssignTable()"><i class="fa-solid fa-table-list"></i> Generate Entry Fields</button>
         </div>
 
@@ -132,13 +138,13 @@
             <div class="card-header"><i class="fa-solid fa-pen-to-square"></i> Enter Account Details</div>
             <div style="overflow-x: auto;">
                 <table class="modern-table" id="assignment-table">
-                    <thead><tr><th>Type</th><th>Account No</th><th>Installments</th><th>Target Amount (₹)</th></tr></thead>
+                    <thead><tr><th>Type</th><th>Account No</th><th>Installments</th><th>Amount (₹)</th></tr></thead>
                     <tbody id="assign-tbody"></tbody>
                 </table>
             </div>
             <div style="display: flex; gap: 15px; margin-top: 20px;">
                 <button class="btn btn-success" onclick="saveAssignmentsToFirebase()" style="flex: 1;"><i class="fa-solid fa-check-double"></i> Save Assignments</button>
-                <button class="btn btn-primary" onclick="printAssistantReport()" style="flex: 1; background: #475569;"><i class="fa-solid fa-print"></i> Print Assistant Report</button>
+                <button class="btn btn-primary" onclick="printAssignmentReport()" style="flex: 1; background: #475569;"><i class="fa-solid fa-print"></i> Print Assignment Report</button>
             </div>
         </div>
     </div>
@@ -169,7 +175,6 @@
                 <div class="pdf-card c-assigned"><i class="fa-solid fa-users"></i><div class="val" id="r-assigned">0</div><div class="lbl">Assigned</div></div>
                 <div class="pdf-card c-completed"><i class="fa-solid fa-circle-check"></i><div class="val" id="r-completed">0</div><div class="lbl">Completed</div></div>
                 <div class="pdf-card c-pending"><i class="fa-regular fa-clock"></i><div class="val" id="r-pending">0</div><div class="lbl">Pending</div></div>
-                <!-- Mini cards for specific statuses -->
                 <div class="pdf-card" style="border-color:#cbd5e1; color:#334155;"><div class="val" style="font-size:18px;" id="r-lock">0</div><div class="lbl" style="background:#64748b;">Lock</div></div>
                 <div class="pdf-card" style="border-color:#cbd5e1; color:#334155;"><div class="val" style="font-size:18px;" id="r-pcr">0</div><div class="lbl" style="background:#64748b;">PCR</div></div>
                 <div class="pdf-card" style="border-color:#cbd5e1; color:#334155;"><div class="val" style="font-size:18px;" id="r-seizing">0</div><div class="lbl" style="background:#64748b;">Seizing</div></div>
@@ -200,7 +205,6 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Set Default Dates
         document.getElementById('assign-date').valueAsDate = new Date();
         document.getElementById('from-date').valueAsDate = new Date();
         document.getElementById('to-date').valueAsDate = new Date();
@@ -213,7 +217,7 @@
         }
 
         // ==========================================
-        // 1. MANAGE EXECUTIVES 
+        // 1. MANAGE EXECUTIVES
         // ==========================================
         function loadExecutives() {
             db.ref('Executives').on('value', snap => {
@@ -255,7 +259,6 @@
             
             if(!rawName || !pin) return alert("Please enter Name and Passcode!");
             
-            // FIREBASE FIX: Remove dots (.) and other invalid characters from the name
             let safeName = rawName.replace(/[.#$\[\]]/g, '').replace(/\s+/g, ' ').trim();
             
             if(safeName !== rawName) {
@@ -283,7 +286,7 @@
             }
         }
         
-        loadExecutives(); // Initialize
+        loadExecutives(); 
 
         // ==========================================
         // 2. ASSIGN ACCOUNTS
@@ -291,17 +294,19 @@
         function generateAssignTable() {
             let reg = parseInt(document.getElementById('reg-count').value) || 0;
             let mat = parseInt(document.getElementById('mat-count').value) || 0;
+            let defInst = document.getElementById('def-inst').value || "";
             let tbody = document.getElementById('assign-tbody');
             tbody.innerHTML = '';
             
             if(reg === 0 && mat === 0) return alert("Enter Accounts count!");
 
+            // Pre-fill default installments for regular accounts
             for(let i=0; i<reg; i++) {
                 tbody.innerHTML += `<tr>
                     <td style="color:var(--accent); font-weight:700;">Regular<input type="hidden" class="a-type" value="Regular"></td>
                     <td><input type="text" class="a-acc" placeholder="Account No"></td>
-                    <td><input type="text" class="a-inst" placeholder="Ex: 1/5"></td>
-                    <td><input type="number" class="a-amt" placeholder="Target ₹"></td>
+                    <td><input type="text" class="a-inst" value="${defInst}" placeholder="Ex: 1/5"></td>
+                    <td><input type="number" class="a-amt" placeholder="Amount"></td>
                 </tr>`;
             }
             for(let i=0; i<mat; i++) {
@@ -309,7 +314,7 @@
                     <td style="color:var(--danger); font-weight:700;">Matured<input type="hidden" class="a-type" value="Matured"></td>
                     <td><input type="text" class="a-acc" placeholder="Account No"></td>
                     <td><input type="text" class="a-inst" value="Matured" readonly style="background:#f1f5f9; color:#64748b;"></td>
-                    <td><input type="number" class="a-amt" placeholder="Target ₹"></td>
+                    <td><input type="number" class="a-amt" placeholder="Amount"></td>
                 </tr>`;
             }
             document.getElementById('assign-table-container').style.display = 'block';
@@ -341,7 +346,7 @@
             }).catch(e => alert("❌ Error: " + e.message));
         }
 
-        function printAssistantReport() {
+        function printAssignmentReport() {
             let date = document.getElementById('assign-date').value;
             let dateFormatted = date.split('-').reverse().join('-');
             let name = document.getElementById('assign-exec-select').value;
@@ -350,7 +355,7 @@
             let html = `
                 <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:16px; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; font-family:Arial, sans-serif;">
                     <span style="flex:1;">Name: ${name}</span>
-                    <span style="flex:1; text-align:center; font-size:20px; text-transform:uppercase;">Assistant Report</span>
+                    <span style="flex:1; text-align:center; font-size:20px; text-transform:uppercase;">Assignment Report</span>
                     <span style="flex:1; text-align:right;">Date: ${dateFormatted}</span>
                 </div>
                 <table style="width:100%; border-collapse:collapse; text-align:center; font-size:14px; font-family:Arial, sans-serif;">
@@ -358,7 +363,7 @@
                         <th style="border:1px solid #000; padding:10px;">Type</th>
                         <th style="border:1px solid #000; padding:10px;">Account No</th>
                         <th style="border:1px solid #000; padding:10px;">Installments</th>
-                        <th style="border:1px solid #000; padding:10px;">Target Amount</th>
+                        <th style="border:1px solid #000; padding:10px;">Amount</th>
                     </tr>
             `;
 
@@ -419,7 +424,6 @@
                             grandAmt += data.summary.totalAmt || 0;
 
                             if(data.details) {
-                                // Add dynamic rows based on actual data structure saved by Executive
                                 data.details.forEach(item => {
                                     let row = `<tr>
                                         <td style="font-weight:600; color:#475569;">${item.status}</td>
