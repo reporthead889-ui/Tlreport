@@ -3,90 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TL Admin Control Panel</title>
-    <!-- Firebase SDK -->
+    <title>TL Admin Dashboard</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <!-- FontAwesome & Google Fonts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #0f172a;
-            --secondary: #1e293b;
-            --accent: #2563eb;
-            --success: #16a34a;
-            --danger: #dc2626;
-            --bg: #f1f5f9;
-            --card-bg: #ffffff;
-            --text-main: #334155;
-            --border: #e2e8f0;
-        }
-
+        :root { --primary: #0f172a; --secondary: #1e293b; --accent: #2563eb; --success: #16a34a; --danger: #dc2626; --bg: #f1f5f9; --card-bg: #ffffff; --text-main: #334155; --border: #e2e8f0; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); margin: 0; padding: 0; color: var(--text-main); }
-        
         .top-nav { background: var(--primary); padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; color: white; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         .top-nav h1 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: 0.5px; }
         .nav-tabs { display: flex; gap: 10px; overflow-x: auto; }
         .nav-btn { background: transparent; border: none; color: #94a3b8; padding: 8px 16px; font-size: 14px; font-weight: 600; cursor: pointer; border-radius: 6px; transition: all 0.3s; }
         .nav-btn:hover { color: white; background: rgba(255,255,255,0.1); }
         .nav-btn.active { background: var(--accent); color: white; }
-
         .container { max-width: 900px; margin: 30px auto; padding: 0 15px; }
         .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
         .card { background: var(--card-bg); border-radius: 12px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); margin-bottom: 24px; border: 1px solid var(--border); }
         .card-header { font-size: 16px; font-weight: 700; color: var(--primary); border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
-        
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
         .form-group { display: flex; flex-direction: column; gap: 6px; }
         label { font-size: 13px; font-weight: 600; color: #475569; }
-        input, select { padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-family: 'Inter', sans-serif; transition: border-color 0.2s; outline: none;}
+        input, select { padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-family: 'Inter', sans-serif; outline: none;}
         input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-        
         .btn { padding: 10px 20px; font-size: 14px; font-weight: 600; border-radius: 8px; cursor: pointer; border: none; color: white; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
-        .btn-primary { background: var(--accent); } .btn-primary:hover { background: #1d4ed8; }
-        .btn-success { background: var(--success); } .btn-success:hover { background: #15803d; }
-        .btn-danger { background: var(--danger); } .btn-danger:hover { background: #b91c1c; }
-        
+        .btn-primary { background: var(--accent); } .btn-success { background: var(--success); } .btn-danger { background: var(--danger); }
         .exec-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
         .exec-item { border: 1px solid var(--border); padding: 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; }
-        .exec-info h4 { margin: 0 0 4px 0; color: var(--primary); font-size: 15px; }
-        .exec-info p { margin: 0; font-size: 12px; color: #64748b; font-weight: 500; }
-        
         .modern-table { width: 100%; border-collapse: collapse; font-size: 13px; }
         .modern-table th { background: #f8fafc; padding: 12px; text-align: left; color: #475569; font-weight: 600; border-bottom: 2px solid var(--border); }
         .modern-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
         .modern-table input { padding: 8px 10px; width: 100%; margin: 0; box-sizing: border-box;}
-
         .report-board { display: none; margin-top: 20px; }
         .pdf-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-bottom: 24px; }
         .pdf-card { border: 1px solid var(--border); border-radius: 10px; text-align: center; overflow: hidden; background: white; }
-        .pdf-card i { font-size: 20px; margin-top: 12px; }
         .pdf-card .val { font-size: 24px; font-weight: 700; padding: 8px 0; }
         .pdf-card .lbl { color: white; padding: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
-        
         .c-assigned { color: var(--accent); background: #eff6ff; border-color: #bfdbfe; } .c-assigned .lbl { background: var(--accent); }
         .c-completed { color: var(--success); background: #f0fdf4; border-color: #bbf7d0; } .c-completed .lbl { background: var(--success); }
         .c-pending { color: #ea580c; background: #fff7ed; border-color: #fed7aa; } .c-pending .lbl { background: #ea580c; }
-
         #print-section { display: none; }
-        @media print {
-            body * { visibility: hidden; }
-            #print-section, #print-section * { visibility: visible; }
-            #print-section { display: block; position: absolute; left: 0; top: 0; width: 100%; padding: 20px; background: white; font-family: Arial, sans-serif;}
-        }
-        @media (max-width: 600px) {
-            .form-grid { grid-template-columns: 1fr; }
-            .top-nav { flex-direction: column; gap: 15px; }
-        }
+        @media print { body * { visibility: hidden; } #print-section, #print-section * { visibility: visible; } #print-section { display: block; position: absolute; left: 0; top: 0; width: 100%; padding: 20px; background: white; font-family: Arial, sans-serif;} }
     </style>
 </head>
 <body>
-
-    <!-- TOP NAVIGATION -->
     <div class="top-nav">
         <h1><i class="fa-solid fa-shield-halved"></i> TL Admin Dashboard</h1>
         <div class="nav-tabs">
@@ -104,14 +66,11 @@
                 <div class="form-group"><label>Executive Name</label><input type="text" id="exec-name" placeholder="Ex: K MURALI KRISHNA"></div>
                 <div class="form-group"><label>Passcode (PIN)</label><input type="number" id="exec-pin" placeholder="Ex: 1234"></div>
             </div>
-            <button class="btn btn-primary" onclick="saveExecutive()"><i class="fa-solid fa-cloud-arrow-up"></i> Save Executive to Database</button>
+            <button class="btn btn-primary" onclick="saveExecutive()">Save Executive</button>
         </div>
-
         <div class="card">
             <div class="card-header"><i class="fa-solid fa-users-viewfinder"></i> Active Executives</div>
-            <ul id="exec-list-ui" class="exec-list">
-                <li style="color:#64748b; font-size:14px;"><i class="fa-solid fa-spinner fa-spin"></i> Fetching from database...</li>
-            </ul>
+            <ul id="exec-list-ui" class="exec-list"><li style="color:#64748b; font-size:14px;">Fetching from database...</li></ul>
         </div>
     </div>
 
@@ -123,17 +82,13 @@
                 <div class="form-group"><label>Date</label><input type="date" id="assign-date"></div>
                 <div class="form-group"><label>Select Executive</label><select id="assign-exec-select" class="exec-dropdown"></select></div>
             </div>
-            
             <div class="form-grid" style="background:#f8fafc; padding:15px; border-radius:8px; border:1px solid var(--border);">
                 <div class="form-group"><label>Regular Accounts Count</label><input type="number" id="reg-count" value="0"></div>
                 <div class="form-group"><label>Matured Accounts Count</label><input type="number" id="mat-count" value="0"></div>
-                <!-- Default Installments Box -->
                 <div class="form-group" style="grid-column: 1 / -1;"><label>Default Installments (Optional)</label><input type="text" id="def-inst" placeholder="Ex: 1" value="1"></div>
             </div>
-            
             <button class="btn btn-primary" onclick="generateAssignTable()"><i class="fa-solid fa-table-list"></i> Generate Entry Fields</button>
         </div>
-
         <div id="assign-table-container" class="card" style="display:none;">
             <div class="card-header"><i class="fa-solid fa-pen-to-square"></i> Enter Account Details</div>
             <div style="overflow-x: auto;">
@@ -149,7 +104,7 @@
         </div>
     </div>
 
-    <!-- 3. PERFORMANCE REPORTS -->
+    <!-- 3. PERFORMANCE REPORTS (Includes Balance Tracking) -->
     <div id="tab-reports" class="container tab-content">
         <div class="card">
             <div class="card-header"><i class="fa-solid fa-filter"></i> Report Filter</div>
@@ -162,25 +117,32 @@
             </div>
             <button class="btn btn-primary" onclick="generateReport()"><i class="fa-solid fa-magnifying-glass"></i> Search Data</button>
         </div>
-
-        <!-- REPORT VISUAL BOARD -->
         <div id="report-board" class="report-board card">
-            <div style="text-align:center; font-weight:700; font-size:18px; color:var(--primary); margin-bottom: 20px;">COLLECTION & SEIZING PERFORMANCE REPORT</div>
-            <div style="display:flex; justify-content:space-between; font-weight:600; color:#475569; margin-bottom:20px; border-bottom:2px solid var(--border); padding-bottom:15px; font-size:14px;">
-                <div><i class="fa-regular fa-calendar-days"></i> <span id="r-dates"></span></div>
-                <div><i class="fa-solid fa-user"></i> <span id="r-name"></span></div>
-            </div>
-
+            <div style="text-align:center; font-weight:700; font-size:18px; color:var(--primary); margin-bottom: 20px;">COLLECTION PERFORMANCE & BALANCE REPORT</div>
+            
             <div class="pdf-cards">
-                <div class="pdf-card c-assigned"><i class="fa-solid fa-users"></i><div class="val" id="r-assigned">0</div><div class="lbl">Assigned</div></div>
-                <div class="pdf-card c-completed"><i class="fa-solid fa-circle-check"></i><div class="val" id="r-completed">0</div><div class="lbl">Completed</div></div>
-                <div class="pdf-card c-pending"><i class="fa-regular fa-clock"></i><div class="val" id="r-pending">0</div><div class="lbl">Pending</div></div>
-                <div class="pdf-card" style="border-color:#cbd5e1; color:#334155;"><div class="val" style="font-size:18px;" id="r-lock">0</div><div class="lbl" style="background:#64748b;">Lock</div></div>
-                <div class="pdf-card" style="border-color:#cbd5e1; color:#334155;"><div class="val" style="font-size:18px;" id="r-pcr">0</div><div class="lbl" style="background:#64748b;">PCR</div></div>
-                <div class="pdf-card" style="border-color:#cbd5e1; color:#334155;"><div class="val" style="font-size:18px;" id="r-seizing">0</div><div class="lbl" style="background:#64748b;">Seizing</div></div>
+                <div class="pdf-card c-assigned"><div class="val" id="r-assigned">0</div><div class="lbl">Total Assigned</div></div>
+                <div class="pdf-card c-completed"><div class="val" id="r-completed">0</div><div class="lbl">Total Completed</div></div>
+                <div class="pdf-card c-pending"><div class="val" id="r-pending">0</div><div class="lbl">Total Balance</div></div>
+            </div>
+            
+            <!-- Balances Display -->
+            <div class="form-grid" style="margin-bottom: 20px;">
+                <div class="card" style="padding:15px; margin-bottom:0; background:#eff6ff; border-color:#bfdbfe;">
+                    <h4 style="margin:0 0 10px 0; color:var(--accent);">REGULAR ACCOUNTS</h4>
+                    <div>Assigned: <span id="r-reg-ass">0</span></div>
+                    <div>Completed: <span id="r-reg-com">0</span></div>
+                    <div style="font-weight:bold; margin-top:5px;">Balance: <span id="r-reg-bal" style="color:red;">0</span></div>
+                </div>
+                <div class="card" style="padding:15px; margin-bottom:0; background:#fef2f2; border-color:#fecaca;">
+                    <h4 style="margin:0 0 10px 0; color:var(--danger);">MATURED ACCOUNTS</h4>
+                    <div>Assigned: <span id="r-mat-ass">0</span></div>
+                    <div>Completed: <span id="r-mat-com">0</span></div>
+                    <div style="font-weight:bold; margin-top:5px;">Balance: <span id="r-mat-bal" style="color:red;">0</span></div>
+                </div>
             </div>
 
-            <div class="card-header" style="font-size:14px; margin-top:30px;"><i class="fa-solid fa-indian-rupee-sign"></i> Collection Data</div>
+            <div class="card-header" style="font-size:14px;"><i class="fa-solid fa-indian-rupee-sign"></i> Collection Data</div>
             <div style="overflow-x: auto;">
                 <table class="modern-table">
                     <thead><tr><th>Category / Status</th><th>Account No. & Date</th><th>Amount (₹)</th></tr></thead>
@@ -189,19 +151,12 @@
             </div>
         </div>
     </div>
-
+    
     <!-- HIDDEN PRINT AREA -->
     <div id="print-section"></div>
 
     <script>
-        // FIREBASE INITIALIZATION
-        const firebaseConfig = {
-            apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI",
-            databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
-            projectId: "sri-vishnu-priya-finance-c591f",
-            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
-            appId: "1:184676228358:android:7ef47b55ab678bb0dfd287"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI", databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com", projectId: "sri-vishnu-priya-finance-c591f", storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app", appId: "1:184676228358:android:7ef47b55ab678bb0dfd287" };
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
@@ -216,96 +171,54 @@
             event.currentTarget.classList.add('active');
         }
 
-        // ==========================================
-        // 1. MANAGE EXECUTIVES
-        // ==========================================
         function loadExecutives() {
             db.ref('Executives').on('value', snap => {
                 let list = document.getElementById('exec-list-ui');
                 let selects = document.querySelectorAll('.exec-dropdown');
                 list.innerHTML = '';
                 let optionsHTML = '<option value="">-- Select Executive --</option>';
-                
                 if(snap.exists()) {
                     snap.forEach(child => {
-                        let name = child.key;
-                        let pin = child.val().pin;
+                        let name = child.key; let pin = child.val().pin;
                         optionsHTML += `<option value="${name}">${name}</option>`;
-                        list.innerHTML += `
-                            <li class="exec-item">
-                                <div class="exec-info"><h4>${name}</h4><p><i class="fa-solid fa-key"></i> Passcode: ${pin}</p></div>
-                                <div style="display:flex; gap:8px;">
-                                    <button onclick="editExec('${name}', '${pin}')" class="btn btn-primary" style="padding:8px 12px;"><i class="fa-solid fa-pen"></i></button>
-                                    <button onclick="deleteExec('${name}')" class="btn btn-danger" style="padding:8px 12px;"><i class="fa-solid fa-trash"></i></button>
-                                </div>
-                            </li>`;
+                        list.innerHTML += `<li class="exec-item">
+                            <div class="exec-info"><h4>${name}</h4><p><i class="fa-solid fa-key"></i> Passcode: ${pin}</p></div>
+                            <div>
+                                <button onclick="editExec('${name}', '${pin}')" class="btn btn-primary" style="padding:8px 12px;"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="deleteExec('${name}')" class="btn btn-danger" style="padding:8px 12px;"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </li>`;
                     });
-                } else {
-                    list.innerHTML = '<li style="grid-column: 1/-1; text-align:center; color:#64748b; padding:20px;">No Executives found. Add one above.</li>';
-                }
-
-                selects.forEach(sel => {
-                    let current = sel.value; sel.innerHTML = optionsHTML;
-                    if(current) sel.value = current;
-                });
-            }, error => {
-                alert("Database Error: " + error.message);
+                } else { list.innerHTML = '<li>No Executives found.</li>'; }
+                selects.forEach(sel => { let current = sel.value; sel.innerHTML = optionsHTML; if(current) sel.value = current; });
             });
         }
-
         function saveExecutive() {
             let rawName = document.getElementById('exec-name').value.trim().toUpperCase();
             let pin = document.getElementById('exec-pin').value.trim();
-            
-            if(!rawName || !pin) return alert("Please enter Name and Passcode!");
-            
+            if(!rawName || !pin) return alert("Enter Name and Passcode!");
             let safeName = rawName.replace(/[.#$\[\]]/g, '').replace(/\s+/g, ' ').trim();
-            
-            if(safeName !== rawName) {
-                alert("Note: Special characters like dots (.) are not allowed. Name will be saved as: " + safeName);
-            }
-
             db.ref('Executives/' + safeName).set({ pin: pin }).then(() => {
-                alert(`✅ Executive ${safeName} saved successfully!`);
-                document.getElementById('exec-name').value = '';
-                document.getElementById('exec-pin').value = '';
-            }).catch(error => {
-                alert("❌ Failed to save! Error: " + error.message);
+                alert(`✅ Saved successfully!`);
+                document.getElementById('exec-name').value = ''; document.getElementById('exec-pin').value = '';
             });
         }
-
-        function editExec(name, pin) {
-            document.getElementById('exec-name').value = name;
-            document.getElementById('exec-pin').value = pin;
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function deleteExec(name) {
-            if(confirm(`Are you sure you want to delete ${name}?`)) {
-                db.ref('Executives/' + name).remove().catch(e => alert(e.message));
-            }
-        }
-        
+        function editExec(name, pin) { document.getElementById('exec-name').value = name; document.getElementById('exec-pin').value = pin; switchTab('tab-manage'); }
+        function deleteExec(name) { if(confirm(`Delete ${name}?`)) db.ref('Executives/' + name).remove(); }
         loadExecutives(); 
 
-        // ==========================================
-        // 2. ASSIGN ACCOUNTS
-        // ==========================================
         function generateAssignTable() {
             let reg = parseInt(document.getElementById('reg-count').value) || 0;
             let mat = parseInt(document.getElementById('mat-count').value) || 0;
             let defInst = document.getElementById('def-inst').value || "";
             let tbody = document.getElementById('assign-tbody');
             tbody.innerHTML = '';
-            
             if(reg === 0 && mat === 0) return alert("Enter Accounts count!");
-
-            // Pre-fill default installments for regular accounts
             for(let i=0; i<reg; i++) {
                 tbody.innerHTML += `<tr>
                     <td style="color:var(--accent); font-weight:700;">Regular<input type="hidden" class="a-type" value="Regular"></td>
                     <td><input type="text" class="a-acc" placeholder="Account No"></td>
-                    <td><input type="text" class="a-inst" value="${defInst}" placeholder="Ex: 1/5"></td>
+                    <td><input type="text" class="a-inst" value="${defInst}" placeholder="Inst"></td>
                     <td><input type="number" class="a-amt" placeholder="Amount"></td>
                 </tr>`;
             }
@@ -313,19 +226,17 @@
                 tbody.innerHTML += `<tr>
                     <td style="color:var(--danger); font-weight:700;">Matured<input type="hidden" class="a-type" value="Matured"></td>
                     <td><input type="text" class="a-acc" placeholder="Account No"></td>
-                    <td><input type="text" class="a-inst" value="Matured" readonly style="background:#f1f5f9; color:#64748b;"></td>
+                    <td><input type="text" class="a-inst" value="Matured" readonly style="background:#f1f5f9;"></td>
                     <td><input type="number" class="a-amt" placeholder="Amount"></td>
                 </tr>`;
             }
             document.getElementById('assign-table-container').style.display = 'block';
-            document.getElementById('assign-table-container').scrollIntoView({ behavior: 'smooth' });
         }
 
         function saveAssignmentsToFirebase() {
             let date = document.getElementById('assign-date').value;
             let exec = document.getElementById('assign-exec-select').value;
             if(!exec) return alert("Select Executive!");
-
             let data = [];
             document.querySelectorAll('#assign-tbody tr').forEach(row => {
                 let acc = row.querySelector('.a-acc').value;
@@ -334,21 +245,19 @@
                         type: row.querySelector('.a-type').value,
                         accNo: acc,
                         installments: row.querySelector('.a-inst').value,
-                        targetAmt: row.querySelector('.a-amt').value || "0"
+                        targetAmt: row.querySelector('.a-amt').value || "0",
+                        status: "Pending" // Initial status
                     });
                 }
             });
-
             if(data.length === 0) return alert("Fill at least one Account No!");
-
             db.ref(`Assignments/${date}/${exec}`).set(data).then(() => {
                 alert(`✅ Successfully Assigned ${data.length} accounts to ${exec} for ${date}!`);
-            }).catch(e => alert("❌ Error: " + e.message));
+            });
         }
 
         function printAssignmentReport() {
-            let date = document.getElementById('assign-date').value;
-            let dateFormatted = date.split('-').reverse().join('-');
+            let date = document.getElementById('assign-date').value.split('-').reverse().join('-');
             let name = document.getElementById('assign-exec-select').value;
             if(!name) return alert("Select Executive to Print!");
 
@@ -356,7 +265,7 @@
                 <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:16px; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; font-family:Arial, sans-serif;">
                     <span style="flex:1;">Name: ${name}</span>
                     <span style="flex:1; text-align:center; font-size:20px; text-transform:uppercase;">Assignment Report</span>
-                    <span style="flex:1; text-align:right;">Date: ${dateFormatted}</span>
+                    <span style="flex:1; text-align:right;">Date: ${date}</span>
                 </div>
                 <table style="width:100%; border-collapse:collapse; text-align:center; font-size:14px; font-family:Arial, sans-serif;">
                     <tr style="background:#f0f0f0;">
@@ -364,104 +273,105 @@
                         <th style="border:1px solid #000; padding:10px;">Account No</th>
                         <th style="border:1px solid #000; padding:10px;">Installments</th>
                         <th style="border:1px solid #000; padding:10px;">Amount</th>
-                    </tr>
-            `;
-
+                    </tr>`;
             let assignedCount = 0;
             document.querySelectorAll('#assign-tbody tr').forEach(row => {
                 let acc = row.querySelector('.a-acc').value;
                 if(acc) {
                     assignedCount++;
-                    let type = row.querySelector('.a-type').value;
-                    let inst = row.querySelector('.a-inst').value;
-                    let amt = row.querySelector('.a-amt').value || "0";
-                    html += `<tr>
-                        <td style="border:1px solid #000; padding:10px; font-weight:bold;">${type}</td>
-                        <td style="border:1px solid #000; padding:10px; font-weight:bold;">${acc}</td>
-                        <td style="border:1px solid #000; padding:10px;">${inst}</td>
-                        <td style="border:1px solid #000; padding:10px;">₹ ${amt}</td>
-                    </tr>`;
+                    let type = row.querySelector('.a-type').value; let inst = row.querySelector('.a-inst').value; let amt = row.querySelector('.a-amt').value || "0";
+                    html += `<tr><td style="border:1px solid #000; padding:10px; font-weight:bold;">${type}</td><td style="border:1px solid #000; padding:10px; font-weight:bold;">${acc}</td><td style="border:1px solid #000; padding:10px;">${inst}</td><td style="border:1px solid #000; padding:10px;">₹ ${amt}</td></tr>`;
                 }
             });
-
             html += `</table><div style="margin-top: 15px; font-size: 14px; font-weight:bold; font-family:Arial, sans-serif;">Total Accounts Assigned: ${assignedCount}</div>`;
-
-            let pArea = document.getElementById('print-section');
-            pArea.innerHTML = html;
+            
+            document.getElementById('print-section').innerHTML = html;
             window.print();
         }
 
-        // ==========================================
-        // 3. PERFORMANCE REPORT
-        // ==========================================
-        function generateReport() {
+        async function generateReport() {
             let exec = document.getElementById('report-exec-select').value;
             let fromD = document.getElementById('from-date').value;
             let toD = document.getElementById('to-date').value;
-            
             if(!exec || !fromD || !toD) return alert("Select Executive and Date Range!");
 
-            db.ref('DailyReports').once('value').then(snap => {
-                if(!snap.exists()) return alert("No Collection Reports found in Database!");
-
-                let totalAssigned = 0, totalComp = 0, totalPend = 0;
-                let lockC = 0, pcrC = 0, qrC = 0, seizC = 0, grandAmt = 0;
+            try {
+                // Fetch ALL Assignments in Date Range to calculate Total Balances correctly
+                let assignSnap = await db.ref('Assignments').once('value');
+                let reportSnap = await db.ref('DailyReports').once('value');
+                
+                let regAssigned = 0, matAssigned = 0;
+                let regCompleted = 0, matCompleted = 0;
+                let grandAmt = 0;
                 let regRows = "", matRows = "";
+                
+                // 1. Calculate Assignments
+                if(assignSnap.exists()) {
+                    assignSnap.forEach(dateNode => {
+                        let rDate = dateNode.key;
+                        if(rDate >= fromD && rDate <= toD && dateNode.hasChild(exec)) {
+                            let accs = dateNode.child(exec).val();
+                            accs.forEach(a => {
+                                if(a.type === 'Regular') regAssigned++;
+                                if(a.type === 'Matured') matAssigned++;
+                            });
+                        }
+                    });
+                }
 
-                snap.forEach(dateNode => {
-                    let rDate = dateNode.key;
-                    if(rDate >= fromD && rDate <= toD) {
-                        if(dateNode.hasChild(exec)) {
+                // 2. Calculate Completions
+                if(reportSnap.exists()) {
+                    reportSnap.forEach(dateNode => {
+                        let rDate = dateNode.key;
+                        if(rDate >= fromD && rDate <= toD && dateNode.hasChild(exec)) {
                             let data = dateNode.child(exec).val();
-                            
-                            totalAssigned += data.summary.assigned || 0;
-                            totalComp += data.summary.completed || 0;
-                            totalPend += data.summary.pending || 0;
-                            lockC += data.summary.lockCount || 0;
-                            pcrC += data.summary.pcrCount || 0;
-                            qrC += data.summary.qrCount || 0;
-                            seizC += data.summary.seizingCount || 0;
-                            grandAmt += data.summary.totalAmt || 0;
-
                             if(data.details) {
                                 data.details.forEach(item => {
-                                    let row = `<tr>
-                                        <td style="font-weight:600; color:#475569;">${item.status}</td>
-                                        <td><b>${item.accNo}</b> <span style="font-size:11px; color:#94a3b8; display:block;">(${rDate.split('-').reverse().join('-')})</span></td>
-                                        <td style="font-weight:600;">${item.status === 'Seizing' ? '-' : '₹' + parseFloat(item.amt).toLocaleString('en-IN')}</td>
-                                    </tr>`;
-                                    if(item.type === 'Regular') regRows += row; else matRows += row;
+                                    if(item.status !== "Pending") {
+                                        let amtNum = parseFloat(item.amt) || 0;
+                                        grandAmt += amtNum;
+                                        let row = `<tr>
+                                            <td style="font-weight:600; color:#475569;">${item.status}</td>
+                                            <td><b>${item.accNo}</b> <span style="font-size:11px; color:#94a3b8; display:block;">(${rDate.split('-').reverse().join('-')})</span></td>
+                                            <td style="font-weight:600;">${item.status === 'Seizing' ? '-' : '₹' + amtNum.toLocaleString('en-IN')}</td>
+                                        </tr>`;
+                                        
+                                        if(item.type === 'Regular') { regCompleted++; regRows += row; }
+                                        else { matCompleted++; matRows += row; }
+                                    }
                                 });
                             }
                         }
-                    }
-                });
+                    });
+                }
 
-                if(totalAssigned === 0) return alert(`No entries found for ${exec} in this date range.`);
+                let totalAssigned = regAssigned + matAssigned;
+                let totalCompleted = regCompleted + matCompleted;
 
-                document.getElementById('r-name').innerText = exec;
-                document.getElementById('r-dates').innerText = `${fromD.split('-').reverse().join('-')} to ${toD.split('-').reverse().join('-')}`;
-                
+                if(totalAssigned === 0 && totalCompleted === 0) return alert(`No data found for ${exec} in this date range.`);
+
                 document.getElementById('r-assigned').innerText = totalAssigned;
-                document.getElementById('r-completed').innerText = totalComp;
-                document.getElementById('r-pending').innerText = totalPend;
-                document.getElementById('r-lock').innerText = lockC;
-                document.getElementById('r-pcr').innerText = pcrC;
-                document.getElementById('r-seizing').innerText = seizC;
+                document.getElementById('r-completed').innerText = totalCompleted;
+                document.getElementById('r-pending').innerText = totalAssigned - totalCompleted;
+
+                document.getElementById('r-reg-ass').innerText = regAssigned;
+                document.getElementById('r-reg-com').innerText = regCompleted;
+                document.getElementById('r-reg-bal').innerText = regAssigned - regCompleted;
+
+                document.getElementById('r-mat-ass').innerText = matAssigned;
+                document.getElementById('r-mat-com').innerText = matCompleted;
+                document.getElementById('r-mat-bal').innerText = matAssigned - matCompleted;
 
                 let tableHTML = "";
                 if(regRows) tableHTML += `<tr><td colspan="3" style="text-align:left; font-weight:700; color:var(--accent); background:#eff6ff;">REGULAR ACCOUNTS</td></tr>` + regRows;
                 if(matRows) tableHTML += `<tr><td colspan="3" style="text-align:left; font-weight:700; color:var(--danger); background:#fef2f2;">MATURED ACCOUNTS</td></tr>` + matRows;
-                tableHTML += `<tr style="background:var(--primary); color:white; font-weight:700;">
-                    <td style="text-align:left;">Overall Collection</td>
-                    <td>${totalComp} Accounts</td>
-                    <td>₹ ${grandAmt.toLocaleString('en-IN')}</td>
-                </tr>`;
+                tableHTML += `<tr style="background:var(--primary); color:white; font-weight:700;"><td style="text-align:left;">Total Amount Collected</td><td>${totalCompleted} Accs</td><td>₹ ${grandAmt.toLocaleString('en-IN')}</td></tr>`;
 
                 document.getElementById('r-table-body').innerHTML = tableHTML;
                 document.getElementById('report-board').style.display = 'block';
                 document.getElementById('report-board').scrollIntoView({ behavior: 'smooth' });
-            }).catch(e => alert("Error fetching report: " + e.message));
+                
+            } catch(e) { alert("Error: " + e.message); }
         }
     </script>
 </body>
