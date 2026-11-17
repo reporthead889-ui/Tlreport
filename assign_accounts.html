@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Accounts - Sri Vishnu Priya</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- FIREBASE DIRECT SCRIPTS -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); min-height: 100vh; color: white; display: flex; flex-direction: column; align-items: center; padding: 30px 15px; }
+        
+        .circle { position: fixed; border-radius: 50%; background: linear-gradient(135deg, #00d2ff, #3a7bd5); filter: blur(80px); z-index: 0; }
+        .circle1 { width: 300px; height: 300px; top: -50px; left: -50px; opacity: 0.4; }
+        .circle2 { width: 400px; height: 400px; bottom: -100px; right: -50px; opacity: 0.3; }
+
+        .container { position: relative; z-index: 1; width: 100%; max-width: 1000px; display: flex; flex-direction: column; gap: 25px; }
+        .glass-panel { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 15px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); }
+        
+        .header { display: flex; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 15px; }
+        .back-btn { color: #00d2ff; font-size: 20px; text-decoration: none; margin-right: 15px; transition: 0.3s; }
+        .back-btn:hover { transform: translateX(-5px); }
+        .header h2 { font-size: 20px; font-weight: 600; }
+
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 15px; }
+        .input-group { display: flex; flex-direction: column; gap: 6px; }
+        .input-group label { font-size: 12px; color: rgba(255,255,255,0.7); font-weight: 500; text-transform: uppercase;}
+        
+        .input-group input { width: 100%; padding: 10px 12px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: #fff; outline: none; font-size: 14px; }
+        .input-group input:focus, .input-group select:focus { border-color: #00d2ff; box-shadow: 0 0 10px rgba(0,210,255,0.2); }
+
+        /* Modern Premium Select Dropdown */
+        .input-group select {
+            width: 100%; padding: 10px 12px; background: rgba(255, 255, 255, 0.1); 
+            border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: #fff; 
+            outline: none; font-size: 14px; cursor: pointer;
+            appearance: none; -webkit-appearance: none;
+            /* Custom SVG Arrow */
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+        }
+        .input-group select option { background: #1f363d; color: white; padding: 10px; }
+
+        #maturedYearDiv { display: none; }
+
+        .generate-btn { grid-column: 1 / -1; padding: 12px; background: linear-gradient(135deg, #00d2ff, #3a7bd5); border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .generate-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 210, 255, 0.3); }
+
+        .table-container { overflow-x: auto; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
+        th, td { padding: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        th { font-size: 12px; color: rgba(255,255,255,0.7); text-transform: uppercase; background: rgba(255, 255, 255, 0.05); }
+        td { font-size: 13px; }
+        
+        td input { width: 100%; min-width: 120px; padding: 8px 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.2); border-radius: 5px; color: #fff; text-align: left; }
+        td input[readonly] { background: transparent; border: none; font-weight: bold; width: 60px; text-align: left; padding: 0;}
+        td input:focus { outline: none; border-color: #00d2ff; background: rgba(0,210,255,0.05); }
+
+        /* Save All Button */
+        .save-all-btn { width: 100%; padding: 15px; margin-top: 25px; background: linear-gradient(135deg, #2ed573, #27ae60); border: none; border-radius: 10px; color: #fff; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 20px rgba(46, 213, 115, 0.2); }
+        .save-all-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(46, 213, 115, 0.4); }
+        .save-all-btn:disabled { background: #555; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    </style>
+</head>
+<body>
+    <div class="circle circle1"></div>
+    <div class="circle circle2"></div>
+
+    <div class="container">
+        
+        <!-- Configuration Form -->
+        <div class="glass-panel">
+            <div class="header">
+                <a href="dashboard.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+                <h2>Assign Accounts</h2>
+            </div>
+            
+            <form id="configForm">
+                <!-- Top Row: Date, Branch, Executive -->
+                <div class="form-row">
+                    <div class="input-group">
+                        <label>Date</label>
+                        <input type="date" id="assignDate" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Select Branch</label>
+                        <select id="branchSelect" required>
+                            <option value="">Loading Branches...</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Select Executive</label>
+                        <select id="execSelect" required>
+                            <option value="">Select Branch First...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Middle Row: Type, Matured Year, INS, Count -->
+                <div class="form-row">
+                    <div class="input-group">
+                        <label>Account Type</label>
+                        <select id="accType" required onchange="toggleMaturedYear()">
+                            <option value="REGULAR">REGULAR</option>
+                            <option value="MATURED">MATURED</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group" id="maturedYearDiv">
+                        <label>Matured Year</label>
+                        <select id="maturedYear">
+                            <!-- JS nundi 15 years back data vastundi -->
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label>INS (Value)</label>
+                        <input type="text" id="insValue" placeholder="Ex: 5" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Count (Accounts)</label>
+                        <input type="number" id="countValue" placeholder="Ex: 7" required min="1" max="100">
+                    </div>
+                </div>
+
+                <button type="submit" class="generate-btn">Generate Fields <i class="fas fa-list-ol"></i></button>
+            </form>
+        </div>
+
+        <!-- Generated Inputs Table -->
+        <div class="glass-panel" id="tablePanel" style="display:none;">
+            <div class="header" style="border:none; margin-bottom:0;">
+                <h2>Enter Account Details</h2>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Type</th>
+                            <th>A/C Number</th>
+                            <th>INS</th>
+                            <th>Amount (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="generatedRows">
+                        <!-- Rows will be injected here via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            <!-- BULK SAVE BUTTON -->
+            <button id="saveAllBtn" class="save-all-btn" onclick="saveAllAccounts()">Save All Accounts <i class="fas fa-save"></i></button>
+        </div>
+    </div>
+
+    <script>
+        // 1. Set Today's Date
+        document.getElementById('assignDate').valueAsDate = new Date();
+
+        // 2. Generate Past 15 Years for Matured Year
+        const currentYear = new Date().getFullYear();
+        const maturedYearSelect = document.getElementById('maturedYear');
+        for (let y = currentYear; y >= currentYear - 15; y--) {
+            maturedYearSelect.innerHTML += `<option value="${y}">${y}</option>`;
+        }
+
+        // Toggle Matured Year Dropdown visibility
+        function toggleMaturedYear() {
+            const type = document.getElementById('accType').value;
+            const maturedDiv = document.getElementById('maturedYearDiv');
+            maturedDiv.style.display = (type === 'MATURED') ? 'flex' : 'none';
+        }
+
+        // Firebase Setup
+        const firebaseConfig = {
+            apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
+            authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
+            databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
+            projectId: "sri-vishnu-priya-finance-c591f",
+            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
+            messagingSenderId: "184676228358",
+            appId: "1:184676228358:web:c2b32b68debeeadadfd287"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // 3. Fetch Branches
+        db.ref('branches').on('value', (snapshot) => {
+            const branchSelect = document.getElementById('branchSelect');
+            branchSelect.innerHTML = '<option value="">-- Select Branch --</option>'; 
+            const data = snapshot.val();
+            if (data) {
+                for (let key in data) {
+                    branchSelect.innerHTML += `<option value="${data[key].branchName}">${data[key].branchName}</option>`;
+                }
+            } else {
+                branchSelect.innerHTML = '<option value="">No Branches Found!</option>';
+            }
+        });
+
+        // 4. Fetch Executives based on selected Branch
+        document.getElementById('branchSelect').addEventListener('change', function() {
+            const selectedBranch = this.value;
+            const execSelect = document.getElementById('execSelect');
+            execSelect.innerHTML = '<option value="">Loading...</option>';
+            
+            db.ref('executives').once('value').then((snapshot) => {
+                execSelect.innerHTML = '<option value="">-- Select Executive --</option>';
+                const data = snapshot.val();
+                let found = false;
+                if (data) {
+                    for (let key in data) {
+                        if(data[key].branch === selectedBranch) {
+                            execSelect.innerHTML += `<option value="${data[key].name}">${data[key].name}</option>`;
+                            found = true;
+                        }
+                    }
+                }
+                if(!found) execSelect.innerHTML = '<option value="">No Executives found in this branch</option>';
+            });
+        });
+
+        // 5. Generate Table Rows
+        document.getElementById("configForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+            
+            const count = parseInt(document.getElementById('countValue').value);
+            const type = document.getElementById('accType').value;
+            const maturedYear = type === 'MATURED' ? document.getElementById('maturedYear').value : '-';
+            const insValue = document.getElementById('insValue').value;
+
+            document.getElementById('tablePanel').style.display = 'block';
+            const tbody = document.getElementById('generatedRows');
+            tbody.innerHTML = ''; 
+
+            let displayType = type === 'MATURED' ? `MATURED (${maturedYear})` : 'REGULAR';
+
+            for (let i = 1; i <= count; i++) {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${i}</td>
+                        <td style="color:#00d2ff; font-weight:500; font-size:12px;">${displayType}</td>
+                        <td>
+                            <input type="text" id="accNo_${i}" placeholder="Enter A/C No" autocomplete="off">
+                        </td>
+                        <td>
+                            <input type="text" value="${insValue}" readonly tabindex="-1">
+                        </td>
+                        <td>
+                            <input type="number" id="amt_${i}" placeholder="₹ Amount">
+                        </td>
+                    </tr>
+                `;
+            }
+            
+            document.getElementById('tablePanel').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // 6. BULK SAVE ALL ACCOUNTS TO FIREBASE
+        window.saveAllAccounts = async function() {
+            const saveBtn = document.getElementById('saveAllBtn');
+            const count = parseInt(document.getElementById('countValue').value);
+            
+            const assignDate = document.getElementById('assignDate').value;
+            const branch = document.getElementById('branchSelect').value;
+            const executive = document.getElementById('execSelect').value;
+            const type = document.getElementById('accType').value;
+            const maturedYear = type === 'MATURED' ? document.getElementById('maturedYear').value : null;
+            const insValue = document.getElementById('insValue').value;
+
+            let accountsToSave = [];
+            
+            // Loop through all rows to collect data
+            for (let i = 1; i <= count; i++) {
+                const accNo = document.getElementById(`accNo_${i}`).value.trim();
+                const amt = document.getElementById(`amt_${i}`).value.trim();
+                
+                // Only take rows where both A/C No and Amount are filled
+                if (accNo !== "" && amt !== "") {
+                    accountsToSave.push({
+                        date: assignDate,
+                        branch: branch,
+                        executive: executive,
+                        type: type,
+                        maturedYear: maturedYear,
+                        ins: insValue,
+                        accountNumber: accNo,
+                        amount: amt,
+                        status: "Pending",
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    });
+                }
+            }
+
+            if (accountsToSave.length === 0) {
+                alert("Please fill at least one Account Number and Amount!");
+                return;
+            }
+
+            // Start saving process
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving All...';
+            saveBtn.disabled = true;
+
+            try {
+                // Save each valid account to Firebase
+                for (let acc of accountsToSave) {
+                    await db.ref('assigned_accounts').push(acc);
+                }
+                
+                alert(`${accountsToSave.length} Accounts Saved Successfully!`);
+                
+                // Reset everything back to normal
+                document.getElementById('tablePanel').style.display = 'none';
+                document.getElementById('configForm').reset();
+                document.getElementById('assignDate').valueAsDate = new Date();
+                
+                saveBtn.innerHTML = 'Save All Accounts <i class="fas fa-save"></i>';
+                saveBtn.disabled = false;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+            } catch(error) {
+                alert("Error saving accounts: " + error.message);
+                saveBtn.innerHTML = 'Save All Accounts <i class="fas fa-save"></i>';
+                saveBtn.disabled = false;
+            }
+        };
+    </script>
+</body>
+</html>
