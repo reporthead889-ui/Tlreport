@@ -4,147 +4,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Team Lead Fin - Premium Login</title>
-    <!-- Google Fonts: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            /* Premium Dark Blue/Cyan Gradient */
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-            overflow: hidden;
+            display: flex; justify-content: center; align-items: center; min-height: 100vh;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); overflow: hidden;
         }
-
-        /* Background animated glowing orbs for extra premium feel */
-        .circle {
-            position: absolute;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
-            filter: blur(60px);
-            z-index: 0;
-        }
+        .circle { position: absolute; border-radius: 50%; background: linear-gradient(135deg, #00d2ff, #3a7bd5); filter: blur(60px); z-index: 0; }
         .circle1 { width: 300px; height: 300px; top: -100px; left: -100px; opacity: 0.5; }
         .circle2 { width: 400px; height: 400px; bottom: -150px; right: -100px; opacity: 0.4; }
-
-        /* Glassmorphism Card */
+        
         .login-box {
-            position: relative;
-            z-index: 1;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 50px 40px;
-            border-radius: 20px;
-            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            max-width: 380px;
-            text-align: center;
+            position: relative; z-index: 1; background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1); padding: 50px 40px;
+            border-radius: 20px; box-shadow: 0 25px 45px rgba(0, 0, 0, 0.2);
+            width: 100%; max-width: 380px; text-align: center;
         }
-
-        .login-box h2 {
-            color: #ffffff;
-            font-size: 28px;
-            font-weight: 600;
-            letter-spacing: 2px;
-            margin-bottom: 35px;
-            text-transform: uppercase;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .input-group {
-            position: relative;
-            margin-bottom: 25px;
-        }
-
+        .login-box h2 { color: #ffffff; font-size: 28px; font-weight: 600; letter-spacing: 2px; margin-bottom: 35px; text-transform: uppercase; }
+        .input-group { position: relative; margin-bottom: 25px; }
         .input-group input {
-            width: 100%;
-            padding: 15px 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 30px;
-            font-size: 15px;
-            color: #fff;
-            outline: none;
-            transition: all 0.3s ease;
+            width: 100%; padding: 15px 20px; background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 30px; font-size: 15px; color: #fff; outline: none; transition: all 0.3s ease;
         }
-
-        .input-group input::placeholder {
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        .input-group input:focus {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
-        }
-
+        .input-group input::placeholder { color: rgba(255, 255, 255, 0.6); }
+        .input-group input:focus { background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.5); }
+        
         .login-btn {
-            width: 100%;
-            padding: 15px;
-            margin-top: 10px;
-            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
-            border: none;
-            border-radius: 30px;
-            color: #fff;
-            font-size: 16px;
-            font-weight: 600;
-            letter-spacing: 1px;
-            cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            width: 100%; padding: 15px; margin-top: 10px; background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            border: none; border-radius: 30px; color: #fff; font-size: 16px; font-weight: 600; cursor: pointer; transition: transform 0.3s ease;
         }
-
-        .login-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 210, 255, 0.4);
-        }
-
-        .login-btn:active {
-            transform: translateY(0);
-        }
-
+        .login-btn:hover { transform: translateY(-3px); }
         #error-msg {
-            color: #ff6b6b;
-            font-size: 14px;
-            margin-top: 15px;
-            font-weight: 400;
-            display: none;
-            background: rgba(255, 107, 107, 0.1);
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 107, 107, 0.3);
+            color: #ff6b6b; font-size: 14px; margin-top: 15px; display: none;
+            background: rgba(255, 107, 107, 0.1); padding: 10px; border-radius: 10px; border: 1px solid rgba(255, 107, 107, 0.3);
         }
     </style>
 </head>
 <body>
 
-    <!-- Background Orbs -->
     <div class="circle circle1"></div>
     <div class="circle circle2"></div>
 
-    <!-- Login Container -->
     <div class="login-box">
         <h2>Team Lead Fin</h2>
-        
         <div class="input-group">
             <input type="text" id="userId" placeholder="Enter User ID" autocomplete="off">
         </div>
-        
         <div class="input-group">
             <input type="password" id="password" placeholder="Enter Password">
         </div>
-        
         <button id="loginBtn" class="login-btn">Secure Login</button>
-        
         <div id="error-msg">Incorrect User ID or Password</div>
     </div>
 
@@ -153,7 +64,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
 
-        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
             authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
@@ -168,32 +78,28 @@
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
 
-        // Login Logic
         document.getElementById("loginBtn").addEventListener("click", function() {
             const enteredId = document.getElementById("userId").value.trim();
             const enteredPass = document.getElementById("password").value.trim();
             const errorMsg = document.getElementById("error-msg");
             const btn = this;
 
-            // Button Click Animation Text
             btn.innerText = "Authenticating...";
 
             setTimeout(() => {
                 if (enteredId === "TNL COLL" && enteredPass === "COLL@TNL") {
                     errorMsg.style.display = "none";
                     btn.innerText = "Success!";
-                    btn.style.background = "linear-gradient(135deg, #11998e, #38ef7d)"; // Green on success
+                    btn.style.background = "linear-gradient(135deg, #11998e, #38ef7d)";
                     
-                    // Success alert (tarvata next page ki redirect cheskovachu)
                     setTimeout(() => {
-                        alert("Premium Login Successful!");
-                        // window.location.href = "dashboard.html"; 
+                        // Idhigo ikkada Dashboard ki Redirect avthundi 👇
+                        window.location.href = "dashboard.html"; 
                     }, 500);
 
                 } else {
                     errorMsg.style.display = "block";
                     btn.innerText = "Secure Login";
-                    // Shake effect on error
                     document.querySelector('.login-box').animate([
                         { transform: 'translateX(0)' },
                         { transform: 'translateX(-10px)' },
@@ -201,7 +107,7 @@
                         { transform: 'translateX(0)' }
                     ], { duration: 300 });
                 }
-            }, 800); // Artificial delay to look like server authentication
+            }, 800);
         });
     </script>
 
