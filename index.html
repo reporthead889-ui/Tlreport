@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TL Admin Dashboard</title>
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -171,13 +172,14 @@
         </div>
     </div>
     
-    <!-- Edit Modal (Fixed Data Loss Issue) -->
+    <!-- Edit Modal (Fully Fixed for Key matching) -->
     <div id="edit-modal">
         <div class="modal-content">
             <h3 style="margin-top:0; color:var(--primary);">Edit Report Entry</h3>
             
             <input type="hidden" id="edit-date">
             <input type="hidden" id="edit-exec">
+            <input type="hidden" id="edit-key"> <!-- Exact Firebase Key -->
             <input type="hidden" id="edit-accNo">
             <input type="hidden" id="edit-type">
             <input type="hidden" id="edit-inst">
@@ -187,7 +189,7 @@
                 <select id="edit-status">
                     <option value="Lock">Lock</option><option value="PCR">PCR</option>
                     <option value="QR">QR</option><option value="Office / Others">Office / Others</option>
-                    <option value="Seizing">Seizing</option><option value="Pending">Pending (Revert)</option>
+                    <option value="Seizing">Seizing</option><option value="Pending">Pending (Delete Entry)</option>
                 </select>
             </div>
             <div class="form-group" style="margin-top:10px;">
@@ -201,7 +203,7 @@
         </div>
     </div>
 
-    <!-- HIDDEN PRINT AREA (A4 Formatting) -->
+    <!-- HIDDEN PRINT AREA -->
     <div id="print-section"></div>
 
     <script>
@@ -210,7 +212,7 @@
         const db = firebase.database();
         let execsData = {}; 
 
-        // Amount Formatter (Converts >= 1,00,000 to Lakhs like 2.10 L)
+        // Amount Formatter
         function formatAmountShort(num) {
             if(!num) return "₹ 0";
             if(num >= 100000) { return "₹ " + (num / 100000).toFixed(2) + " L"; }
@@ -350,7 +352,11 @@
                 } else { tbody.innerHTML = '<tr><td colspan="5" style="color:red; font-weight:bold;">No Active Assignments found.</td></tr>'; }
             });
         }
-        function deleteSingleAccount(exec, accKey) { if(confirm(`Delete account ${accKey}?`)) db.ref(`Assignments/${exec}/${accKey}`).remove(); }
+        function deleteSingleAccount(exec, accKey) { 
+            if(confirm(`Delete account ${accKey}?`)) {
+                db.ref(`Assignments/${exec}/${accKey}`).remove().then(() => alert("Deleted successfully!"));
+            }
+        }
 
         function printGroupedAssignments() {
             let exec = document.getElementById('view-exec-select').value;
@@ -376,6 +382,7 @@
             let branch = execsData[exec] ? execsData[exec].branch : "N/A";
             let date = new Date().toLocaleDateString('en-IN'); 
 
+            document.getElementById('print-section').innerHTML = ""; // Clear
             let html = `
                 <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:14px; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px;">
                     <span style="flex:1;">Name: ${exec}<br>Branch: ${branch}</span>
@@ -422,7 +429,8 @@
             }
 
             html += `<h3 style="text-align:right;">Grand Total Accounts: ${rCount + mCount} | Grand Total Amount: ${formatAmountShort(rAmt + mAmt)}</h3>`;
-            document.getElementById('print-section').innerHTML = html; window.print();
+            document.getElementById('print-section').innerHTML = html; 
+            window.print();
         }
 
         // 4. PERFORMANCE REPORTS & EDIT/DELETE
@@ -449,14 +457,11 @@
                         if(rDate >= fromD && rDate <= toD && dateNode.hasChild(exec)) {
                             let data = dateNode.child(exec).val();
                             if(data.details) {
+                                // EXACT NODE KEY FOR EDIT/DELETE
                                 Object.keys(data.details).forEach(nodeKey => {
                                     let item = data.details[nodeKey];
                                     
-                                    // CLEANUP GARBAGE DATA (Removes undefined items from past bugs)
-                                    if(!item || !item.accNo || item.accNo === 'undefined' || !item.type) {
-                                        db.ref(`DailyReports/${rDate}/${exec}/details/${nodeKey}`).remove();
-                                        return; 
-                                    }
+                                    if(!item || !item.accNo) return; 
 
                                     if(item.status !== "Pending") {
                                         totalCompleted++;
@@ -464,10 +469,10 @@
                                         let amtNum = parseFloat(item.amt) || 0; grandAmt += amtNum;
                                         let displayInst = item.inst ? `(${item.inst})` : "";
                                         
-                                        // Edit / Delete buttons payload
+                                        // EXACT FIREBASE KEY PASSED ('nodeKey')
                                         let actionBtns = `
-                                            <button class="btn btn-primary" style="padding:4px 8px; font-size:11px;" onclick="openEditModal('${rDate}', '${exec}', '${item.accNo}', '${item.type}', '${item.inst}', '${item.status}', '${item.amt}')">Edit</button>
-                                            <button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="deleteReportEntry('${rDate}', '${exec}', '${item.accNo}')">Del</button>
+                                            <button class="btn btn-primary" style="padding:4px 8px; font-size:11px;" onclick="openEditModal('${rDate}', '${exec}', '${nodeKey}', '${item.accNo}', '${item.type}', '${item.inst}', '${item.status}', '${item.amt}')">Edit</button>
+                                            <button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="deleteReportEntry('${rDate}', '${exec}', '${nodeKey}')">Del</button>
                                         `;
 
                                         let row = `<tr>
@@ -504,10 +509,11 @@
             } catch(e) { alert("Error: " + e.message); }
         }
 
-        // Report Edit/Delete Fix (No more missing properties or new duplicate records)
-        function openEditModal(date, exec, accNo, type, inst, status, amt) {
+        // PERFECTED EDIT / DELETE USING EXACT FIREBASE KEY
+        function openEditModal(date, exec, key, accNo, type, inst, status, amt) {
             document.getElementById('edit-date').value = date;
             document.getElementById('edit-exec').value = exec;
+            document.getElementById('edit-key').value = key; 
             document.getElementById('edit-accNo').value = accNo;
             document.getElementById('edit-type').value = type;
             document.getElementById('edit-inst').value = inst;
@@ -518,24 +524,28 @@
 
         function updateReportEntry() {
             let date = document.getElementById('edit-date').value; let exec = document.getElementById('edit-exec').value;
+            let key = document.getElementById('edit-key').value; // THIS PREVENTS DUPLICATES
             let accNo = document.getElementById('edit-accNo').value; let type = document.getElementById('edit-type').value; let inst = document.getElementById('edit-inst').value;
             let nStatus = document.getElementById('edit-status').value; let nAmt = document.getElementById('edit-amt').value;
             
             if(nStatus === "Pending") {
-                db.ref(`DailyReports/${date}/${exec}/details/${accNo}`).remove().then(() => {
-                    document.getElementById('edit-modal').style.display = 'none'; generateReport();
+                db.ref(`DailyReports/${date}/${exec}/details/${key}`).remove().then(() => {
+                    alert("Reverted to Pending!"); document.getElementById('edit-modal').style.display = 'none'; generateReport();
                 });
             } else {
-                db.ref(`DailyReports/${date}/${exec}/details/${accNo}`).set({
+                db.ref(`DailyReports/${date}/${exec}/details/${key}`).update({
                     accNo: accNo, type: type, inst: inst, status: nStatus, amt: Number(nAmt)
                 }).then(() => {
-                    document.getElementById('edit-modal').style.display = 'none'; generateReport();
+                    alert("Updated Successfully!"); document.getElementById('edit-modal').style.display = 'none'; generateReport();
                 });
             }
         }
-        function deleteReportEntry(date, exec, accNo) {
-            if(confirm("Delete this entry from the report?")) {
-                db.ref(`DailyReports/${date}/${exec}/details/${accNo}`).remove().then(() => generateReport());
+
+        function deleteReportEntry(date, exec, key) {
+            if(confirm("Delete this entry entirely from the report?")) {
+                db.ref(`DailyReports/${date}/${exec}/details/${key}`).remove().then(() => {
+                    alert("Deleted Successfully!"); generateReport();
+                });
             }
         }
 
@@ -544,6 +554,8 @@
             let exec = document.getElementById('r-name').innerText;
             let branch = document.getElementById('r-branch').innerText;
             let dates = document.getElementById('r-dates').innerText;
+            
+            document.getElementById('print-section').innerHTML = ""; // Clear
             
             let html = `
                 <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:14px; margin-bottom: 10px; border-bottom: 2px solid #000; padding-bottom: 10px;">
