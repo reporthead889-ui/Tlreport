@@ -3,219 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TL Dashboard - Sri Vishnu Priya</title>
+    <title>Team Lead Fin - Premium Login</title>
+    <!-- Google Fonts: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        
-        :root { 
-            --primary: #0f172a; --secondary: #2563eb; --bg-color: #f8fafc; 
-            --card-bg: #ffffff; --text-dark: #1e293b; --text-muted: #64748b; 
-            --border: #e2e8f0; --accent: #f59e0b; --danger: #ef4444; 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
         }
         
-        body { font-family: 'Inter', sans-serif; margin: 0; background-color: var(--bg-color); color: var(--text-dark); display: flex; }
-        
-        .sidebar { width: 260px; background: var(--primary); color: white; min-height: 100vh; position: fixed; display: flex; flex-direction: column; }
-        .brand { padding: 25px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px; }
-        .brand h2 { margin: 0; font-size: 1.2rem; color: #fff; }
-        .brand span { font-size: 0.8rem; color: #94a3b8; }
-        
-        .tab-btn { background: transparent; color: #cbd5e1; border: none; padding: 16px 25px; text-align: left; font-size: 0.95rem; cursor: pointer; border-left: 4px solid transparent; width: 100%; transition: 0.3s;}
-        .tab-btn:hover, .tab-btn.active { background: rgba(255,255,255,0.05); color: white; border-left-color: var(--secondary); }
-        
-        .main-content { margin-left: 260px; padding: 30px; width: calc(100% - 260px); box-sizing: border-box; }
-        .tab-content { display: none; } 
-        .tab-content.active { display: block; }
-        
-        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid var(--border); }
-        .section-header h3 { margin: 0; color: var(--primary); font-size: 1.4rem; }
-        
-        .card { background: var(--card-bg); padding: 25px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 25px; }
-        .form-row { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 15px; }
-        .form-group { flex: 1; min-width: 200px; }
-        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: var(--text-muted); }
-        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; outline:none; }
-        
-        .btn { padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; border: none; transition: 0.2s;}
-        .btn-primary { background: var(--secondary); color: white; }
-        .btn-primary:hover { background: #1d4ed8; }
-        .btn-print { background: var(--text-dark); color: white; float: right; }
-        .btn-danger { background: var(--danger); color: white; padding: 6px 12px; }
-        .btn-edit { background: var(--accent); color: white; padding: 6px 12px; }
-        
-        .table-container { background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border); overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th { background: #f8fafc; padding: 12px 15px; font-size: 0.85rem; color: var(--text-muted); border-bottom: 1px solid var(--border); }
-        td { padding: 12px 15px; border-bottom: 1px solid var(--border); }
-        .dynamic-input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        
-        .cards-wrapper { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px; }
-        .stat-card { background: var(--card-bg); padding: 20px; border-radius: 8px; border: 1px solid var(--border); flex: 1; text-align: center; }
-        .stat-card h5 { margin: 0 0 10px 0; color: var(--text-muted); font-size: 0.8rem; }
-        .stat-card .val { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
-        
-        @media print {
-            body { background: white; } 
-            .sidebar, .no-print { display: none !important; }
-            .main-content { margin: 0; padding: 0; width: 100%; } 
-            .card { border: none; padding: 0; }
-            .print-header { text-align: center; border-bottom: 2px solid #000; margin-bottom: 20px; padding-bottom: 15px; }
-            table, th, td { border: 1px solid #000; } 
-            th { background: #eee !important; -webkit-print-color-adjust: exact; }
-            .stat-card { border: 1px solid #000; padding: 10px; }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            /* Premium Dark Blue/Cyan Gradient */
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            overflow: hidden;
+        }
+
+        /* Background animated glowing orbs for extra premium feel */
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            filter: blur(60px);
+            z-index: 0;
+        }
+        .circle1 { width: 300px; height: 300px; top: -100px; left: -100px; opacity: 0.5; }
+        .circle2 { width: 400px; height: 400px; bottom: -150px; right: -100px; opacity: 0.4; }
+
+        /* Glassmorphism Card */
+        .login-box {
+            position: relative;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 50px 40px;
+            border-radius: 20px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+        }
+
+        .login-box h2 {
+            color: #ffffff;
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            margin-bottom: 35px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            font-size: 15px;
+            color: #fff;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .input-group input:focus {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            margin-top: 10px;
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            border: none;
+            border-radius: 30px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 210, 255, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        #error-msg {
+            color: #ff6b6b;
+            font-size: 14px;
+            margin-top: 15px;
+            font-weight: 400;
+            display: none;
+            background: rgba(255, 107, 107, 0.1);
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 107, 107, 0.3);
         }
     </style>
 </head>
 <body>
 
-    <div class="sidebar no-print">
-        <div class="brand">
-            <h2>Sri Vishnu Priya</h2>
-            <span>TL Dashboard</span>
-        </div>
-        <button class="tab-btn active" onclick="switchTab('tab-add-exec', this)">1. ADD EXECUTIVE'S</button>
-        <button class="tab-btn" onclick="switchTab('tab-assign-acc', this)">2. ASSIGN ACCOUNTS</button>
-        <button class="tab-btn" onclick="switchTab('tab-assign-rep', this)">3. ASSIGN REPORT</button>
-        <button class="tab-btn" onclick="switchTab('tab-daily-rep', this)">4. EMPLOYEE DAILY REPORT</button>
-        <button class="tab-btn" onclick="switchTab('tab-branch-rep', this)">5. BRANCH ASSIGN REPORT</button>
-    </div>
+    <!-- Background Orbs -->
+    <div class="circle circle1"></div>
+    <div class="circle circle2"></div>
 
-    <div class="main-content">
+    <!-- Login Container -->
+    <div class="login-box">
+        <h2>Team Lead Fin</h2>
         
-        <!-- 1. ADD EXECUTIVE'S -->
-        <div id="tab-add-exec" class="tab-content active">
-            <div class="section-header"><h3>ADD EXECUTIVE'S</h3></div>
-            <div class="card no-print">
-                <div class="form-row">
-                    <div class="form-group"><label>Employee Name</label><input type="text" id="exec-name"></div>
-                    <div class="form-group"><label>Branch Name</label><input type="text" id="exec-branch"></div>
-                    <div class="form-group"><label>Passcode</label><input type="password" id="exec-passcode"></div>
-                </div>
-                <button class="btn btn-primary" onclick="saveExecutive()">SAVE EXECUTIVE</button>
-            </div>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr><th>Name</th><th>Branch</th><th>Passcode</th><th class="no-print">Action</th></tr>
-                    </thead>
-                    <tbody id="executives-list"></tbody>
-                </table>
-            </div>
+        <div class="input-group">
+            <input type="text" id="userId" placeholder="Enter User ID" autocomplete="off">
         </div>
-
-        <!-- 2. ASSIGN ACCOUNTS -->
-        <div id="tab-assign-acc" class="tab-content">
-            <div class="section-header"><h3>ASSIGN ACCOUNTS</h3></div>
-            <div class="card no-print">
-                <div class="form-row">
-                    <div class="form-group"><label>Date</label><input type="date" id="assign-date"></div>
-                    <div class="form-group"><label>Employee</label><select id="assign-emp-select"><option value="">--Select--</option></select></div>
-                    <div class="form-group">
-                        <label>Account Type</label>
-                        <select id="assign-type" onchange="toggleAssignType()">
-                            <option value="REGULAR">REGULAR</option>
-                            <option value="MATURED">MATURED</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-row" id="reg-inputs">
-                    <div class="form-group"><label>Installments (INS)</label><input type="number" id="reg-ins"></div>
-                    <div class="form-group"><label>Count</label><input type="number" id="reg-count"></div>
-                </div>
-                <div class="form-row" id="mat-inputs" style="display:none;">
-                    <div class="form-group"><label>Matured Year</label><input type="number" id="mat-year"></div>
-                    <div class="form-group"><label>Installments (INS)</label><input type="number" id="mat-ins"></div>
-                    <div class="form-group"><label>Count</label><input type="number" id="mat-count"></div>
-                </div>
-                <button class="btn btn-primary" onclick="generateRows()">GENERATE COLUMNS</button>
-            </div>
-            
-            <div id="dynamic-grid" style="display:none;">
-                <div class="table-container" style="margin-bottom: 20px;">
-                    <table id="dynamic-table">
-                        <thead id="dynamic-thead"></thead>
-                        <tbody id="dynamic-tbody"></tbody>
-                    </table>
-                </div>
-                <button class="btn btn-primary no-print" onclick="submitAssignments()">FINAL SUBMIT</button>
-            </div>
+        
+        <div class="input-group">
+            <input type="password" id="password" placeholder="Enter Password">
         </div>
-
-        <!-- 3. ASSIGN REPORT -->
-        <div id="tab-assign-rep" class="tab-content">
-            <div class="section-header no-print">
-                <h3>ASSIGN REPORT</h3>
-                <button class="btn btn-print" onclick="window.print()">🖨️ PRINT</button>
-            </div>
-            <div class="card form-row no-print">
-                <div class="form-group"><label>Employee</label><select id="rep-emp-select"></select></div>
-                <div class="form-group"><label>&nbsp;</label><button class="btn btn-primary" onclick="fetchAssignReport()">SEARCH</button></div>
-            </div>
-            <div id="assign-print-area"></div>
-        </div>
-
-        <!-- 4. EMPLOYEE DAILY REPORT -->
-        <div id="tab-daily-rep" class="tab-content">
-            <div class="section-header no-print">
-                <h3>EMPLOYEE DAILY REPORT</h3>
-                <button class="btn btn-print" onclick="window.print()">🖨️ PRINT GM REPORT</button>
-            </div>
-            <div class="card form-row no-print">
-                <div class="form-group"><label>Employee</label><select id="daily-emp-select"></select></div>
-                <div class="form-group"><label>Date</label><input type="date" id="daily-date"></div>
-                <div class="form-group"><label>&nbsp;</label><button class="btn btn-primary" onclick="fetchDailyReport()">SEARCH</button></div>
-            </div>
-            
-            <div id="daily-print-area" style="display:none;">
-                <div class="print-header">
-                    <h2>DAILY PERFORMANCE REPORT</h2>
-                    <p><strong>Employee:</strong> <span id="pr-daily-emp"></span> &nbsp;|&nbsp; <strong>Date:</strong> <span id="pr-daily-date"></span></p>
-                </div>
-                
-                <h4 style="color:var(--text-muted);">REGULAR SUMMARY</h4>
-                <div class="cards-wrapper" id="tl-reg-cards"></div>
-                
-                <h4 style="color:var(--text-muted);">MATURED SUMMARY</h4>
-                <div class="cards-wrapper" id="tl-mat-cards"></div>
-                
-                <h4 style="color:var(--text-muted);">COLLECTION ENTRY UPDATES (TL Controls)</h4>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr><th>A/C No</th><th>Type</th><th>INS</th><th>Status</th><th>Amount</th><th class="no-print">Action</th></tr>
-                        </thead>
-                        <tbody id="tl-daily-tbody"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- 5. BRANCH ASSIGNMENT REPORT -->
-        <div id="tab-branch-rep" class="tab-content">
-            <div class="section-header no-print">
-                <h3>BRANCH ASSIGNMENT REPORT</h3>
-                <button class="btn btn-print" onclick="window.print()">🖨️ PRINT</button>
-            </div>
-            <div class="card form-row no-print">
-                <div class="form-group"><label>Branch</label><select id="branch-select"></select></div>
-                <div class="form-group"><label>Month/Year</label><input type="text" id="branch-month" value="11/2026"></div>
-                <div class="form-group"><label>&nbsp;</label><button class="btn btn-primary" onclick="fetchBranchReport()">SEARCH</button></div>
-            </div>
-            <div id="branch-print-area" style="display:none;">
-                <div class="print-header">
-                    <h2 id="pr-branch-title"></h2>
-                    <p><strong>Month:</strong> <span id="pr-branch-month"></span></p>
-                </div>
-                <div id="branch-data-container"></div>
-            </div>
-        </div>
+        
+        <button id="loginBtn" class="login-btn">Secure Login</button>
+        
+        <div id="error-msg">Incorrect User ID or Password</div>
     </div>
 
-    <!-- Firebase SDK Imports -->
+    <!-- Firebase SDK Setup -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, onValue, push, set, remove, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
 
+        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
             authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
@@ -223,412 +161,49 @@
             projectId: "sri-vishnu-priya-finance-c591f",
             storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
             messagingSenderId: "184676228358",
-            appId: "1:184676228358:web:c2b32b68debeeadadfd287"
+            appId: "1:184676228358:web:c2b32b68debeeadadfd287",
+            measurementId: "G-E3TT96ZH1T"
         };
+
         const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        
-        let branchEmployeeMap = {};
+        const analytics = getAnalytics(app);
 
-        // ==========================================
-        // 1. ADD EXECUTIVE LOGIC (Path: executives)
-        // ==========================================
-        window.saveExecutive = function() {
-            const name = document.getElementById('exec-name').value.trim();
-            const branch = document.getElementById('exec-branch').value.trim();
-            const pass = document.getElementById('exec-passcode').value.trim();
-            
-            if(name && branch && pass) {
-                const newRef = push(ref(db, 'executives'));
-                set(newRef, { name: name, branch: branch, passcode: pass })
-                .then(() => {
-                    alert("✅ Executive Saved Successfully!"); 
-                    document.getElementById('exec-name').value = ''; 
-                    document.getElementById('exec-branch').value = ''; 
-                    document.getElementById('exec-passcode').value = '';
-                })
-                .catch(error => alert("❌ Firebase Error: " + error.message));
-            } else { 
-                alert("Please fill all fields!"); 
-            }
-        }
+        // Login Logic
+        document.getElementById("loginBtn").addEventListener("click", function() {
+            const enteredId = document.getElementById("userId").value.trim();
+            const enteredPass = document.getElementById("password").value.trim();
+            const errorMsg = document.getElementById("error-msg");
+            const btn = this;
 
-        onValue(ref(db, 'executives'), (snapshot) => {
-            const tbody = document.getElementById('executives-list');
-            const assignSel = document.getElementById('assign-emp-select');
-            const repSel = document.getElementById('rep-emp-select');
-            const dailySel = document.getElementById('daily-emp-select');
-            const branchSel = document.getElementById('branch-select');
+            // Button Click Animation Text
+            btn.innerText = "Authenticating...";
 
-            tbody.innerHTML = ''; 
-            let opts = '<option value="">--Select--</option>'; 
-            let branches = new Set(); 
-            branchEmployeeMap = {};
-
-            if(snapshot.exists()) {
-                snapshot.forEach(child => {
-                    const data = child.val();
-                    const key = child.key;
+            setTimeout(() => {
+                if (enteredId === "TNL COLL" && enteredPass === "COLL@TNL") {
+                    errorMsg.style.display = "none";
+                    btn.innerText = "Success!";
+                    btn.style.background = "linear-gradient(135deg, #11998e, #38ef7d)"; // Green on success
                     
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>${data.name}</td>
-                            <td>${data.branch}</td>
-                            <td>${data.passcode}</td>
-                            <td class="no-print">
-                                <button class="btn btn-danger" onclick="deleteExec('${key}')">Delete</button>
-                            </td>
-                        </tr>
-                    `;
-                    
-                    opts += `<option value="${data.name}">${data.name}</option>`;
-                    branches.add(data.branch);
-                    
-                    if(!branchEmployeeMap[data.branch]) {
-                        branchEmployeeMap[data.branch] = [];
-                    }
-                    branchEmployeeMap[data.branch].push(data.name);
-                });
-            }
-            
-            assignSel.innerHTML = opts; 
-            repSel.innerHTML = opts; 
-            dailySel.innerHTML = opts;
-            
-            let branchOpts = '<option value="">--Select--</option>'; 
-            branches.forEach(b => branchOpts += `<option value="${b}">${b}</option>`); 
-            branchSel.innerHTML = branchOpts;
+                    // Success alert (tarvata next page ki redirect cheskovachu)
+                    setTimeout(() => {
+                        alert("Premium Login Successful!");
+                        // window.location.href = "dashboard.html"; 
+                    }, 500);
+
+                } else {
+                    errorMsg.style.display = "block";
+                    btn.innerText = "Secure Login";
+                    // Shake effect on error
+                    document.querySelector('.login-box').animate([
+                        { transform: 'translateX(0)' },
+                        { transform: 'translateX(-10px)' },
+                        { transform: 'translateX(10px)' },
+                        { transform: 'translateX(0)' }
+                    ], { duration: 300 });
+                }
+            }, 800); // Artificial delay to look like server authentication
         });
-
-        window.deleteExec = function(key) { 
-            if(confirm("Delete this Executive?")) {
-                remove(ref(db, `executives/${key}`)); 
-            }
-        }
-
-        // ==========================================
-        // 2. ASSIGN ACCOUNTS LOGIC (Path: assignments)
-        // ==========================================
-        window.submitAssignments = function() {
-            const empName = document.getElementById('assign-emp-select').value;
-            const type = document.getElementById('assign-type').value;
-            const count = parseInt(type === 'REGULAR' ? document.getElementById('reg-count').value : document.getElementById('mat-count').value);
-            const ins = type === 'REGULAR' ? document.getElementById('reg-ins').value : document.getElementById('mat-ins').value;
-            const year = type === 'MATURED' ? document.getElementById('mat-year').value : null;
-            
-            if(!empName) return alert("Please Select Employee");
-
-            let promises = [];
-            
-            for(let i=1; i<=count; i++) {
-                const accNo = document.getElementById(`dyn-acc-${i}`).value;
-                const amount = document.getElementById(`dyn-amt-${i}`).value;
-                
-                if(accNo && amount) {
-                    const newRef = push(ref(db, `assignments/${empName}`)); 
-                    promises.push(set(newRef, { 
-                        accountNo: accNo, 
-                        type: type, 
-                        installments: ins, 
-                        amount: parseFloat(amount), 
-                        year: year 
-                    }));
-                }
-            }
-            
-            if(promises.length === 0) return alert("Please enter at least one account detail!");
-            
-            Promise.all(promises).then(() => { 
-                alert("✅ Accounts Assigned Successfully!"); 
-                document.getElementById('dynamic-grid').style.display = 'none'; 
-            }).catch(error => alert("❌ Error: " + error.message));
-        }
-
-        // ==========================================
-        // 3. ASSIGN REPORT LOGIC 
-        // ==========================================
-        window.fetchAssignReport = function() {
-            const emp = document.getElementById('rep-emp-select').value;
-            if(!emp) return alert("Select Employee!");
-            
-            get(ref(db, `assignments/${emp}`)).then(snapshot => {
-                const area = document.getElementById('assign-print-area');
-                if(!snapshot.exists()) { 
-                    area.innerHTML = `<p>No Assignments found</p>`; 
-                    return; 
-                }
-                
-                let regularData = {}; 
-                let maturedData = {};
-                
-                snapshot.forEach(child => {
-                    const data = child.val();
-                    if(data.type === 'REGULAR') { 
-                        let key = `${data.installments} INS`; 
-                        if(!regularData[key]) regularData[key] = {count: 0, amt: 0}; 
-                        regularData[key].count++; 
-                        regularData[key].amt += data.amount; 
-                    } else { 
-                        let key = `${data.year}`; 
-                        if(!maturedData[key]) maturedData[key] = {count: 0, amt: 0}; 
-                        maturedData[key].count++; 
-                        maturedData[key].amt += data.amount; 
-                    }
-                });
-                
-                let html = '';
-                if(Object.keys(regularData).length > 0) {
-                    html += buildRepTab(emp, 'REGULAR SUMMARY', regularData, ['INSTALLMENTS (INS)', 'NO. OF ACCOUNTS', 'AMOUNT (Lakhs)']);
-                }
-                if(Object.keys(maturedData).length > 0) {
-                    html += buildRepTab(emp, 'MATURED SUMMARY', maturedData, ['YEAR OF MATURED', 'NO. OF ACCOUNTS', 'AMOUNT (Lakhs)']);
-                }
-                area.innerHTML = html;
-            });
-        }
-
-        function buildRepTab(empName, title, dataObj, headers) {
-            let html = `
-                <div class="print-header">
-                    <h2>ASSIGN ACCOUNTS</h2>
-                    <p>${empName} | ${title}</p>
-                </div>
-                <div class="table-container" style="margin-bottom:30px;">
-                    <table>
-                        <thead>
-                            <tr><th>${headers[0]}</th><th>${headers[1]}</th><th>${headers[2]}</th></tr>
-                        </thead>
-                        <tbody>
-            `;
-            let totalCount = 0, totalAmt = 0; 
-            for(let key in dataObj) { 
-                totalCount += dataObj[key].count; 
-                totalAmt += dataObj[key].amt; 
-                html += `<tr><td>${key}</td><td>${dataObj[key].count}</td><td>${(dataObj[key].amt/100000).toFixed(2)}</td></tr>`; 
-            }
-            html += `
-                        <tr style="font-weight:bold;background:#f1f5f9;">
-                            <td>TOTAL ACCOUNTS & AMOUNT :-</td>
-                            <td>${totalCount}</td>
-                            <td>${(totalAmt/100000).toFixed(2)}</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            `;
-            return html;
-        }
-
-        // ==========================================
-        // 4. DAILY GM REPORT (Path: daily_performance)
-        // ==========================================
-        window.fetchDailyReport = function() {
-            const emp = document.getElementById('daily-emp-select').value;
-            const dateInput = document.getElementById('daily-date').value;
-            if(!emp || !dateInput) return alert("Select Employee & Date!");
-            
-            const selDate = new Date(dateInput);
-            const dbDate = `${selDate.getDate().toString().padStart(2,'0')}-${(selDate.getMonth()+1).toString().padStart(2,'0')}-${selDate.getFullYear()}`;
-            
-            document.getElementById('daily-print-area').style.display = 'block'; 
-            document.getElementById('pr-daily-emp').innerText = emp; 
-            document.getElementById('pr-daily-date').innerText = dbDate;
-            
-            let regAssign = 0, matAssign = 0;
-            
-            get(ref(db, `assignments/${emp}`)).then(snapshot => {
-                if(snapshot.exists()) {
-                    snapshot.forEach(c => {
-                        if(c.val().type === 'REGULAR') regAssign++; else matAssign++;
-                    });
-                }
-                
-                onValue(ref(db, `daily_performance/${dbDate}/${emp}`), (perfSnap) => {
-                    const tbody = document.getElementById('tl-daily-tbody'); 
-                    tbody.innerHTML = '';
-                    let rCount = {c:0, l:0, p:0, o:0, s:0};
-                    let mCount = {c:0, l:0, p:0, o:0, s:0};
-                    
-                    if(perfSnap.exists()) {
-                        perfSnap.forEach(ch => {
-                            const d = ch.val();
-                            const k = ch.key;
-                            const t = d.type === 'REGULAR' ? rCount : mCount;
-                            
-                            t.c++; 
-                            if(d.status === 'LOCK') t.l++; 
-                            else if(d.status === 'PCR') t.p++; 
-                            else if(d.status === 'OP' || d.status === "OP'S") t.o++; 
-                            else if(d.status === 'SEEZING') t.s++;
-                            
-                            tbody.innerHTML += `
-                                <tr>
-                                    <td><strong>${d.accountNo}</strong></td>
-                                    <td>${d.type}</td>
-                                    <td>${d.ins || '-'}</td>
-                                    <td>
-                                        <select id="s-${k}" class="dynamic-input">
-                                            <option value="${d.status}">${d.status}</option>
-                                            <option value="LOCK">LOCK</option>
-                                            <option value="PCR">PCR</option>
-                                            <option value="OP">OP</option>
-                                            <option value="SEEZING">SEEZING</option>
-                                        </select>
-                                    </td>
-                                    <td><input type="number" id="a-${k}" class="dynamic-input" value="${d.amount}"></td>
-                                    <td class="no-print">
-                                        <button class="btn btn-edit" onclick="updatePerf('${dbDate}','${emp}','${k}')">Save</button> 
-                                        <button class="btn btn-danger" onclick="deletePerf('${dbDate}','${emp}','${k}')">Del</button>
-                                    </td>
-                                </tr>
-                            `;
-                        });
-                    }
-                    
-                    document.getElementById('tl-reg-cards').innerHTML = buildCards(regAssign, rCount); 
-                    document.getElementById('tl-mat-cards').innerHTML = buildCards(matAssign, mCount);
-                });
-            });
-        }
-        
-        function buildCards(assigned, countObj) { 
-            return `
-                <div class="stat-card"><h5>Assigned</h5><div class="val">${assigned}</div></div>
-                <div class="stat-card"><h5>Completed</h5><div class="val">${countObj.c}</div></div>
-                <div class="stat-card" style="border-bottom:4px solid var(--danger);"><h5>Balance</h5><div class="val">${Math.max(0, assigned - countObj.c)}</div></div>
-                <div class="stat-card"><h5>LOCK</h5><div class="val">${countObj.l}</div></div>
-                <div class="stat-card"><h5>PCR</h5><div class="val">${countObj.p}</div></div>
-                <div class="stat-card"><h5>OP</h5><div class="val">${countObj.o}</div></div>
-                <div class="stat-card"><h5>SEEZING</h5><div class="val">${countObj.s}</div></div>
-            `; 
-        }
-        
-        window.updatePerf = function(date, emp, key) { 
-            set(ref(db, `daily_performance/${date}/${emp}/${key}/status`), document.getElementById(`s-${key}`).value); 
-            set(ref(db, `daily_performance/${date}/${emp}/${key}/amount`), document.getElementById(`a-${key}`).value)
-            .then(() => alert("✅ Status Updated Successfully!")); 
-        }
-        
-        window.deletePerf = function(date, emp, key) { 
-            if(confirm("Delete this entry?")) {
-                remove(ref(db, `daily_performance/${date}/${emp}/${key}`)); 
-            }
-        }
-
-        // ==========================================
-        // 5. BRANCH REPORT
-        // ==========================================
-        window.fetchBranchReport = function() {
-            const branch = document.getElementById('branch-select').value; 
-            if(!branch) return alert("Select Branch");
-            
-            document.getElementById('branch-print-area').style.display = 'block'; 
-            document.getElementById('pr-branch-title').innerText = `${branch} BRANCH REPORT`; 
-            document.getElementById('pr-branch-month').innerText = document.getElementById('branch-month').value;
-            
-            const container = document.getElementById('branch-data-container'); 
-            container.innerHTML = '';
-            
-            const emps = branchEmployeeMap[branch] || [];
-            
-            emps.forEach(empName => {
-                get(ref(db, `assignments/${empName}`)).then(snapshot => {
-                    if(!snapshot.exists()) return;
-                    
-                    let rData = {}, mData = {}; 
-                    snapshot.forEach(ch => { 
-                        const data = ch.val(); 
-                        if(data.type === 'REGULAR') {
-                            let k = `${data.installments} INS`; 
-                            if(!rData[k]) rData[k] = {c:0, a:0}; 
-                            rData[k].c++; 
-                            rData[k].a += data.amount;
-                        } else {
-                            let k = `${data.year}`; 
-                            if(!mData[k]) mData[k] = {c:0, a:0}; 
-                            mData[k].c++; 
-                            mData[k].a += data.amount;
-                        } 
-                    });
-                    
-                    let html = `<div style="margin-bottom:20px; border:1px solid var(--border); padding:15px; border-radius:8px;"><h3 style="margin:0 0 15px 0; color:var(--primary);">${empName} :-</h3>`;
-                    
-                    if(Object.keys(rData).length > 0) {
-                        html += buildBranchSubTable('REGULAR ACCOUNTS (INS)', rData);
-                    }
-                    if(Object.keys(mData).length > 0) {
-                        html += buildBranchSubTable('MATURED ACCOUNTS (YEAR)', mData);
-                    }
-                    
-                    html += `</div>`;
-                    container.innerHTML += html;
-                });
-            });
-        }
-        
-        function buildBranchSubTable(title, dataObj) { 
-            let rows = '', tCount = 0, tAmt = 0; 
-            for(let key in dataObj) { 
-                tCount += dataObj[key].c; 
-                tAmt += dataObj[key].a; 
-                rows += `<tr><td>${key}</td><td>${dataObj[key].c}</td><td>${(dataObj[key].a/100000).toFixed(2)}/-</td></tr>`; 
-            } 
-            return `
-                <table style="margin-bottom:15px;">
-                    <thead>
-                        <tr><th>${title}</th><th>NO. OF ACCOUNTS</th><th>AMOUNT (Lakhs)</th></tr>
-                    </thead>
-                    <tbody>
-                        ${rows}
-                        <tr style="font-weight:bold;background:#f1f5f9;">
-                            <td>TOTAL ACCOUNTS & AMOUNT :-</td>
-                            <td>${tCount}</td>
-                            <td>${(tAmt/100000).toFixed(2)}/-</td>
-                        </tr>
-                    </tbody>
-                </table>
-            `; 
-        }
     </script>
-    
-    <!-- UI Navigation Scripts -->
-    <script>
-        function switchTab(tabId, btn) { 
-            document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active')); 
-            document.querySelectorAll('.tab-btn').forEach(e => e.classList.remove('active')); 
-            document.getElementById(tabId).classList.add('active'); 
-            btn.classList.add('active'); 
-        }
-        
-        function toggleAssignType() { 
-            const type = document.getElementById('assign-type').value; 
-            document.getElementById('reg-inputs').style.display = type === 'REGULAR' ? 'flex' : 'none'; 
-            document.getElementById('mat-inputs').style.display = type === 'MATURED' ? 'flex' : 'none'; 
-        }
-        
-        function generateRows() {
-            const type = document.getElementById('assign-type').value;
-            const count = parseInt(type === 'REGULAR' ? document.getElementById('reg-count').value : document.getElementById('mat-count').value);
-            
-            if(!count || count <= 0) return alert("Please enter a valid count!");
-            
-            const tbody = document.getElementById('dynamic-tbody'); 
-            tbody.innerHTML = '';
-            
-            document.getElementById('dynamic-thead').innerHTML = `<tr><th>S.No</th><th>Type</th><th>A/C Number</th><th>Amount</th></tr>`;
-            
-            for(let i=1; i<=count; i++) { 
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${i}</td>
-                        <td><input type="text" class="dynamic-input" value="${type}" readonly style="border:none; font-weight:bold;"></td>
-                        <td><input type="text" id="dyn-acc-${i}" class="dynamic-input" placeholder="Enter A/C No"></td>
-                        <td><input type="number" id="dyn-amt-${i}" class="dynamic-input" placeholder="Enter Amount"></td>
-                    </tr>
-                `; 
-            }
-            document.getElementById('dynamic-grid').style.display = 'block';
-        }
-    </script>
+
 </body>
 </html>
