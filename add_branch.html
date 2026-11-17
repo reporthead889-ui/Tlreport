@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Branch - Sri Vishnu Priya Finance</title>
+    <!-- Google Fonts: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            overflow: hidden;
+        }
+
+        /* Animated Background Orbs */
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            filter: blur(60px);
+            z-index: 0;
+        }
+        .circle1 { width: 300px; height: 300px; top: -100px; left: -100px; opacity: 0.5; }
+        .circle2 { width: 400px; height: 400px; bottom: -150px; right: -100px; opacity: 0.4; }
+
+        /* Form Container (Glassmorphism) */
+        .form-box {
+            position: relative;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .back-btn {
+            color: #00d2ff;
+            font-size: 20px;
+            text-decoration: none;
+            margin-right: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .back-btn:hover {
+            transform: translateX(-5px);
+        }
+
+        .header h2 {
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 18px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px 20px 15px 50px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            font-size: 15px;
+            color: #fff;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .input-group input:focus {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+
+        .input-group input:focus + i {
+            color: #00d2ff;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            margin-top: 10px;
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            border: none;
+            border-radius: 30px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 210, 255, 0.4);
+        }
+
+        #success-msg {
+            color: #2ed573;
+            font-size: 14px;
+            margin-top: 15px;
+            font-weight: 500;
+            display: none;
+            background: rgba(46, 213, 115, 0.1);
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(46, 213, 115, 0.3);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="circle circle1"></div>
+    <div class="circle circle2"></div>
+
+    <div class="form-box">
+        <div class="header">
+            <!-- Back to Dashboard Link -->
+            <a href="dashboard.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+            <h2>Add Branch</h2>
+        </div>
+        
+        <form id="branchForm">
+            <div class="input-group">
+                <i class="fas fa-building"></i>
+                <input type="text" id="branchName" placeholder="Enter Branch Name" required autocomplete="off">
+            </div>
+            
+            <div class="input-group">
+                <i class="fas fa-user-tie"></i>
+                <input type="text" id="managerName" placeholder="Enter Manager Name" required autocomplete="off">
+            </div>
+            
+            <button type="submit" class="submit-btn" id="submitBtn">
+                <span>Submit Details</span> <i class="fas fa-check-circle"></i>
+            </button>
+        </form>
+        
+        <div id="success-msg"><i class="fas fa-check"></i> Branch Added Successfully!</div>
+    </div>
+
+    <script>
+        // Form Submit Logic
+        document.getElementById("branchForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Page reload avvakunda aputundi
+            
+            const branchName = document.getElementById("branchName").value.trim();
+            const managerName = document.getElementById("managerName").value.trim();
+            const submitBtn = document.getElementById("submitBtn");
+            const successMsg = document.getElementById("success-msg");
+
+            if(branchName !== "" && managerName !== "") {
+                // Button animation
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                
+                setTimeout(() => {
+                    // Success Message & form reset
+                    successMsg.style.display = "block";
+                    submitBtn.innerHTML = '<span>Submit Details</span> <i class="fas fa-check-circle"></i>';
+                    document.getElementById("branchForm").reset();
+
+                    // 3 seconds taruvatha success message hide avtundi
+                    setTimeout(() => {
+                        successMsg.style.display = "none";
+                    }, 3000);
+
+                    // Note: Mundu mundu Firebase Realtime Database ki data pampadaniki ikkada code raddam
+                    console.log("Saved: ", branchName, managerName);
+
+                }, 1000); // Artificial loading effect (1 second)
+            }
+        });
+    </script>
+
+</body>
+</html>
