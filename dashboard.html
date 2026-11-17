@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sri Vishnu Priya - Dashboard</title>
+    <!-- Google Fonts: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            min-height: 100vh;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background Orbs */
+        .circle {
+            position: fixed;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            filter: blur(80px);
+            z-index: 0;
+        }
+        .circle1 { width: 350px; height: 350px; top: -50px; left: -100px; opacity: 0.4; }
+        .circle2 { width: 450px; height: 450px; bottom: -100px; right: -100px; opacity: 0.3; }
+
+        /* Dashboard Container */
+        .dashboard-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        /* Header Section */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .header h2 {
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: #fff;
+        }
+
+        .logout-btn {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            color: #ff6b6b;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logout-btn:hover {
+            background: #ff6b6b;
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        /* Options Grid */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        /* Option Cards */
+        .option-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 30px 20px;
+            border-radius: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .option-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 15px 35px rgba(0, 210, 255, 0.2);
+        }
+
+        .option-icon {
+            font-size: 35px;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .option-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 600px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Orbs -->
+    <div class="circle circle1"></div>
+    <div class="circle circle2"></div>
+
+    <!-- Main Container -->
+    <div class="dashboard-container">
+        
+        <!-- Header -->
+        <div class="header">
+            <h2>Sri Vishnu Priya Finance</h2>
+            <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+
+        <!-- Options Grid -->
+        <div class="options-grid">
+            
+            <div class="option-card" onclick="openPage('add_branch.html')">
+                <i class="fas fa-code-branch option-icon"></i>
+                <h3>ADD BRANCH</h3>
+            </div>
+
+            <div class="option-card" onclick="openPage('add_executives.html')">
+                <i class="fas fa-users option-icon"></i>
+                <h3>ADD EXECUTIVE'S</h3>
+            </div>
+
+            <div class="option-card" onclick="openPage('assign_accounts.html')">
+                <i class="fas fa-file-invoice-dollar option-icon"></i>
+                <h3>ASSIGN ACCOUNTS</h3>
+            </div>
+
+            <div class="option-card" onclick="openPage('assign_accounts_report.html')">
+                <i class="fas fa-chart-pie option-icon"></i>
+                <h3>ASSIGN ACCOUNTS REPORT</h3>
+            </div>
+
+            <div class="option-card" onclick="openPage('employee_daily_report.html')">
+                <i class="fas fa-calendar-day option-icon"></i>
+                <h3>EMPLOYEE DAILY REPORT</h3>
+            </div>
+
+            <div class="option-card" onclick="openPage('branch_assignment_report.html')">
+                <i class="fas fa-building option-icon"></i>
+                <h3>BRANCH ASSIGNMENT REPORT</h3>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- JavaScript Functions -->
+    <script>
+        // Redirect to respective pages when an option is clicked
+        function openPage(pageName) {
+            // alert message teesi mee page links add chesukovachu
+            alert("Redirecting to: " + pageName);
+            // window.location.href = pageName; 
+        }
+
+        // Logout function
+        function logout() {
+            if(confirm("Are you sure you want to logout?")) {
+                window.location.href = "index.html";
+            }
+        }
+    </script>
+
+</body>
+</html>
