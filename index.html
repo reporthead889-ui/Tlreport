@@ -5,97 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TL Dashboard - Sri Vishnu Priya Finance</title>
     <style>
-        /* పక్కా ప్రీమియం & ప్రొఫెషనల్ డిజైన్ */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        
-        :root {
-            --primary: #0f172a;    /* Dark Slate */
-            --secondary: #2563eb;  /* Royal Blue */
-            --bg-color: #f8fafc;   /* Light Gray Background */
-            --card-bg: #ffffff;
-            --text-dark: #1e293b;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-            --accent: #f59e0b;
-            --danger: #ef4444;
-            --success: #10b981;
-        }
-
+        :root { --primary: #0f172a; --secondary: #2563eb; --bg-color: #f8fafc; --card-bg: #ffffff; --text-dark: #1e293b; --text-muted: #64748b; --border: #e2e8f0; --accent: #f59e0b; --danger: #ef4444; }
         body { font-family: 'Inter', sans-serif; margin: 0; background-color: var(--bg-color); color: var(--text-dark); display: flex; }
-
-        /* --- SIDEBAR --- */
         .sidebar { width: 260px; background: var(--primary); color: white; min-height: 100vh; position: fixed; display: flex; flex-direction: column; }
         .brand { padding: 25px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px; }
-        .brand h2 { margin: 0; font-size: 1.2rem; color: #fff; letter-spacing: 1px; }
-        .brand span { font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; }
-        
-        .tab-btn { background: transparent; color: #cbd5e1; border: none; padding: 16px 25px; text-align: left; font-size: 0.95rem; font-weight: 500; cursor: pointer; border-left: 4px solid transparent; transition: 0.2s; width: 100%; }
+        .brand h2 { margin: 0; font-size: 1.2rem; color: #fff; }
+        .brand span { font-size: 0.8rem; color: #94a3b8; }
+        .tab-btn { background: transparent; color: #cbd5e1; border: none; padding: 16px 25px; text-align: left; font-size: 0.95rem; cursor: pointer; border-left: 4px solid transparent; width: 100%; }
         .tab-btn:hover, .tab-btn.active { background: rgba(255,255,255,0.05); color: white; border-left-color: var(--secondary); }
-
-        /* --- MAIN CONTENT --- */
         .main-content { margin-left: 260px; padding: 30px; width: calc(100% - 260px); box-sizing: border-box; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        
+        .tab-content { display: none; } .tab-content.active { display: block; }
         .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid var(--border); }
         .section-header h3 { margin: 0; color: var(--primary); font-size: 1.4rem; }
-        
-        /* --- FORMS & INPUTS --- */
-        .card { background: var(--card-bg); padding: 25px; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        .card { background: var(--card-bg); padding: 25px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 25px; }
         .form-row { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 15px; }
         .form-group { flex: 1; min-width: 200px; }
         .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: var(--text-muted); }
-        .form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem; outline: none; box-sizing: border-box; }
-        .form-group input:focus, .form-group select:focus { border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
-        
-        /* --- BUTTONS --- */
-        .btn { padding: 10px 20px; border-radius: 6px; font-size: 0.95rem; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; }
+        .btn { padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; border: none; }
         .btn-primary { background: var(--secondary); color: white; }
-        .btn-primary:hover { background: #1d4ed8; }
         .btn-print { background: var(--text-dark); color: white; float: right; }
-        .btn-sm { padding: 6px 12px; font-size: 0.8rem; border-radius: 4px; }
-        .btn-danger { background: var(--danger); color: white; }
-        .btn-edit { background: var(--accent); color: white; }
-
-        /* --- TABLES --- */
+        .btn-danger { background: var(--danger); color: white; padding: 6px 12px; }
+        .btn-edit { background: var(--accent); color: white; padding: 6px 12px; }
         .table-container { background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border); overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
-        th { background: #f8fafc; padding: 12px 15px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border); }
-        td { padding: 12px 15px; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
-        tr:last-child td { border-bottom: none; }
+        th { background: #f8fafc; padding: 12px 15px; font-size: 0.85rem; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+        td { padding: 12px 15px; border-bottom: 1px solid var(--border); }
         .dynamic-input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        .readonly-input { border: none; background: transparent; outline: none; font-weight: 600; color: var(--text-muted); }
-
-        /* --- DASHBOARD CARDS --- */
         .cards-wrapper { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px; }
         .stat-card { background: var(--card-bg); padding: 20px; border-radius: 8px; border: 1px solid var(--border); flex: 1; text-align: center; }
-        .stat-card h5 { margin: 0 0 10px 0; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; }
+        .stat-card h5 { margin: 0 0 10px 0; color: var(--text-muted); font-size: 0.8rem; }
         .stat-card .val { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
-
-        /* --- CLASSY PRINT STYLES --- */
         @media print {
-            body { background: white; }
-            .sidebar, .no-print { display: none !important; }
-            .main-content { margin: 0; padding: 0; width: 100%; }
-            .card { border: none; box-shadow: none; padding: 0; margin-bottom: 20px; }
+            body { background: white; } .sidebar, .no-print { display: none !important; }
+            .main-content { margin: 0; padding: 0; width: 100%; } .card { border: none; padding: 0; }
             .print-header { text-align: center; border-bottom: 2px solid #000; margin-bottom: 20px; padding-bottom: 15px; }
-            .print-header h2 { margin: 0 0 5px 0; font-size: 1.6rem; color: #000; }
-            .print-header p { margin: 0; font-size: 1rem; color: #333; }
-            table { border: 1px solid #000; }
-            th { background: #eee !important; -webkit-print-color-adjust: exact; border: 1px solid #000; color: #000; }
-            td { border: 1px solid #000; color: #000; }
+            table, th, td { border: 1px solid #000; } th { background: #eee !important; -webkit-print-color-adjust: exact; }
             .stat-card { border: 1px solid #000; padding: 10px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- SIDEBAR -->
     <div class="sidebar no-print">
-        <div class="brand">
-            <h2>Sri Vishnu Priya</h2>
-            <span>TL Dashboard</span>
-        </div>
+        <div class="brand"><h2>Sri Vishnu Priya</h2><span>TL Dashboard</span></div>
         <button class="tab-btn active" onclick="switchTab('tab-add-exec', this)">1. ADD EXECUTIVE'S</button>
         <button class="tab-btn" onclick="switchTab('tab-assign-acc', this)">2. ASSIGN ACCOUNTS</button>
         <button class="tab-btn" onclick="switchTab('tab-assign-rep', this)">3. ASSIGN REPORT</button>
@@ -103,7 +57,6 @@
         <button class="tab-btn" onclick="switchTab('tab-branch-rep', this)">5. BRANCH ASSIGN REPORT</button>
     </div>
 
-    <!-- MAIN CONTENT -->
     <div class="main-content">
         
         <!-- 1. ADD EXECUTIVE'S -->
@@ -111,19 +64,16 @@
             <div class="section-header"><h3>ADD EXECUTIVE'S</h3></div>
             <div class="card no-print">
                 <div class="form-row">
-                    <div class="form-group"><label>Employee Name</label><input type="text" id="exec-name" placeholder="Enter Name"></div>
-                    <div class="form-group"><label>Branch Name</label><input type="text" id="exec-branch" placeholder="Enter Branch"></div>
-                    <div class="form-group"><label>Passcode</label><input type="password" id="exec-passcode" placeholder="Enter Passcode"></div>
+                    <div class="form-group"><label>Employee Name</label><input type="text" id="exec-name"></div>
+                    <div class="form-group"><label>Branch Name</label><input type="text" id="exec-branch"></div>
+                    <div class="form-group"><label>Passcode</label><input type="password" id="exec-passcode"></div>
                 </div>
                 <button class="btn btn-primary" onclick="saveExecutive()">SAVE EXECUTIVE</button>
             </div>
-            <h4>Saved Executives</h4>
             <div class="table-container">
                 <table>
-                    <thead><tr><th>Employee Name</th><th>Branch</th><th>Passcode</th><th class="no-print">Action</th></tr></thead>
-                    <tbody id="executives-list">
-                        <tr><td colspan="4" style="text-align:center;">Loading...</td></tr>
-                    </tbody>
+                    <thead><tr><th>Name</th><th>Branch</th><th>Passcode</th><th class="no-print">Action</th></tr></thead>
+                    <tbody id="executives-list"></tbody>
                 </table>
             </div>
         </div>
@@ -134,39 +84,29 @@
             <div class="card no-print">
                 <div class="form-row">
                     <div class="form-group"><label>Date</label><input type="date" id="assign-date"></div>
-                    <div class="form-group">
-                        <label>Select Employee</label>
-                        <select id="assign-emp-select"><option value="">--Select--</option></select>
-                    </div>
+                    <div class="form-group"><label>Employee</label><select id="assign-emp-select"><option value="">--Select--</option></select></div>
                     <div class="form-group">
                         <label>Account Type</label>
                         <select id="assign-type" onchange="toggleAssignType()">
-                            <option value="REGULAR">REGULAR</option>
-                            <option value="MATURED">MATURED</option>
+                            <option value="REGULAR">REGULAR</option><option value="MATURED">MATURED</option>
                         </select>
                     </div>
                 </div>
-                <!-- Dynamic Inputs -->
                 <div class="form-row" id="reg-inputs">
-                    <div class="form-group"><label>Installments (INS)</label><input type="number" id="reg-ins" placeholder="Ex: 5"></div>
-                    <div class="form-group"><label>Count (No. of Accounts)</label><input type="number" id="reg-count" placeholder="Ex: 10"></div>
+                    <div class="form-group"><label>Installments (INS)</label><input type="number" id="reg-ins"></div>
+                    <div class="form-group"><label>Count</label><input type="number" id="reg-count"></div>
                 </div>
                 <div class="form-row" id="mat-inputs" style="display:none;">
-                    <div class="form-group"><label>Matured Year</label><input type="number" id="mat-year" placeholder="Ex: 2026"></div>
-                    <div class="form-group"><label>Installments (INS)</label><input type="number" id="mat-ins" placeholder="Ex: 5"></div>
-                    <div class="form-group"><label>Count (No. of Accounts)</label><input type="number" id="mat-count" placeholder="Ex: 10"></div>
+                    <div class="form-group"><label>Matured Year</label><input type="number" id="mat-year"></div>
+                    <div class="form-group"><label>Installments (INS)</label><input type="number" id="mat-ins"></div>
+                    <div class="form-group"><label>Count</label><input type="number" id="mat-count"></div>
                 </div>
                 <button class="btn btn-primary" onclick="generateRows()">GENERATE COLUMNS</button>
             </div>
 
-            <!-- Dynamic Table Generation -->
             <div id="dynamic-grid" style="display:none;">
-                <h4>Enter Account Details</h4>
                 <div class="table-container" style="margin-bottom: 20px;">
-                    <table id="dynamic-table">
-                        <thead id="dynamic-thead"></thead>
-                        <tbody id="dynamic-tbody"></tbody>
-                    </table>
+                    <table id="dynamic-table"><thead id="dynamic-thead"></thead><tbody id="dynamic-tbody"></tbody></table>
                 </div>
                 <button class="btn btn-primary no-print" onclick="submitAssignments()">FINAL SUBMIT</button>
             </div>
@@ -174,53 +114,33 @@
 
         <!-- 3. ASSIGN REPORT -->
         <div id="tab-assign-rep" class="tab-content">
-            <div class="section-header no-print">
-                <h3>ASSIGN REPORT</h3>
-                <button class="btn btn-print" onclick="window.print()">🖨️ PRINT REPORT</button>
-            </div>
+            <div class="section-header no-print"><h3>ASSIGN REPORT</h3><button class="btn btn-print" onclick="window.print()">🖨️ PRINT</button></div>
             <div class="card form-row no-print">
-                <div class="form-group"><label>Select Employee</label><select id="rep-emp-select"><option value="">--Select--</option></select></div>
+                <div class="form-group"><label>Employee</label><select id="rep-emp-select"></select></div>
                 <div class="form-group"><label>&nbsp;</label><button class="btn btn-primary" onclick="fetchAssignReport()">SEARCH</button></div>
             </div>
-            
-            <div id="assign-print-area">
-                <!-- Javascript will inject Classy layout here based on Firebase data -->
-                <p style="text-align:center; color:gray;">Search for an employee to view report.</p>
-            </div>
+            <div id="assign-print-area"></div>
         </div>
 
         <!-- 4. EMPLOYEE DAILY REPORT -->
         <div id="tab-daily-rep" class="tab-content">
-            <div class="section-header no-print">
-                <h3>EMPLOYEE DAILY REPORT</h3>
-                <button class="btn btn-print" onclick="window.print()">🖨️ PRINT GM REPORT</button>
-            </div>
+            <div class="section-header no-print"><h3>EMPLOYEE DAILY REPORT</h3><button class="btn btn-print" onclick="window.print()">🖨️ PRINT GM REPORT</button></div>
             <div class="card form-row no-print">
-                <div class="form-group"><label>Employee</label><select id="daily-emp-select"><option value="">--Select--</option></select></div>
+                <div class="form-group"><label>Employee</label><select id="daily-emp-select"></select></div>
                 <div class="form-group"><label>Date</label><input type="date" id="daily-date"></div>
                 <div class="form-group"><label>&nbsp;</label><button class="btn btn-primary" onclick="fetchDailyReport()">SEARCH</button></div>
             </div>
-
             <div id="daily-print-area" style="display:none;">
                 <div class="print-header">
                     <h2>DAILY PERFORMANCE REPORT</h2>
                     <p><strong>Employee:</strong> <span id="pr-daily-emp"></span> &nbsp;|&nbsp; <strong>Date:</strong> <span id="pr-daily-date"></span></p>
                 </div>
-                
-                <h4 style="color:var(--text-muted); margin-top:20px;">REGULAR SUMMARY</h4>
-                <div class="cards-wrapper" id="tl-reg-cards">
-                    <!-- Javascript generated -->
-                </div>
-                
-                <h4 style="color:var(--text-muted);">MATURED SUMMARY</h4>
-                <div class="cards-wrapper" id="tl-mat-cards">
-                    <!-- Javascript generated -->
-                </div>
-
-                <h4 style="color:var(--text-muted); margin-top:30px;">COLLECTION ENTRY UPDATES (TL Controls)</h4>
+                <h4 style="color:var(--text-muted);">REGULAR SUMMARY</h4><div class="cards-wrapper" id="tl-reg-cards"></div>
+                <h4 style="color:var(--text-muted);">MATURED SUMMARY</h4><div class="cards-wrapper" id="tl-mat-cards"></div>
+                <h4 style="color:var(--text-muted);">COLLECTION ENTRY UPDATES</h4>
                 <div class="table-container">
                     <table>
-                        <thead><tr><th>A/C No</th><th>Type</th><th>Status</th><th>Amount</th><th class="no-print">Action</th></tr></thead>
+                        <thead><tr><th>A/C No</th><th>Type</th><th>INS</th><th>Status</th><th>Amount</th><th class="no-print">Action</th></tr></thead>
                         <tbody id="tl-daily-tbody"></tbody>
                     </table>
                 </div>
@@ -229,35 +149,23 @@
 
         <!-- 5. BRANCH ASSIGNMENT REPORT -->
         <div id="tab-branch-rep" class="tab-content">
-            <div class="section-header no-print">
-                <h3>BRANCH ASSIGNMENT REPORT</h3>
-                <button class="btn btn-print" onclick="window.print()">🖨️ PRINT BRANCH REPORT</button>
-            </div>
+            <div class="section-header no-print"><h3>BRANCH ASSIGNMENT REPORT</h3><button class="btn btn-print" onclick="window.print()">🖨️ PRINT</button></div>
             <div class="card form-row no-print">
-                <div class="form-group"><label>Select Branch</label><select id="branch-select"><option value="">--Select--</option></select></div>
-                <div class="form-group"><label>Month/Year Text (For Print)</label><input type="text" id="branch-month" value="11/2026"></div>
+                <div class="form-group"><label>Branch</label><select id="branch-select"></select></div>
+                <div class="form-group"><label>Month/Year</label><input type="text" id="branch-month" value="11/2026"></div>
                 <div class="form-group"><label>&nbsp;</label><button class="btn btn-primary" onclick="fetchBranchReport()">SEARCH</button></div>
             </div>
-
             <div id="branch-print-area" style="display:none;">
-                <div class="print-header">
-                    <h2 id="pr-branch-title">BRANCH ASSIGNMENT REPORT</h2>
-                    <p><strong>Month:</strong> <span id="pr-branch-month"></span></p>
-                </div>
-                <div id="branch-data-container">
-                    <!-- Data injected via JS -->
-                </div>
+                <div class="print-header"><h2 id="pr-branch-title"></h2><p><strong>Month:</strong> <span id="pr-branch-month"></span></p></div>
+                <div id="branch-data-container"></div>
             </div>
         </div>
-
     </div>
 
-    <!-- Firebase SDK Modular Import -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, onValue, push, set, remove, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // Your Config
         const firebaseConfig = {
             apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
             authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
@@ -269,371 +177,136 @@
         };
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
+        let branchEmployeeMap = {};
 
-        // Global Variables
-        let branchesList = new Set();
-        let branchEmployeeMap = {}; // Maps Branch -> [Emp1, Emp2]
-
-        // ==========================
-        // 1. ADD EXECUTIVE LOGIC
-        // ==========================
+        // 1. ADD EXECUTIVE (Uppercase path used)
         window.saveExecutive = function() {
-            const name = document.getElementById('exec-name').value.trim();
-            const branch = document.getElementById('exec-branch').value.trim();
-            const pass = document.getElementById('exec-passcode').value.trim();
-            if(name && branch && pass) {
-                push(ref(db, 'executives'), { name: name, branch: branch, passcode: pass });
-                alert("Executive Saved to Firebase!");
-                document.getElementById('exec-name').value = '';
-                document.getElementById('exec-passcode').value = '';
-            } else { alert("Fill all fields"); }
+            const n = document.getElementById('exec-name').value, b = document.getElementById('exec-branch').value, p = document.getElementById('exec-passcode').value;
+            if(n && b && p) {
+                push(ref(db, 'Executives'), { name: n, branch: b, passcode: p }).then(() => {
+                    alert("✅ Saved!"); document.getElementById('exec-name').value=''; document.getElementById('exec-passcode').value='';
+                }).catch(e => alert("Error: " + e.message));
+            }
         }
 
-        // Real-time Fetch Executives
-        onValue(ref(db, 'executives'), (snapshot) => {
-            const tbody = document.getElementById('executives-list');
-            const assignSel = document.getElementById('assign-emp-select');
-            const repSel = document.getElementById('rep-emp-select');
-            const dailySel = document.getElementById('daily-emp-select');
-            const branchSel = document.getElementById('branch-select');
-
-            tbody.innerHTML = '';
-            let optHTML = '<option value="">--Select--</option>';
-            branchesList.clear();
-            branchEmployeeMap = {};
-
-            if(snapshot.exists()) {
-                snapshot.forEach((child) => {
-                    const data = child.val();
-                    const key = child.key;
-                    
-                    // Table row
-                    tbody.innerHTML += `<tr>
-                        <td>${data.name}</td><td>${data.branch}</td><td>${data.passcode}</td>
-                        <td class="no-print">
-                            <button class="btn btn-sm btn-danger" onclick="deleteExec('${key}')">Delete</button>
-                        </td>
-                    </tr>`;
-                    
-                    // Dropdowns map
-                    optHTML += `<option value="${data.name}">${data.name}</option>`;
-                    branchesList.add(data.branch);
-                    if(!branchEmployeeMap[data.branch]) branchEmployeeMap[data.branch] = [];
-                    branchEmployeeMap[data.branch].push(data.name);
+        onValue(ref(db, 'Executives'), (snap) => {
+            const tbody = document.getElementById('executives-list'), aSel = document.getElementById('assign-emp-select'), rSel = document.getElementById('rep-emp-select'), dSel = document.getElementById('daily-emp-select'), bSel = document.getElementById('branch-select');
+            tbody.innerHTML = ''; let opts = '<option value="">--Select--</option>'; let branches = new Set(); branchEmployeeMap = {};
+            if(snap.exists()) {
+                snap.forEach(ch => {
+                    const d = ch.val(), k = ch.key;
+                    tbody.innerHTML += `<tr><td>${d.name}</td><td>${d.branch}</td><td>${d.passcode}</td><td class="no-print"><button class="btn btn-danger" onclick="deleteExec('${k}')">Del</button></td></tr>`;
+                    opts += `<option value="${d.name}">${d.name}</option>`; branches.add(d.branch);
+                    if(!branchEmployeeMap[d.branch]) branchEmployeeMap[d.branch] = []; branchEmployeeMap[d.branch].push(d.name);
                 });
-            } else { tbody.innerHTML = '<tr><td colspan="4">No Data</td></tr>'; }
-
-            // Populate all select boxes dynamically
-            assignSel.innerHTML = optHTML; repSel.innerHTML = optHTML; dailySel.innerHTML = optHTML;
-            
-            // Populate Branches
-            let bHtml = '<option value="">--Select Branch--</option>';
-            branchesList.forEach(b => { bHtml += `<option value="${b}">${b}</option>`; });
-            branchSel.innerHTML = bHtml;
+            }
+            aSel.innerHTML=opts; rSel.innerHTML=opts; dSel.innerHTML=opts;
+            let bOpts = '<option value="">--Select--</option>'; branches.forEach(b => bOpts+=`<option value="${b}">${b}</option>`); bSel.innerHTML=bOpts;
         });
 
-        window.deleteExec = function(key) {
-            if(confirm("Delete this Executive from Firebase?")) remove(ref(db, `executives/${key}`));
-        }
+        window.deleteExec = k => { if(confirm("Delete?")) remove(ref(db, `Executives/${k}`)); }
 
-        // ==========================
-        // 2. ASSIGN ACCOUNTS LOGIC
-        // ==========================
+        // 2. ASSIGN ACCOUNTS (Uppercase Assignments path)
         window.submitAssignments = function() {
-            const empName = document.getElementById('assign-emp-select').value;
-            const type = document.getElementById('assign-type').value;
-            const count = parseInt(type === 'REGULAR' ? document.getElementById('reg-count').value : document.getElementById('mat-count').value);
-            const ins = type === 'REGULAR' ? document.getElementById('reg-ins').value : document.getElementById('mat-ins').value;
-            const year = type === 'MATURED' ? document.getElementById('mat-year').value : null;
-
-            if(!empName) { alert("Select Employee!"); return; }
-
-            const updates = {};
-            for(let i=1; i<=count; i++) {
-                const accNo = document.getElementById(`dyn-acc-${i}`).value;
-                const amt = document.getElementById(`dyn-amt-${i}`).value;
-                if(accNo && amt) {
-                    const newRef = push(ref(db, `assignments/${empName}`));
-                    updates[`assignments/${empName}/${newRef.key}`] = {
-                        accountNo: accNo, type: type, installments: ins, amount: parseFloat(amt), year: year, date: document.getElementById('assign-date').value
-                    };
-                }
-            }
-            
-            set(ref(db), updates).then(() => {
-                alert("Accounts Assigned Successfully to Firebase!");
-                document.getElementById('dynamic-grid').style.display = 'none';
-            }).catch(e => alert(e));
-        }
-
-        // ==========================
-        // 3. ASSIGN REPORT LOGIC (Lakhs Calc)
-        // ==========================
-        window.fetchAssignReport = function() {
-            const emp = document.getElementById('rep-emp-select').value;
+            const emp = document.getElementById('assign-emp-select').value, type = document.getElementById('assign-type').value;
+            const c = parseInt(type==='REGULAR'?document.getElementById('reg-count').value:document.getElementById('mat-count').value);
+            const ins = type==='REGULAR'?document.getElementById('reg-ins').value:document.getElementById('mat-ins').value;
+            const yr = type==='MATURED'?document.getElementById('mat-year').value:null;
             if(!emp) return alert("Select Employee");
 
-            get(ref(db, `assignments/${emp}`)).then(snap => {
+            const updates = {};
+            for(let i=1; i<=c; i++) {
+                const acc = document.getElementById(`dyn-acc-${i}`).value, amt = document.getElementById(`dyn-amt-${i}`).value;
+                if(acc && amt) {
+                    const newKey = push(ref(db, `Assignments/${emp}`)).key;
+                    updates[`Assignments/${emp}/${newKey}`] = { accountNo: acc, type: type, installments: ins, amount: parseFloat(amt), year: yr };
+                }
+            }
+            set(ref(db), updates).then(()=> { alert("✅ Assigned!"); document.getElementById('dynamic-grid').style.display='none'; });
+        }
+
+        // 3. ASSIGN REPORT
+        window.fetchAssignReport = function() {
+            const emp = document.getElementById('rep-emp-select').value;
+            get(ref(db, `Assignments/${emp}`)).then(snap => {
                 const area = document.getElementById('assign-print-area');
-                if(!snap.exists()) { area.innerHTML = `<p>No Assignments found for ${emp}</p>`; return; }
-
-                let regularData = {}; // Grouper { "5 INS": { count:0, amt:0 } }
-                let maturedData = {}; // Grouper { "2023": { count:0, amt:0 } }
-
-                snap.forEach(child => {
-                    const data = child.val();
-                    if(data.type === 'REGULAR') {
-                        const key = `${data.installments} INS`;
-                        if(!regularData[key]) regularData[key] = { count: 0, amt: 0 };
-                        regularData[key].count++; regularData[key].amt += data.amount;
-                    } else {
-                        const key = `${data.year}`;
-                        if(!maturedData[key]) maturedData[key] = { count: 0, amt: 0 };
-                        maturedData[key].count++; maturedData[key].amt += data.amount;
-                    }
+                if(!snap.exists()) { area.innerHTML = `<p>No Assignments found</p>`; return; }
+                let rData = {}, mData = {};
+                snap.forEach(ch => {
+                    const d = ch.val();
+                    if(d.type==='REGULAR'){ let k=`${d.installments} INS`; if(!rData[k])rData[k]={c:0,a:0}; rData[k].c++; rData[k].a+=d.amount; }
+                    else { let k=`${d.year}`; if(!mData[k])mData[k]={c:0,a:0}; mData[k].c++; mData[k].a+=d.amount; }
                 });
-
                 let html = '';
-                // Render Regular
-                if(Object.keys(regularData).length > 0) {
-                    html += buildReportTable(emp, 'REGULAR SUMMARY', regularData, ['INSTALLMENTS', 'NO. OF ACCOUNTS', 'AMOUNT (Lakhs)']);
-                }
-                // Render Matured
-                if(Object.keys(maturedData).length > 0) {
-                    if(html !== '') html += '<div style="page-break-before: always;"></div>'; // Separate prints
-                    html += buildReportTable(emp, 'MATURED SUMMARY', maturedData, ['YEAR OF MATURED', 'NO. OF ACCOUNTS', 'AMOUNT (Lakhs)']);
-                }
+                if(Object.keys(rData).length>0) html += buildRepTab(emp, 'REGULAR SUMMARY', rData, ['INS','ACCOUNTS','AMOUNT']);
+                if(Object.keys(mData).length>0) html += buildRepTab(emp, 'MATURED SUMMARY', mData, ['YEAR','ACCOUNTS','AMOUNT']);
                 area.innerHTML = html;
             });
         }
-
-        function buildReportTable(emp, title, dataObj, headers) {
-            let html = `
-                <div class="print-header">
-                    <h2>ASSIGN ACCOUNTS</h2>
-                    <p><strong>Employee:</strong> ${emp} &nbsp;|&nbsp; <strong>Camp:</strong> ${title.split(' ')[0]}</p>
-                </div>
-                <h4 style="text-align:center;">${title}</h4>
-                <div class="table-container" style="margin-bottom:30px;">
-                    <table>
-                        <thead><tr><th>${headers[0]}</th><th>${headers[1]}</th><th>${headers[2]}</th></tr></thead>
-                        <tbody>
-            `;
-            let totalCount = 0; let totalAmt = 0;
-            for(let key in dataObj) {
-                totalCount += dataObj[key].count;
-                totalAmt += dataObj[key].amt;
-                // LAKHS CONVERSION
-                let lakhAmt = (dataObj[key].amt / 100000).toFixed(2);
-                html += `<tr><td>${key}</td><td>${dataObj[key].count}</td><td>${lakhAmt}</td></tr>`;
-            }
-            let totalLakh = (totalAmt / 100000).toFixed(2);
-            html += `
-                        <tr style="background:#f1f5f9; font-weight:bold;">
-                            <td>TOTAL ACCOUNTS & AMOUNT :-</td>
-                            <td>${totalCount}</td>
-                            <td>${totalLakh}</td>
-                        </tr>
-                        </tbody></table></div>
-            `;
-            return html;
+        function buildRepTab(e, t, d, h) {
+            let ht=`<div class="print-header"><h2>ASSIGN ACCOUNTS</h2><p>${e} | ${t}</p></div><div class="table-container" style="margin-bottom:20px;"><table><thead><tr><th>${h[0]}</th><th>${h[1]}</th><th>${h[2]}</th></tr></thead><tbody>`;
+            let tc=0, ta=0;
+            for(let k in d){ tc+=d[k].c; ta+=d[k].a; ht+=`<tr><td>${k}</td><td>${d[k].c}</td><td>${(d[k].a/100000).toFixed(2)}</td></tr>`; }
+            return ht+`<tr style="font-weight:bold;background:#f1f5f9;"><td>TOTAL</td><td>${tc}</td><td>${(ta/100000).toFixed(2)}</td></tr></tbody></table></div>`;
         }
 
-        // ==========================
-        // 4. DAILY GM REPORT & TL CONTROLS
-        // ==========================
+        // 4. DAILY GM REPORT (Added INS column, Uppercase DailyReports path)
         window.fetchDailyReport = function() {
-            const emp = document.getElementById('daily-emp-select').value;
-            const date = document.getElementById('daily-date').value; // e.g. 2026-11-17
-            if(!emp || !date) return alert("Select Employee & Date");
-
-            // Format date to match Employee app (DD-MM-YYYY)
-            const d = new Date(date);
-            const dbDateKey = `${d.getDate().toString().padStart(2,'0')}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getFullYear()}`;
+            const emp = document.getElementById('daily-emp-select').value, dt = document.getElementById('daily-date').value;
+            if(!emp || !dt) return;
+            const dForm = `${new Date(dt).getDate().toString().padStart(2,'0')}-${(new Date(dt).getMonth()+1).toString().padStart(2,'0')}-${new Date(dt).getFullYear()}`;
+            document.getElementById('daily-print-area').style.display='block'; document.getElementById('pr-daily-emp').innerText=emp; document.getElementById('pr-daily-date').innerText=dForm;
             
-            document.getElementById('daily-print-area').style.display = 'block';
-            document.getElementById('pr-daily-emp').innerText = emp;
-            document.getElementById('pr-daily-date').innerText = dbDateKey;
-
-            // TL needs to see Assignments to calculate Balance
-            let totalRegAssign = 0, totalMatAssign = 0;
-            get(ref(db, `assignments/${emp}`)).then(snap => {
-                if(snap.exists()) {
-                    snap.forEach(ch => {
-                        if(ch.val().type === 'REGULAR') totalRegAssign++; else totalMatAssign++;
-                    });
-                }
+            let rAssgn=0, mAssgn=0;
+            get(ref(db, `Assignments/${emp}`)).then(snap => {
+                if(snap.exists()) snap.forEach(c => c.val().type==='REGULAR'?rAssgn++:mAssgn++);
                 
-                // Fetch Performance
-                const perfRef = ref(db, `daily_performance/${dbDateKey}/${emp}`);
-                onValue(perfRef, (perfSnap) => {
-                    const tbody = document.getElementById('tl-daily-tbody');
-                    tbody.innerHTML = '';
-                    let rCount={comp:0,lock:0,pcr:0,op:0,seez:0}, mCount={comp:0,lock:0,pcr:0,op:0,seez:0};
-
-                    if(perfSnap.exists()) {
-                        perfSnap.forEach(ch => {
-                            const data = ch.val();
-                            const key = ch.key;
-                            const t = data.type === 'REGULAR' ? rCount : mCount;
-                            
-                            t.comp++;
-                            if(data.status === 'LOCK') t.lock++; else if(data.status === 'PCR') t.pcr++; else if(data.status === 'OP' || data.status === "OP'S") t.op++; else if(data.status === 'SEEZING') t.seez++;
-
-                            // Table Row with TL Edit Controls
-                            tbody.innerHTML += `
-                                <tr>
-                                    <td><strong>${data.accountNo}</strong></td><td>${data.type}</td>
-                                    <td>
-                                        <select id="tl-stat-${key}" class="dynamic-input">
-                                            <option value="${data.status}" selected>${data.status}</option>
-                                            <option value="LOCK">LOCK</option><option value="PCR">PCR</option><option value="OP">OP</option><option value="SEEZING">SEEZING</option>
-                                        </select>
-                                    </td>
-                                    <td><input type="number" id="tl-amt-${key}" class="dynamic-input" value="${data.amount}"></td>
-                                    <td class="no-print">
-                                        <button class="btn btn-sm btn-edit" onclick="updatePerf('${dbDateKey}', '${emp}', '${key}')">Save</button>
-                                        <button class="btn btn-sm btn-danger" onclick="deletePerf('${dbDateKey}', '${emp}', '${key}')">Del</button>
-                                    </td>
-                                </tr>
-                            `;
+                onValue(ref(db, `DailyReports/${dForm}/${emp}`), (pSnap) => {
+                    const tbody = document.getElementById('tl-daily-tbody'); tbody.innerHTML='';
+                    let rC={c:0,l:0,p:0,o:0,s:0}, mC={c:0,l:0,p:0,o:0,s:0};
+                    if(pSnap.exists()) {
+                        pSnap.forEach(ch => {
+                            const d = ch.val(), k = ch.key, t = d.type==='REGULAR'?rC:mC;
+                            t.c++; if(d.status==='LOCK')t.l++; else if(d.status==='PCR')t.p++; else if(d.status==='OP'||d.status==="OP'S")t.o++; else if(d.status==='SEEZING')t.s++;
+                            // INS Column Added Here
+                            tbody.innerHTML+=`<tr><td><strong>${d.accountNo}</strong></td><td>${d.type}</td><td>${d.ins||'-'}</td><td><select id="s-${k}" class="dynamic-input"><option value="${d.status}">${d.status}</option><option value="LOCK">LOCK</option><option value="PCR">PCR</option><option value="OP">OP</option><option value="SEEZING">SEEZING</option></select></td><td><input type="number" id="a-${k}" class="dynamic-input" value="${d.amount}"></td><td class="no-print"><button class="btn btn-edit" onclick="upd('${dForm}','${emp}','${k}')">Save</button> <button class="btn btn-danger" onclick="del('${dForm}','${emp}','${k}')">X</button></td></tr>`;
                         });
-                    } else { tbody.innerHTML = '<tr><td colspan="5">No performance logged for this date.</td></tr>'; }
-
-                    // Render Cards
-                    document.getElementById('tl-reg-cards').innerHTML = buildCards(totalRegAssign, rCount);
-                    document.getElementById('tl-mat-cards').innerHTML = buildCards(totalMatAssign, mCount);
+                    }
+                    document.getElementById('tl-reg-cards').innerHTML = bCard(rAssgn,rC); document.getElementById('tl-mat-cards').innerHTML = bCard(mAssgn,mC);
                 });
             });
         }
+        function bCard(a,c){ return `<div class="stat-card"><h5>Assigned</h5><div class="val">${a}</div></div><div class="stat-card"><h5>Completed</h5><div class="val">${c.c}</div></div><div class="stat-card" style="border-bottom:4px solid var(--danger);"><h5>Balance</h5><div class="val">${Math.max(0,a-c.c)}</div></div><div class="stat-card"><h5>LOCK</h5><div class="val">${c.l}</div></div><div class="stat-card"><h5>PCR</h5><div class="val">${c.p}</div></div><div class="stat-card"><h5>OP</h5><div class="val">${c.o}</div></div><div class="stat-card"><h5>SEEZING</h5><div class="val">${c.s}</div></div>`; }
+        window.upd = (dt,e,k) => { set(ref(db, `DailyReports/${dt}/${e}/${k}/status`), document.getElementById(`s-${k}`).value); set(ref(db, `DailyReports/${dt}/${e}/${k}/amount`), document.getElementById(`a-${k}`).value).then(()=>alert("Saved!")); }
+        window.del = (dt,e,k) => { if(confirm("Del?")) remove(ref(db, `DailyReports/${dt}/${e}/${k}`)); }
 
-        function buildCards(assign, counts) {
-            let bal = Math.max(0, assign - counts.comp);
-            return `
-                <div class="stat-card"><h5>Assigned</h5><div class="val">${assign}</div></div>
-                <div class="stat-card"><h5>Completed</h5><div class="val">${counts.comp}</div></div>
-                <div class="stat-card" style="border-bottom: 4px solid var(--danger);"><h5>Balance</h5><div class="val">${bal}</div></div>
-                <div class="stat-card"><h5>LOCK</h5><div class="val">${counts.lock}</div></div>
-                <div class="stat-card"><h5>PCR</h5><div class="val">${counts.pcr}</div></div>
-                <div class="stat-card"><h5>OP</h5><div class="val">${counts.op}</div></div>
-                <div class="stat-card"><h5>SEEZING</h5><div class="val">${counts.seez}</div></div>
-            `;
-        }
-
-        // TL Edit & Delete Firebase Actions
-        window.updatePerf = function(date, emp, key) {
-            const stat = document.getElementById(`tl-stat-${key}`).value;
-            const amt = document.getElementById(`tl-amt-${key}`).value;
-            set(ref(db, `daily_performance/${date}/${emp}/${key}/status`), stat);
-            set(ref(db, `daily_performance/${date}/${emp}/${key}/amount`), amt).then(() => alert("Updated successfully!"));
-        }
-        window.deletePerf = function(date, emp, key) {
-            if(confirm("Delete this entry?")) remove(ref(db, `daily_performance/${date}/${emp}/${key}`));
-        }
-
-        // ==========================
-        // 5. BRANCH ASSIGN REPORT
-        // ==========================
+        // 5. BRANCH REPORT
         window.fetchBranchReport = function() {
-            const branch = document.getElementById('branch-select').value;
-            if(!branch) return alert("Select Branch");
-
-            document.getElementById('branch-print-area').style.display = 'block';
-            document.getElementById('pr-branch-title').innerText = `${branch} BRANCH ASSIGNMENT REPORT`;
-            document.getElementById('pr-branch-month').innerText = document.getElementById('branch-month').value;
-
-            const emps = branchEmployeeMap[branch] || [];
-            const container = document.getElementById('branch-data-container');
-            container.innerHTML = '';
-
-            emps.forEach(emp => {
-                get(ref(db, `assignments/${emp}`)).then(snap => {
+            const b = document.getElementById('branch-select').value; if(!b) return;
+            document.getElementById('branch-print-area').style.display='block'; document.getElementById('pr-branch-title').innerText=`${b} BRANCH REPORT`; document.getElementById('pr-branch-month').innerText=document.getElementById('branch-month').value;
+            const con = document.getElementById('branch-data-container'); con.innerHTML='';
+            (branchEmployeeMap[b]||[]).forEach(emp => {
+                get(ref(db, `Assignments/${emp}`)).then(snap => {
                     if(!snap.exists()) return;
-                    
-                    let regularData = {}, maturedData = {};
-                    snap.forEach(ch => {
-                        const d = ch.val();
-                        if(d.type === 'REGULAR') {
-                            const k = `${d.installments} INS`;
-                            if(!regularData[k]) regularData[k] = {cnt:0, amt:0};
-                            regularData[k].cnt++; regularData[k].amt+=d.amount;
-                        } else {
-                            const k = `${d.year}`;
-                            if(!maturedData[k]) maturedData[k] = {cnt:0, amt:0};
-                            maturedData[k].cnt++; maturedData[k].amt+=d.amount;
-                        }
-                    });
-
-                    // Build Sub-tables for this Employee (Classy format)
-                    let html = `<div style="margin-bottom:30px; border: 1px solid var(--border); padding: 15px; border-radius: 8px;">`;
-                    html += `<h3 style="margin: 0 0 15px 0; color: var(--primary);">${emp} :-</h3>`;
-                    
-                    if(Object.keys(regularData).length > 0) html += buildBranchSubTable('REGULAR ACCOUNTS (INS)', regularData);
-                    if(Object.keys(maturedData).length > 0) html += buildBranchSubTable('MATURED ACCOUNTS (YEAR)', maturedData);
-                    
-                    html += `</div>`;
-                    container.innerHTML += html;
+                    let rD={}, mD={}; snap.forEach(ch=>{ const d=ch.val(); if(d.type==='REGULAR'){let k=`${d.installments} INS`; if(!rD[k])rD[k]={c:0,a:0}; rD[k].c++; rD[k].a+=d.amount;}else{let k=`${d.year}`; if(!mD[k])mD[k]={c:0,a:0}; mD[k].c++; mD[k].a+=d.amount;} });
+                    let ht=`<div style="margin-bottom:20px; border:1px solid var(--border); padding:15px;"><h3 style="margin:0 0 15px 0;">${emp}</h3>`;
+                    if(Object.keys(rD).length>0) ht+=bBSub('REGULAR (INS)',rD); if(Object.keys(mD).length>0) ht+=bBSub('MATURED (YR)',mD);
+                    con.innerHTML+=ht+'</div>';
                 });
             });
         }
+        function bBSub(t,d){ let rows='',tc=0,ta=0; for(let k in d){ tc+=d[k].c; ta+=d[k].a; rows+=`<tr><td>${k}</td><td>${d[k].c}</td><td>${(d[k].a/100000).toFixed(2)}</td></tr>`; } return `<table style="margin-bottom:15px;"><thead><tr><th>${t}</th><th>ACCOUNTS</th><th>AMOUNT</th></tr></thead><tbody>${rows}<tr style="font-weight:bold;background:#f1f5f9;"><td>TOTAL</td><td>${tc}</td><td>${(ta/100000).toFixed(2)}</td></tr></tbody></table>`; }
 
-        function buildBranchSubTable(title, dataObj) {
-            let tCnt = 0, tAmt = 0;
-            let rows = '';
-            for(let k in dataObj) {
-                tCnt += dataObj[k].cnt; tAmt += dataObj[k].amt;
-                rows += `<tr><td>${k}</td><td>${dataObj[k].cnt}</td><td>${(dataObj[k].amt/100000).toFixed(2)}/-</td></tr>`;
-            }
-            return `
-                <table style="margin-bottom:15px;">
-                    <thead><tr><th>${title}</th><th>NO. OF ACCOUNTS</th><th>AMOUNT (Lakhs)</th></tr></thead>
-                    <tbody>
-                        ${rows}
-                        <tr style="background:#f1f5f9; font-weight:bold;">
-                            <td>TOTAL ACCOUNTS & AMOUNT :-</td><td>${tCnt}</td><td>${(tAmt/100000).toFixed(2)}/-</td>
-                        </tr>
-                    </tbody>
-                </table>
-            `;
-        }
     </script>
-
-    <!-- UI Tab & Dynamic Form Generation Logic -->
     <script>
-        function switchTab(tabId, btnElement) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            btnElement.classList.add('active');
-        }
-
-        function toggleAssignType() {
-            const t = document.getElementById('assign-type').value;
-            document.getElementById('reg-inputs').style.display = t === 'REGULAR' ? 'flex' : 'none';
-            document.getElementById('mat-inputs').style.display = t === 'MATURED' ? 'flex' : 'none';
-        }
-
+        function switchTab(id, b) { document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(e=>e.classList.remove('active')); document.getElementById(id).classList.add('active'); b.classList.add('active'); }
+        function toggleAssignType() { const t=document.getElementById('assign-type').value; document.getElementById('reg-inputs').style.display=t==='REGULAR'?'flex':'none'; document.getElementById('mat-inputs').style.display=t==='MATURED'?'flex':'none'; }
         function generateRows() {
-            const t = document.getElementById('assign-type').value;
-            const c = parseInt(t === 'REGULAR' ? document.getElementById('reg-count').value : document.getElementById('mat-count').value);
-            const thead = document.getElementById('dynamic-thead');
-            const tbody = document.getElementById('dynamic-tbody');
-            
-            if(!c || c <= 0) return alert("Enter valid count!");
-
-            thead.innerHTML = `<tr><th>S.No</th><th>Type</th><th>A/C Number</th><th>Amount</th></tr>`;
-            tbody.innerHTML = '';
-            for(let i=1; i<=c; i++) {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${i}</td>
-                        <td><input type="text" class="readonly-input" value="${t}" readonly></td>
-                        <td><input type="text" id="dyn-acc-${i}" class="dynamic-input" placeholder="Enter A/C Num"></td>
-                        <td><input type="number" id="dyn-amt-${i}" class="dynamic-input" placeholder="Enter Amount"></td>
-                    </tr>
-                `;
-            }
-            document.getElementById('dynamic-grid').style.display = 'block';
+            const t=document.getElementById('assign-type').value, c=parseInt(t==='REGULAR'?document.getElementById('reg-count').value:document.getElementById('mat-count').value);
+            const tb=document.getElementById('dynamic-tbody'); tb.innerHTML='';
+            document.getElementById('dynamic-thead').innerHTML=`<tr><th>S.No</th><th>Type</th><th>A/C Number</th><th>Amount</th></tr>`;
+            for(let i=1;i<=c;i++) tb.innerHTML+=`<tr><td>${i}</td><td>${t}</td><td><input type="text" id="dyn-acc-${i}" class="dynamic-input"></td><td><input type="number" id="dyn-amt-${i}" class="dynamic-input"></td></tr>`;
+            document.getElementById('dynamic-grid').style.display='block';
         }
     </script>
 </body>
