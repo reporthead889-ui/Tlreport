@@ -15,7 +15,6 @@
         .top-nav h1 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: 0.5px; }
         .nav-tabs { display: flex; gap: 10px; overflow-x: auto; }
         .nav-btn { background: transparent; border: none; color: #94a3b8; padding: 8px 16px; font-size: 14px; font-weight: 600; cursor: pointer; border-radius: 6px; transition: all 0.3s; }
-        .nav-btn:hover { color: white; background: rgba(255,255,255,0.1); }
         .nav-btn.active { background: var(--accent); color: white; }
         .container { max-width: 900px; margin: 30px auto; padding: 0 15px; }
         .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
@@ -26,16 +25,15 @@
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
         .form-group { display: flex; flex-direction: column; gap: 6px; }
         label { font-size: 13px; font-weight: 600; color: #475569; }
-        input, select { padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-family: 'Inter', sans-serif; outline: none;}
-        input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        input, select { padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; outline: none;}
         .btn { padding: 10px 20px; font-size: 14px; font-weight: 600; border-radius: 8px; cursor: pointer; border: none; color: white; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
         .btn-primary { background: var(--accent); } .btn-success { background: var(--success); } .btn-danger { background: var(--danger); }
         .exec-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
         .exec-item { border: 1px solid var(--border); padding: 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; }
-        .modern-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        .modern-table th { background: #f8fafc; padding: 12px; text-align: left; color: #475569; font-weight: 600; border-bottom: 2px solid var(--border); }
+        .modern-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: center; }
+        .modern-table th { background: #f8fafc; padding: 12px; color: #475569; font-weight: 600; border-bottom: 2px solid var(--border); }
         .modern-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
-        .modern-table input { padding: 8px 10px; width: 100%; margin: 0; box-sizing: border-box;}
+        .modern-table input { padding: 8px 10px; width: 100%; margin: 0; box-sizing: border-box; text-align: center;}
         .report-board { display: none; margin-top: 20px; }
         .pdf-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-bottom: 24px; }
         .pdf-card { border: 1px solid var(--border); border-radius: 10px; text-align: center; overflow: hidden; background: white; }
@@ -52,9 +50,9 @@
     <div class="top-nav">
         <h1><i class="fa-solid fa-shield-halved"></i> TL Admin Dashboard</h1>
         <div class="nav-tabs">
-            <button class="nav-btn active" onclick="switchTab('tab-manage')"><i class="fa-solid fa-users"></i> Executives</button>
-            <button class="nav-btn" onclick="switchTab('tab-assign')"><i class="fa-solid fa-list-check"></i> Assign Accounts</button>
-            <button class="nav-btn" onclick="switchTab('tab-reports')"><i class="fa-solid fa-chart-pie"></i> Performance</button>
+            <button class="nav-btn active" onclick="switchTab('tab-manage')">Executives</button>
+            <button class="nav-btn" onclick="switchTab('tab-assign')">Assign Accounts</button>
+            <button class="nav-btn" onclick="switchTab('tab-reports')">Performance</button>
         </div>
     </div>
 
@@ -77,15 +75,16 @@
     <!-- 2. ASSIGN ACCOUNTS -->
     <div id="tab-assign" class="container tab-content">
         <div class="card">
-            <div class="card-header"><i class="fa-solid fa-calendar-check"></i> Assignment Setup</div>
+            <div class="card-header"><i class="fa-solid fa-calendar-check"></i> Master Assignment Setup</div>
+            <p style="font-size:13px; color:#dc2626; margin-top:0;">Note: Saving this will become the active master list for the selected executive.</p>
             <div class="form-grid">
-                <div class="form-group"><label>Date</label><input type="date" id="assign-date"></div>
+                <div class="form-group"><label>Assignment Date</label><input type="date" id="assign-date"></div>
                 <div class="form-group"><label>Select Executive</label><select id="assign-exec-select" class="exec-dropdown"></select></div>
             </div>
             <div class="form-grid" style="background:#f8fafc; padding:15px; border-radius:8px; border:1px solid var(--border);">
                 <div class="form-group"><label>Regular Accounts Count</label><input type="number" id="reg-count" value="0"></div>
                 <div class="form-group"><label>Matured Accounts Count</label><input type="number" id="mat-count" value="0"></div>
-                <div class="form-group" style="grid-column: 1 / -1;"><label>Default Installments (Optional)</label><input type="text" id="def-inst" placeholder="Ex: 1" value="1"></div>
+                <div class="form-group" style="grid-column: 1 / -1;"><label>Default Installments (For Regular)</label><input type="text" id="def-inst" placeholder="Ex: 1" value="1"></div>
             </div>
             <button class="btn btn-primary" onclick="generateAssignTable()"><i class="fa-solid fa-table-list"></i> Generate Entry Fields</button>
         </div>
@@ -98,13 +97,13 @@
                 </table>
             </div>
             <div style="display: flex; gap: 15px; margin-top: 20px;">
-                <button class="btn btn-success" onclick="saveAssignmentsToFirebase()" style="flex: 1;"><i class="fa-solid fa-check-double"></i> Save Assignments</button>
+                <button class="btn btn-success" onclick="saveAssignmentsToFirebase()" style="flex: 1;"><i class="fa-solid fa-check-double"></i> Save Master List</button>
                 <button class="btn btn-primary" onclick="printAssignmentReport()" style="flex: 1; background: #475569;"><i class="fa-solid fa-print"></i> Print Assignment Report</button>
             </div>
         </div>
     </div>
 
-    <!-- 3. PERFORMANCE REPORTS (Includes Balance Tracking) -->
+    <!-- 3. PERFORMANCE REPORTS -->
     <div id="tab-reports" class="container tab-content">
         <div class="card">
             <div class="card-header"><i class="fa-solid fa-filter"></i> Report Filter</div>
@@ -123,10 +122,9 @@
             <div class="pdf-cards">
                 <div class="pdf-card c-assigned"><div class="val" id="r-assigned">0</div><div class="lbl">Total Assigned</div></div>
                 <div class="pdf-card c-completed"><div class="val" id="r-completed">0</div><div class="lbl">Total Completed</div></div>
-                <div class="pdf-card c-pending"><div class="val" id="r-pending">0</div><div class="lbl">Total Balance</div></div>
+                <div class="pdf-card c-pending"><div class="val" id="r-pending" style="color:red;">0</div><div class="lbl">Total Balance</div></div>
             </div>
             
-            <!-- Balances Display -->
             <div class="form-grid" style="margin-bottom: 20px;">
                 <div class="card" style="padding:15px; margin-bottom:0; background:#eff6ff; border-color:#bfdbfe;">
                     <h4 style="margin:0 0 10px 0; color:var(--accent);">REGULAR ACCOUNTS</h4>
@@ -142,17 +140,16 @@
                 </div>
             </div>
 
-            <div class="card-header" style="font-size:14px;"><i class="fa-solid fa-indian-rupee-sign"></i> Collection Data</div>
+            <div class="card-header" style="font-size:14px;"><i class="fa-solid fa-indian-rupee-sign"></i> Collection History (In Selected Range)</div>
             <div style="overflow-x: auto;">
                 <table class="modern-table">
-                    <thead><tr><th>Category / Status</th><th>Account No. & Date</th><th>Amount (₹)</th></tr></thead>
+                    <thead><tr><th>Status</th><th>Account No. & Date</th><th>Amount (₹)</th></tr></thead>
                     <tbody id="r-table-body"></tbody>
                 </table>
             </div>
         </div>
     </div>
     
-    <!-- HIDDEN PRINT AREA -->
     <div id="print-section"></div>
 
     <script>
@@ -217,7 +214,7 @@
             for(let i=0; i<reg; i++) {
                 tbody.innerHTML += `<tr>
                     <td style="color:var(--accent); font-weight:700;">Regular<input type="hidden" class="a-type" value="Regular"></td>
-                    <td><input type="text" class="a-acc" placeholder="Account No"></td>
+                    <td><input type="text" class="a-acc" placeholder="Acc No"></td>
                     <td><input type="text" class="a-inst" value="${defInst}" placeholder="Inst"></td>
                     <td><input type="number" class="a-amt" placeholder="Amount"></td>
                 </tr>`;
@@ -225,7 +222,7 @@
             for(let i=0; i<mat; i++) {
                 tbody.innerHTML += `<tr>
                     <td style="color:var(--danger); font-weight:700;">Matured<input type="hidden" class="a-type" value="Matured"></td>
-                    <td><input type="text" class="a-acc" placeholder="Account No"></td>
+                    <td><input type="text" class="a-acc" placeholder="Acc No"></td>
                     <td><input type="text" class="a-inst" value="Matured" readonly style="background:#f1f5f9;"></td>
                     <td><input type="number" class="a-amt" placeholder="Amount"></td>
                 </tr>`;
@@ -234,7 +231,6 @@
         }
 
         function saveAssignmentsToFirebase() {
-            let date = document.getElementById('assign-date').value;
             let exec = document.getElementById('assign-exec-select').value;
             if(!exec) return alert("Select Executive!");
             let data = [];
@@ -245,14 +241,15 @@
                         type: row.querySelector('.a-type').value,
                         accNo: acc,
                         installments: row.querySelector('.a-inst').value,
-                        targetAmt: row.querySelector('.a-amt').value || "0",
-                        status: "Pending" // Initial status
+                        targetAmt: row.querySelector('.a-amt').value || "0"
                     });
                 }
             });
             if(data.length === 0) return alert("Fill at least one Account No!");
-            db.ref(`Assignments/${date}/${exec}`).set(data).then(() => {
-                alert(`✅ Successfully Assigned ${data.length} accounts to ${exec} for ${date}!`);
+            
+            // KEY FIX: Saving as Master List under Executive Name, ignoring date.
+            db.ref(`Assignments/${exec}`).set(data).then(() => {
+                alert(`✅ Active Master List saved! ${data.length} accounts assigned to ${exec}.`);
             });
         }
 
@@ -264,7 +261,7 @@
             let html = `
                 <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:16px; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; font-family:Arial, sans-serif;">
                     <span style="flex:1;">Name: ${name}</span>
-                    <span style="flex:1; text-align:center; font-size:20px; text-transform:uppercase;">Assignment Report</span>
+                    <span style="flex:1; text-align:center; font-size:20px; text-transform:uppercase;">ASSIGNMENT REPORT</span>
                     <span style="flex:1; text-align:right;">Date: ${date}</span>
                 </div>
                 <table style="width:100%; border-collapse:collapse; text-align:center; font-size:14px; font-family:Arial, sans-serif;">
@@ -296,8 +293,8 @@
             if(!exec || !fromD || !toD) return alert("Select Executive and Date Range!");
 
             try {
-                // Fetch ALL Assignments in Date Range to calculate Total Balances correctly
-                let assignSnap = await db.ref('Assignments').once('value');
+                // Fetch Master Assignment List for Executive
+                let assignSnap = await db.ref(`Assignments/${exec}`).once('value');
                 let reportSnap = await db.ref('DailyReports').once('value');
                 
                 let regAssigned = 0, matAssigned = 0;
@@ -305,21 +302,16 @@
                 let grandAmt = 0;
                 let regRows = "", matRows = "";
                 
-                // 1. Calculate Assignments
+                // Calculate Total Assigned Master List
                 if(assignSnap.exists()) {
-                    assignSnap.forEach(dateNode => {
-                        let rDate = dateNode.key;
-                        if(rDate >= fromD && rDate <= toD && dateNode.hasChild(exec)) {
-                            let accs = dateNode.child(exec).val();
-                            accs.forEach(a => {
-                                if(a.type === 'Regular') regAssigned++;
-                                if(a.type === 'Matured') matAssigned++;
-                            });
-                        }
+                    assignSnap.forEach(aNode => {
+                        let a = aNode.val();
+                        if(a.type === 'Regular') regAssigned++;
+                        if(a.type === 'Matured') matAssigned++;
                     });
                 }
 
-                // 2. Calculate Completions
+                // Calculate Completions within date range
                 if(reportSnap.exists()) {
                     reportSnap.forEach(dateNode => {
                         let rDate = dateNode.key;
@@ -348,8 +340,6 @@
                 let totalAssigned = regAssigned + matAssigned;
                 let totalCompleted = regCompleted + matCompleted;
 
-                if(totalAssigned === 0 && totalCompleted === 0) return alert(`No data found for ${exec} in this date range.`);
-
                 document.getElementById('r-assigned').innerText = totalAssigned;
                 document.getElementById('r-completed').innerText = totalCompleted;
                 document.getElementById('r-pending').innerText = totalAssigned - totalCompleted;
@@ -363,13 +353,12 @@
                 document.getElementById('r-mat-bal').innerText = matAssigned - matCompleted;
 
                 let tableHTML = "";
-                if(regRows) tableHTML += `<tr><td colspan="3" style="text-align:left; font-weight:700; color:var(--accent); background:#eff6ff;">REGULAR ACCOUNTS</td></tr>` + regRows;
-                if(matRows) tableHTML += `<tr><td colspan="3" style="text-align:left; font-weight:700; color:var(--danger); background:#fef2f2;">MATURED ACCOUNTS</td></tr>` + matRows;
-                tableHTML += `<tr style="background:var(--primary); color:white; font-weight:700;"><td style="text-align:left;">Total Amount Collected</td><td>${totalCompleted} Accs</td><td>₹ ${grandAmt.toLocaleString('en-IN')}</td></tr>`;
+                if(regRows) tableHTML += `<tr><td colspan="3" style="text-align:left; font-weight:700; color:var(--accent); background:#eff6ff;">REGULAR COMPLETED</td></tr>` + regRows;
+                if(matRows) tableHTML += `<tr><td colspan="3" style="text-align:left; font-weight:700; color:var(--danger); background:#fef2f2;">MATURED COMPLETED</td></tr>` + matRows;
+                tableHTML += `<tr style="background:var(--primary); color:white; font-weight:700;"><td style="text-align:left;">Total Collected</td><td>${totalCompleted} Accs</td><td>₹ ${grandAmt.toLocaleString('en-IN')}</td></tr>`;
 
                 document.getElementById('r-table-body').innerHTML = tableHTML;
                 document.getElementById('report-board').style.display = 'block';
-                document.getElementById('report-board').scrollIntoView({ behavior: 'smooth' });
                 
             } catch(e) { alert("Error: " + e.message); }
         }
