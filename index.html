@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TL Admin Dashboard</title>
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -85,18 +84,22 @@
                 <div class="form-group"><label>Assignment Date</label><input type="date" id="assign-date"></div>
                 <div class="form-group"><label>Select Executive</label><select id="assign-exec-select" class="exec-dropdown"></select></div>
             </div>
+            
             <div class="form-grid" style="background:#f8fafc; padding:15px; border-radius:8px; border:1px solid var(--border);">
                 <div class="form-group"><label>Regular Count</label><input type="number" id="reg-count" value="0"></div>
                 <div class="form-group"><label>Matured Count</label><input type="number" id="mat-count" value="0"></div>
-                <div class="form-group"><label>Default Installments</label><input type="text" id="def-inst" placeholder="Ex: 1" value="1"></div>
+                <!-- Default Installments & Year Box -->
+                <div class="form-group"><label>Default Inst (Regular)</label><input type="text" id="def-inst" placeholder="Ex: 1" value="1"></div>
+                <div class="form-group"><label>Default Year (Matured)</label><input type="text" id="def-mat-year" placeholder="Ex: 2026" value="2026"></div>
             </div>
+            
             <button class="btn btn-primary" onclick="generateAssignTable()">Generate Fields</button>
         </div>
         
         <div id="assign-table-container" class="card" style="display:none;">
             <div class="card-header">Enter Account Details</div>
             <table class="classic-table" id="assignment-table">
-                <thead><tr><th>Type</th><th>Account No</th><th>Inst/Matured Year</th><th>Target Amount (₹)</th></tr></thead>
+                <thead><tr><th>Type</th><th>Account No</th><th>Inst / Year</th><th>Amount (₹)</th></tr></thead>
                 <tbody id="assign-tbody"></tbody>
             </table>
             <div style="margin-top: 20px;">
@@ -118,9 +121,8 @@
                     <button class="btn btn-primary" onclick="printAssignedList()"><i class="fa-solid fa-print"></i> Print This List</button>
                 </div>
             </div>
-            
             <table class="classic-table" style="margin-top:15px;">
-                <thead><tr><th>Type</th><th>Account No</th><th>Inst / Year</th><th>Target Amount</th><th>Action</th></tr></thead>
+                <thead><tr><th>Type</th><th>Account No</th><th>Inst / Year</th><th>Amount</th><th>Action</th></tr></thead>
                 <tbody id="view-tbody">
                     <tr><td colspan="5" style="color:#64748b;">Select an executive to view accounts.</td></tr>
                 </tbody>
@@ -174,7 +176,7 @@
         const firebaseConfig = { apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI", databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com", projectId: "sri-vishnu-priya-finance-c591f", storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app", appId: "1:184676228358:android:7ef47b55ab678bb0dfd287" };
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        let execsData = {}; // Global variable to store branch info
+        let execsData = {};
 
         document.getElementById('assign-date').valueAsDate = new Date();
         document.getElementById('from-date').valueAsDate = new Date();
@@ -200,7 +202,7 @@
                     snap.forEach(child => {
                         let name = child.key; 
                         let data = child.val();
-                        execsData[name] = data; // Store in global object
+                        execsData[name] = data;
                         optionsHTML += `<option value="${name}">${name}</option>`;
                         tbody.innerHTML += `<tr>
                             <td style="font-weight:bold; color:var(--primary);">${name}</td>
@@ -230,11 +232,13 @@
         function deleteExec(name) { if(confirm(`Delete ${name}?`)) db.ref('Executives/' + name).remove(); }
         loadExecutives(); 
 
-        // 2. ASSIGN ACCOUNTS (Appends data, DOES NOT overwrite)
+        // 2. ASSIGN ACCOUNTS 
         function generateAssignTable() {
             let reg = parseInt(document.getElementById('reg-count').value) || 0;
             let mat = parseInt(document.getElementById('mat-count').value) || 0;
             let defInst = document.getElementById('def-inst').value || "";
+            let defMatYear = document.getElementById('def-mat-year').value || "";
+            
             let tbody = document.getElementById('assign-tbody');
             tbody.innerHTML = '';
             if(reg === 0 && mat === 0) return alert("Enter Accounts count!");
@@ -251,7 +255,7 @@
                 tbody.innerHTML += `<tr>
                     <td style="color:var(--danger); font-weight:bold;">Matured<input type="hidden" class="a-type" value="Matured"></td>
                     <td><input type="text" class="a-acc" placeholder="Acc No"></td>
-                    <td><input type="text" class="a-inst" placeholder="Matured Year"></td>
+                    <td><input type="text" class="a-inst" value="${defMatYear}" placeholder="Year"></td>
                     <td><input type="number" class="a-amt" placeholder="₹"></td>
                 </tr>`;
             }
@@ -267,7 +271,7 @@
             document.querySelectorAll('#assign-tbody tr').forEach(row => {
                 let acc = row.querySelector('.a-acc').value.trim();
                 if(acc) {
-                    let safeAcc = acc.replace(/[.#$\[\]]/g, ''); // Firebase safe key
+                    let safeAcc = acc.replace(/[.#$\[\]]/g, '');
                     updates[safeAcc] = {
                         type: row.querySelector('.a-type').value,
                         accNo: safeAcc,
@@ -280,10 +284,8 @@
 
             if(count === 0) return alert("Fill at least one Account No!");
             
-            // KEY FIX: Using .update() instead of .set(). This adds new accounts without deleting old ones!
             db.ref(`Assignments/${exec}`).update(updates).then(() => {
                 alert(`✅ Successfully Added ${count} new accounts to ${exec}!`);
-                // Clear fields so they don't stay on screen
                 document.getElementById('assign-tbody').innerHTML = '';
                 document.getElementById('assign-table-container').style.display = 'none';
                 document.getElementById('reg-count').value = '0';
@@ -327,7 +329,7 @@
             let exec = document.getElementById('view-exec-select').value;
             if(!exec) return alert("Select Executive to Print!");
             let branch = execsData[exec] ? execsData[exec].branch : "N/A";
-            let date = new Date().toLocaleDateString('en-IN'); // Today's date
+            let date = new Date().toLocaleDateString('en-IN'); 
 
             let html = `
                 <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:14px; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; font-family:Arial, sans-serif;">
@@ -340,12 +342,12 @@
                         <th style="border:1px solid #000; padding:8px;">Type</th>
                         <th style="border:1px solid #000; padding:8px;">Account No</th>
                         <th style="border:1px solid #000; padding:8px;">Inst / Year</th>
-                        <th style="border:1px solid #000; padding:8px;">Target Amount</th>
+                        <th style="border:1px solid #000; padding:8px;">Amount</th>
                     </tr>`;
             
             let count = 0;
             document.querySelectorAll('#view-tbody tr').forEach(row => {
-                if(row.cells.length > 1) { // Skip empty state row
+                if(row.cells.length > 1) { 
                     count++;
                     html += `<tr>
                         <td style="border:1px solid #000; padding:8px; font-weight:bold;">${row.cells[0].innerText}</td>
