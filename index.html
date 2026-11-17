@@ -33,10 +33,10 @@
         .classic-table td { padding: 10px; border: 1px solid var(--border); }
         .classic-table input { padding: 6px 8px; width: 90%; margin: 0; text-align: center; }
         
-        .pdf-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; margin-bottom: 20px; }
+        .pdf-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 8px; margin-bottom: 20px; }
         .pdf-card { border: 1px solid var(--border); border-radius: 8px; text-align: center; background: white; }
         .pdf-card .val { font-size: 18px; font-weight: 700; padding: 8px 0 4px 0; }
-        .pdf-card .lbl { color: white; padding: 4px; font-size: 10px; font-weight: 700; background: #64748b; }
+        .pdf-card .lbl { color: white; padding: 4px; font-size: 10px; font-weight: 700; background: #64748b; border-bottom-left-radius: 7px; border-bottom-right-radius: 7px; }
         
         /* Modals */
         #edit-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:999;}
@@ -156,24 +156,38 @@
                 <div>Dates: <span id="r-dates"></span></div>
             </div>
 
+            <!-- REGULAR CARDS -->
+            <h4 style="color:var(--accent); margin: 0 0 10px 0; font-size: 14px;"><i class="fa-solid fa-chart-simple"></i> REGULAR SUMMARY</h4>
             <div class="pdf-cards">
-                <div class="pdf-card"><div class="val" id="r-assigned" style="color:#2563eb;">0</div><div class="lbl" style="background:#2563eb;">Assigned</div></div>
-                <div class="pdf-card"><div class="val" id="r-completed" style="color:#16a34a;">0</div><div class="lbl" style="background:#16a34a;">Completed</div></div>
-                <div class="pdf-card"><div class="val" id="r-pending" style="color:#dc2626;">0</div><div class="lbl" style="background:#dc2626;">Balance</div></div>
-                <div class="pdf-card"><div class="val" id="r-lock">0</div><div class="lbl">Lock</div></div>
-                <div class="pdf-card"><div class="val" id="r-pcr">0</div><div class="lbl">PCR</div></div>
-                <div class="pdf-card"><div class="val" id="r-ops">0</div><div class="lbl">OP'S</div></div>
-                <div class="pdf-card"><div class="val" id="r-seizing">0</div><div class="lbl">Seizing</div></div>
+                <div class="pdf-card"><div class="val" id="rr-assigned" style="color:#2563eb;">0</div><div class="lbl" style="background:#2563eb;">Assigned</div></div>
+                <div class="pdf-card"><div class="val" id="rr-completed" style="color:#16a34a;">0</div><div class="lbl" style="background:#16a34a;">Completed</div></div>
+                <div class="pdf-card"><div class="val" id="rr-pending" style="color:#dc2626;">0</div><div class="lbl" style="background:#dc2626;">Balance</div></div>
+                <div class="pdf-card"><div class="val" id="rr-lock">0</div><div class="lbl">Lock</div></div>
+                <div class="pdf-card"><div class="val" id="rr-pcr">0</div><div class="lbl">PCR</div></div>
+                <div class="pdf-card"><div class="val" id="rr-ops">0</div><div class="lbl">OP'S</div></div>
+                <div class="pdf-card"><div class="val" id="rr-seizing">0</div><div class="lbl">Seizing</div></div>
             </div>
 
-            <table class="classic-table">
+            <!-- MATURED CARDS -->
+            <h4 style="color:var(--danger); margin: 20px 0 10px 0; font-size: 14px;"><i class="fa-solid fa-chart-pie"></i> MATURED SUMMARY</h4>
+            <div class="pdf-cards">
+                <div class="pdf-card"><div class="val" id="rm-assigned" style="color:#2563eb;">0</div><div class="lbl" style="background:#2563eb;">Assigned</div></div>
+                <div class="pdf-card"><div class="val" id="rm-completed" style="color:#16a34a;">0</div><div class="lbl" style="background:#16a34a;">Completed</div></div>
+                <div class="pdf-card"><div class="val" id="rm-pending" style="color:#dc2626;">0</div><div class="lbl" style="background:#dc2626;">Balance</div></div>
+                <div class="pdf-card"><div class="val" id="rm-lock">0</div><div class="lbl">Lock</div></div>
+                <div class="pdf-card"><div class="val" id="rm-pcr">0</div><div class="lbl">PCR</div></div>
+                <div class="pdf-card"><div class="val" id="rm-ops">0</div><div class="lbl">OP'S</div></div>
+                <div class="pdf-card"><div class="val" id="rm-seizing">0</div><div class="lbl">Seizing</div></div>
+            </div>
+
+            <table class="classic-table" style="margin-top:20px;">
                 <thead><tr><th>Type & Inst/Year</th><th>Account No & Date</th><th>Status</th><th>Amount (₹)</th><th>Actions</th></tr></thead>
                 <tbody id="r-table-body"></tbody>
             </table>
         </div>
     </div>
     
-    <!-- Edit Modal (Fixed Data Loss Issue) -->
+    <!-- Edit Modal -->
     <div id="edit-modal">
         <div class="modal-content">
             <h3 style="margin-top:0; color:var(--primary);">Edit Report Entry</h3>
@@ -212,6 +226,7 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         let execsData = {}; 
+        let currentViewRef = null; // Fix for Multiple Listeners Bug
 
         // Amount Formatter (Converts >= 1,00,000 to Lakhs like 2.10 L)
         function formatAmountShort(num) {
@@ -326,10 +341,14 @@
         function fetchAssignedList() {
             let exec = document.getElementById('view-exec-select').value;
             let tbody = document.getElementById('view-tbody');
+            
+            // Bug Fix: Remove old listener to avoid duplicate data & memory leaks
+            if(currentViewRef) currentViewRef.off('value');
+
             if(!exec) { tbody.innerHTML = '<tr><td colspan="5" style="color:#64748b;">Select an executive.</td></tr>'; return; }
             
-            // FIXED: Used 'value' event to fetch all data at once to ensure old accounts display properly
-            db.ref(`Assignments/${exec}`).on('value', snap => {
+            currentViewRef = db.ref(`Assignments/${exec}`);
+            currentViewRef.on('value', snap => {
                 tbody.innerHTML = ''; activePrintData = [];
                 if(snap.exists()) {
                     let dataArr = [];
@@ -387,9 +406,10 @@
                     <span style="flex:1; text-align:right;">Date: ${date}</span>
                 </div>`;
             
+            // 1. SUMMARY TABLES
             if(rCount > 0) {
                 html += `
-                    <h4 style="margin:10px 0 5px 0; text-transform:uppercase; color:#003366;">REGULAR</h4>
+                    <h4 style="margin:10px 0 5px 0; text-transform:uppercase; color:#003366;">REGULAR SUMMARY</h4>
                     <table style="width:100%; border-collapse:collapse; text-align:center; font-size:14px; margin-bottom:20px;">
                         <tr style="background:#f0f0f0;">
                             <th style="border:1px solid #000; padding:8px;">INSTALLMENT</th>
@@ -408,7 +428,7 @@
 
             if(mCount > 0) {
                 html += `
-                    <h4 style="margin:10px 0 5px 0; text-transform:uppercase; color:#dc2626;">MATURED</h4>
+                    <h4 style="margin:10px 0 5px 0; text-transform:uppercase; color:#dc2626;">MATURED SUMMARY</h4>
                     <table style="width:100%; border-collapse:collapse; text-align:center; font-size:14px; margin-bottom:20px;">
                         <tr style="background:#f0f0f0;">
                             <th style="border:1px solid #000; padding:8px;">YEAR OF MATURED</th>
@@ -425,7 +445,53 @@
                 html += `<tr style="background:#e9ecef; font-weight:bold;"><td style="border:1px solid #000; padding:8px;">TOTAL</td><td style="border:1px solid #000; padding:8px;">${mCount}</td><td style="border:1px solid #000; padding:8px;">${formatAmountShort(mAmt)}</td></tr></table>`;
             }
 
-            html += `<h3 style="text-align:right;">Grand Total Accounts: ${rCount + mCount} | Grand Total Amount: ${formatAmountShort(rAmt + mAmt)}</h3>`;
+            html += `<h3 style="text-align:right; font-size:15px; margin-bottom:30px;">Grand Total Accounts: ${rCount + mCount} | Grand Total Amount: ${formatAmountShort(rAmt + mAmt)}</h3>`;
+
+            // 2. DETAILED ASSIGNED ACCOUNTS LIST
+            html += `<div style="text-align:center; margin-bottom:10px; font-size:16px; font-weight:bold; border-top:1px dashed #000; padding-top:15px;">DETAILED ACCOUNTS LIST</div>`;
+            
+            if(rCount > 0) {
+                html += `<h4 style="margin:5px 0; color:#003366;">REGULAR ACCOUNTS</h4>
+                <table style="width:100%; border-collapse:collapse; text-align:center; font-size:13px; margin-bottom:20px;">
+                    <tr style="background:#f0f0f0;">
+                        <th style="border:1px solid #000; padding:5px;">S.No</th>
+                        <th style="border:1px solid #000; padding:5px;">Account No</th>
+                        <th style="border:1px solid #000; padding:5px;">Installment</th>
+                        <th style="border:1px solid #000; padding:5px;">Target Amt</th>
+                    </tr>`;
+                let sno = 1;
+                activePrintData.filter(d => d.type === 'Regular').forEach(d => {
+                    html += `<tr>
+                        <td style="border:1px solid #000; padding:5px;">${sno++}</td>
+                        <td style="border:1px solid #000; padding:5px; font-weight:bold;">${d.accNo}</td>
+                        <td style="border:1px solid #000; padding:5px;">${d.installments}</td>
+                        <td style="border:1px solid #000; padding:5px;">${formatAmountShort(Number(d.targetAmt))}</td>
+                    </tr>`;
+                });
+                html += `</table>`;
+            }
+
+            if(mCount > 0) {
+                html += `<h4 style="margin:5px 0; color:#dc2626;">MATURED ACCOUNTS</h4>
+                <table style="width:100%; border-collapse:collapse; text-align:center; font-size:13px; margin-bottom:20px;">
+                    <tr style="background:#f0f0f0;">
+                        <th style="border:1px solid #000; padding:5px;">S.No</th>
+                        <th style="border:1px solid #000; padding:5px;">Account No</th>
+                        <th style="border:1px solid #000; padding:5px;">Year</th>
+                        <th style="border:1px solid #000; padding:5px;">Target Amt</th>
+                    </tr>`;
+                let sno = 1;
+                activePrintData.filter(d => d.type === 'Matured').forEach(d => {
+                    html += `<tr>
+                        <td style="border:1px solid #000; padding:5px;">${sno++}</td>
+                        <td style="border:1px solid #000; padding:5px; font-weight:bold;">${d.accNo}</td>
+                        <td style="border:1px solid #000; padding:5px;">${d.installments}</td>
+                        <td style="border:1px solid #000; padding:5px;">${formatAmountShort(Number(d.targetAmt))}</td>
+                    </tr>`;
+                });
+                html += `</table>`;
+            }
+
             document.getElementById('print-section').innerHTML = html; window.print();
         }
 
@@ -439,30 +505,36 @@
 
             try {
                 let assignSnap = await db.ref(`Assignments/${exec}`).once('value');
-                let reportSnap = await db.ref('DailyReports').once('value');
+                // Bug Fix: Query specific date range instead of downloading entire database
+                let reportSnap = await db.ref('DailyReports').orderByKey().startAt(fromD).endAt(toD).once('value');
                 
-                let totalAssigned = 0, totalCompleted = 0;
-                let lockC = 0, pcrC = 0, opsC = 0, seizC = 0, grandAmt = 0;
+                // Separate Counters for Regular and Matured
+                let regAssigned = 0, matAssigned = 0;
+                let rComp = 0, rLock = 0, rPcr = 0, rOps = 0, rSeiz = 0;
+                let mComp = 0, mLock = 0, mPcr = 0, mOps = 0, mSeiz = 0;
+                let grandAmt = 0;
                 let regRows = "", matRows = "";
                 
-                if(assignSnap.exists()) totalAssigned = assignSnap.numChildren();
+                if(assignSnap.exists()) {
+                    assignSnap.forEach(child => {
+                        if(child.val().type === 'Regular') regAssigned++;
+                        else if(child.val().type === 'Matured') matAssigned++;
+                    });
+                }
 
                 if(reportSnap.exists()) {
                     reportSnap.forEach(dateNode => {
                         let rDate = dateNode.key;
-                        if(rDate >= fromD && rDate <= toD && dateNode.hasChild(exec)) {
+                        if(dateNode.hasChild(exec)) {
                             let data = dateNode.child(exec).val();
                             if(data.details) {
                                 Object.keys(data.details).forEach(nodeKey => {
                                     let item = data.details[nodeKey];
-                                    
                                     if(!item || !item.accNo) return; 
 
                                     if(item.status !== "Pending") {
-                                        totalCompleted++;
-                                        if(item.status === 'Lock') lockC++; if(item.status === 'PCR') pcrC++; 
-                                        if(item.status === "OP'S") opsC++; if(item.status === 'Seizing') seizC++;
-                                        let amtNum = parseFloat(item.amt) || 0; grandAmt += amtNum;
+                                        let amtNum = parseFloat(item.amt) || 0; 
+                                        grandAmt += amtNum;
                                         let displayInst = item.inst ? `(${item.inst})` : "";
                                         
                                         let actionBtns = `
@@ -478,7 +550,17 @@
                                             <td class="no-print">${actionBtns}</td>
                                         </tr>`;
                                         
-                                        if(item.type === 'Regular') regRows += row; else matRows += row;
+                                        if(item.type === 'Regular') {
+                                            rComp++;
+                                            if(item.status === 'Lock') rLock++; if(item.status === 'PCR') rPcr++; 
+                                            if(item.status === "OP'S") rOps++; if(item.status === 'Seizing') rSeiz++;
+                                            regRows += row;
+                                        } else {
+                                            mComp++;
+                                            if(item.status === 'Lock') mLock++; if(item.status === 'PCR') mPcr++; 
+                                            if(item.status === "OP'S") mOps++; if(item.status === 'Seizing') mSeiz++;
+                                            matRows += row;
+                                        }
                                     }
                                 });
                             }
@@ -488,14 +570,22 @@
 
                 document.getElementById('r-name').innerText = exec; document.getElementById('r-branch').innerText = branch;
                 document.getElementById('r-dates').innerText = `${fromD.split('-').reverse().join('-')} to ${toD.split('-').reverse().join('-')}`;
-                document.getElementById('r-assigned').innerText = totalAssigned; document.getElementById('r-completed').innerText = totalCompleted;
-                document.getElementById('r-pending').innerText = totalAssigned - totalCompleted;
-                document.getElementById('r-lock').innerText = lockC; document.getElementById('r-pcr').innerText = pcrC; 
-                document.getElementById('r-ops').innerText = opsC; document.getElementById('r-seizing').innerText = seizC;
+                
+                // Update REGULAR Cards
+                document.getElementById('rr-assigned').innerText = regAssigned; document.getElementById('rr-completed').innerText = rComp;
+                document.getElementById('rr-pending').innerText = regAssigned - rComp;
+                document.getElementById('rr-lock').innerText = rLock; document.getElementById('rr-pcr').innerText = rPcr; 
+                document.getElementById('rr-ops').innerText = rOps; document.getElementById('rr-seizing').innerText = rSeiz;
+
+                // Update MATURED Cards
+                document.getElementById('rm-assigned').innerText = matAssigned; document.getElementById('rm-completed').innerText = mComp;
+                document.getElementById('rm-pending').innerText = matAssigned - mComp;
+                document.getElementById('rm-lock').innerText = mLock; document.getElementById('rm-pcr').innerText = mPcr; 
+                document.getElementById('rm-ops').innerText = mOps; document.getElementById('rm-seizing').innerText = mSeiz;
 
                 let tableHTML = "";
-                if(regRows) tableHTML += `<tr><td colspan="5" style="text-align:left; font-weight:700; color:var(--accent); background:#eff6ff;">REGULAR</td></tr>` + regRows;
-                if(matRows) tableHTML += `<tr><td colspan="5" style="text-align:left; font-weight:700; color:var(--danger); background:#fef2f2;">MATURED</td></tr>` + matRows;
+                if(regRows) tableHTML += `<tr><td colspan="5" style="text-align:left; font-weight:700; color:var(--accent); background:#eff6ff;">REGULAR ACCOUNTS</td></tr>` + regRows;
+                if(matRows) tableHTML += `<tr><td colspan="5" style="text-align:left; font-weight:700; color:var(--danger); background:#fef2f2;">MATURED ACCOUNTS</td></tr>` + matRows;
                 tableHTML += `<tr style="background:var(--primary); color:white; font-weight:700;"><td colspan="3" style="text-align:right;">Total Collected Amount:</td><td colspan="2">${formatAmountShort(grandAmt)}</td></tr>`;
 
                 document.getElementById('r-table-body').innerHTML = tableHTML;
@@ -505,11 +595,10 @@
             } catch(e) { alert("Error: " + e.message); }
         }
 
-        // PERFECTED EDIT / DELETE USING EXACT FIREBASE KEY
         function openEditModal(date, exec, key, accNo, type, inst, status, amt) {
             document.getElementById('edit-date').value = date;
             document.getElementById('edit-exec').value = exec;
-            document.getElementById('edit-accNo').value = key; // Use firebase key directly 
+            document.getElementById('edit-accNo').value = key; 
             document.getElementById('edit-type').value = type;
             document.getElementById('edit-inst').value = inst;
             document.getElementById('edit-status').value = status;
@@ -549,7 +638,7 @@
             let branch = document.getElementById('r-branch').innerText;
             let dates = document.getElementById('r-dates').innerText;
             
-            document.getElementById('print-section').innerHTML = ""; // Clear
+            document.getElementById('print-section').innerHTML = ""; 
             
             let html = `
                 <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:14px; margin-bottom: 10px; border-bottom: 2px solid #000; padding-bottom: 10px;">
@@ -558,10 +647,22 @@
                     <span style="flex:1; text-align:right;">Dates: <br>${dates}</span>
                 </div>
                 
+                <h4 style="margin:5px 0;">REGULAR SUMMARY</h4>
                 <table style="width:100%; text-align:center; font-size:13px; margin-bottom:15px; border-collapse:collapse;">
-                    <tr style="background:#f0f0f0;"><th style="border:1px solid #000; padding:5px;">Assigned</th><th style="border:1px solid #000; padding:5px;">Completed</th><th style="border:1px solid #000; padding:5px;">Balance</th><th style="border:1px solid #000; padding:5px;">Lock</th><th style="border:1px solid #000; padding:5px;">PCR</th><th style="border:1px solid #000; padding:5px;">OP'S</th><th style="border:1px solid #000; padding:5px;">Seizing</th></tr>
-                    <tr style="font-weight:bold;"><td style="border:1px solid #000; padding:5px;">${document.getElementById('r-assigned').innerText}</td><td style="border:1px solid #000; padding:5px;">${document.getElementById('r-completed').innerText}</td><td style="border:1px solid #000; padding:5px; color:red;">${document.getElementById('r-pending').innerText}</td><td style="border:1px solid #000; padding:5px;">${document.getElementById('r-lock').innerText}</td><td style="border:1px solid #000; padding:5px;">${document.getElementById('r-pcr').innerText}</td><td style="border:1px solid #000; padding:5px;">${document.getElementById('r-ops').innerText}</td><td style="border:1px solid #000; padding:5px;">${document.getElementById('r-seizing').innerText}</td></tr>
+                    <tr style="background:#f0f0f0;"><th style="border:1px solid #000; padding:4px;">Assigned</th><th style="border:1px solid #000; padding:4px;">Completed</th><th style="border:1px solid #000; padding:4px;">Balance</th><th style="border:1px solid #000; padding:4px;">Lock</th><th style="border:1px solid #000; padding:4px;">PCR</th><th style="border:1px solid #000; padding:4px;">OP'S</th><th style="border:1px solid #000; padding:4px;">Seizing</th></tr>
+                    <tr style="font-weight:bold;">
+                        <td style="border:1px solid #000; padding:4px;">${document.getElementById('rr-assigned').innerText}</td><td style="border:1px solid #000; padding:4px;">${document.getElementById('rr-completed').innerText}</td><td style="border:1px solid #000; padding:4px; color:red;">${document.getElementById('rr-pending').innerText}</td><td style="border:1px solid #000; padding:4px;">${document.getElementById('rr-lock').innerText}</td><td style="border:1px solid #000; padding:4px;">${document.getElementById('rr-pcr').innerText}</td><td style="border:1px solid #000; padding:4px;">${document.getElementById('rr-ops').innerText}</td><td style="border:1px solid #000; padding:4px;">${document.getElementById('rr-seizing').innerText}</td>
+                    </tr>
                 </table>
+
+                <h4 style="margin:5px 0;">MATURED SUMMARY</h4>
+                <table style="width:100%; text-align:center; font-size:13px; margin-bottom:20px; border-collapse:collapse;">
+                    <tr style="background:#f0f0f0;"><th style="border:1px solid #000; padding:4px;">Assigned</th><th style="border:1px solid #000; padding:4px;">Completed</th><th style="border:1px solid #000; padding:4px;">Balance</th><th style="border:1px solid #000; padding:4px;">Lock</th><th style="border:1px solid #000; padding:4px;">PCR</th><th style="border:1px solid #000; padding:4px;">OP'S</th><th style="border:1px solid #000; padding:4px;">Seizing</th></tr>
+                    <tr style="font-weight:bold;">
+                        <td style="border:1px solid #000; padding:4px;">${document.getElementById('rm-assigned').innerText}</td><td style="border:1px solid #000; padding:4px;">${document.getElementById('rm-completed').innerText}</td><td style="border:1px solid #000; padding:4px; color:red;">${document.getElementById('rm-pending').innerText}</td><td style="border:1px solid #000; padding:4px;">${document.getElementById('rm-lock').innerText}</td><td style="border:1px solid #000; padding:4px;">${document.getElementById('rm-pcr').innerText}</td><td style="border:1px solid #000; padding:4px;">${document.getElementById('rm-ops').innerText}</td><td style="border:1px solid #000; padding:4px;">${document.getElementById('rm-seizing').innerText}</td>
+                    </tr>
+                </table>
+
                 <table style="width:100%; border-collapse:collapse; text-align:center; font-size:13px;">
                     <thead><tr style="background:#f0f0f0;"><th style="border:1px solid #000; padding:8px;">Type & Inst/Year</th><th style="border:1px solid #000; padding:8px;">Account No & Date</th><th style="border:1px solid #000; padding:8px;">Status</th><th style="border:1px solid #000; padding:8px;">Amount</th></tr></thead>
                     <tbody>`;
@@ -571,10 +672,10 @@
                 if(r.cells.length === 1 || r.cells.length === 5) {
                     html += `<tr>`;
                     for(let i=0; i<r.cells.length; i++) {
-                        if(r.cells.length === 5 && i === 4) continue; // Skip Action col
+                        if(r.cells.length === 5 && i === 4) continue; 
                         let colspan = r.cells[i].colSpan > 1 ? `colspan="3"` : "";
                         let bg = r.style.background ? `background:${r.style.background}; color:${r.style.color};` : "";
-                        html += `<td ${colspan} style="border:1px solid #000; padding:8px; ${bg}">${r.cells[i].innerHTML}</td>`;
+                        html += `<td ${colspan} style="border:1px solid #000; padding:6px; ${bg}">${r.cells[i].innerHTML}</td>`;
                     }
                     html += `</tr>`;
                 }
