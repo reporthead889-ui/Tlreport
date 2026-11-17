@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Executives - Sri Vishnu Priya</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- FIREBASE DIRECT SCRIPTS (Acode/Local File kosam) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); min-height: 100vh; color: white; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; }
+        .circle { position: fixed; border-radius: 50%; background: linear-gradient(135deg, #00d2ff, #3a7bd5); filter: blur(80px); z-index: 0; }
+        .circle1 { width: 350px; height: 350px; top: -50px; left: -100px; opacity: 0.4; }
+        .circle2 { width: 450px; height: 450px; bottom: -100px; right: -100px; opacity: 0.3; }
+
+        .container { position: relative; z-index: 1; width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 30px; }
+        .glass-panel { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); }
+        .header { display: flex; align-items: center; margin-bottom: 25px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 15px; }
+        .back-btn { color: #00d2ff; font-size: 20px; text-decoration: none; margin-right: 15px; transition: 0.3s; }
+        .back-btn:hover { transform: translateX(-5px); }
+        .header h2 { font-size: 22px; font-weight: 600; }
+
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; align-items: end; }
+        .input-group { display: flex; flex-direction: column; gap: 8px; }
+        .input-group label { font-size: 13px; color: rgba(255,255,255,0.7); font-weight: 500; }
+        .input-group input, .input-group select { width: 100%; padding: 12px 15px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 10px; color: #fff; outline: none; font-size: 14px; }
+        .input-group select option { background: #203a43; color: white; }
+        .input-group input:focus, .input-group select:focus { border-color: #00d2ff; }
+
+        .submit-btn { padding: 12px; background: linear-gradient(135deg, #00d2ff, #3a7bd5); border: none; border-radius: 10px; color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; transition: 0.3s; height: 45px; }
+        .submit-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0, 210, 255, 0.3); }
+
+        .table-container { overflow-x: auto; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
+        th, td { padding: 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        th { font-size: 13px; color: rgba(255,255,255,0.7); text-transform: uppercase; background: rgba(255, 255, 255, 0.05); }
+        td { font-size: 14px; }
+        tbody tr:hover { background: rgba(255, 255, 255, 0.08); }
+
+        .action-btns { display: flex; gap: 10px; }
+        .btn-edit, .btn-delete { border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 13px; transition: 0.3s; }
+        .btn-edit { background: rgba(0, 210, 255, 0.2); color: #00d2ff; }
+        .btn-edit:hover { background: #00d2ff; color: #fff; }
+        .btn-delete { background: rgba(255, 107, 107, 0.2); color: #ff6b6b; }
+        .btn-delete:hover { background: #ff6b6b; color: #fff; }
+    </style>
+</head>
+<body>
+    <div class="circle circle1"></div>
+    <div class="circle circle2"></div>
+
+    <div class="container">
+        <!-- Add Executive Form -->
+        <div class="glass-panel">
+            <div class="header">
+                <a href="dashboard.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+                <h2>Add Executive</h2>
+            </div>
+            
+            <form id="execForm" class="form-grid">
+                <input type="hidden" id="editId" value="">
+                
+                <div class="input-group">
+                    <label>Select Branch</label>
+                    <select id="branchSelect" required>
+                        <option value="">Loading Branches...</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>Executive Name</label>
+                    <input type="text" id="execName" placeholder="Enter Full Name" required autocomplete="off">
+                </div>
+
+                <div class="input-group">
+                    <label>Passcode</label>
+                    <input type="text" id="execPasscode" placeholder="Enter Passcode" required autocomplete="off">
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">Register</button>
+            </form>
+        </div>
+
+        <!-- Executives List Table -->
+        <div class="glass-panel">
+            <div class="header" style="border:none; margin-bottom:0;">
+                <h2>Registered Executives</h2>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Branch</th>
+                            <th>Executive Name</th>
+                            <th>Passcode</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="execTableBody">
+                        <tr><td colspan="5" style="text-align:center; color:#00d2ff;">Loading Data... <i class="fas fa-spinner fa-spin"></i></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Setup
+        const firebaseConfig = {
+            apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
+            authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
+            databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
+            projectId: "sri-vishnu-priya-finance-c591f",
+            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
+            messagingSenderId: "184676228358",
+            appId: "1:184676228358:web:c2b32b68debeeadadfd287"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // 1. Fetch Branches for Dropdown (Real-time nundi)
+        db.ref('branches').on('value', (snapshot) => {
+            const branchSelect = document.getElementById('branchSelect');
+            branchSelect.innerHTML = '<option value="">-- Select Branch --</option>'; 
+            const data = snapshot.val();
+            
+            if (data) {
+                for (let key in data) {
+                    let bName = data[key].branchName; 
+                    if(bName) {
+                        branchSelect.innerHTML += `<option value="${bName}">${bName}</option>`;
+                    }
+                }
+            } else {
+                branchSelect.innerHTML = '<option value="">No Branches Found! Add in Add Branch page.</option>';
+            }
+        }, (error) => {
+            alert("Firebase Error (Branches): " + error.message);
+        });
+
+        // 2. Fetch Executives for Table
+        db.ref('executives').on('value', (snapshot) => {
+            const tableBody = document.getElementById('execTableBody');
+            tableBody.innerHTML = ''; 
+            const data = snapshot.val();
+            
+            if (data) {
+                let sno = 1;
+                for (let key in data) {
+                    let exec = data[key];
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td>${sno++}</td>
+                            <td>${exec.branch}</td>
+                            <td>${exec.name}</td>
+                            <td>${exec.passcode}</td>
+                            <td class="action-btns">
+                                <button class="btn-edit" onclick="editExec('${key}', '${exec.branch}', '${exec.name}', '${exec.passcode}')"><i class="fas fa-edit"></i> Edit</button>
+                                <button class="btn-delete" onclick="deleteExec('${key}')"><i class="fas fa-trash-alt"></i> Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                }
+            } else {
+                tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:rgba(255,255,255,0.5);">No executives registered yet.</td></tr>`;
+            }
+        }, (error) => {
+            alert("Firebase Error (Executives): " + error.message);
+            document.getElementById('execTableBody').innerHTML = `<tr><td colspan="5">Error Loading Data</td></tr>`;
+        });
+
+        // 3. Add or Update Executive
+        document.getElementById("execForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+            const editId = document.getElementById("editId").value;
+            const branch = document.getElementById("branchSelect").value;
+            const name = document.getElementById("execName").value.trim();
+            const passcode = document.getElementById("execPasscode").value.trim();
+            const submitBtn = document.getElementById("submitBtn");
+
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+            if (editId) {
+                db.ref('executives/' + editId).update({ branch, name, passcode }).then(() => {
+                    document.getElementById("editId").value = "";
+                    submitBtn.innerText = "Register";
+                    document.getElementById("execForm").reset();
+                }).catch((error) => {
+                    alert("Update failed: " + error.message);
+                    submitBtn.innerText = "Register";
+                });
+            } else {
+                db.ref('executives').push({ branch, name, passcode }).then(() => {
+                    submitBtn.innerText = "Register";
+                    document.getElementById("execForm").reset();
+                }).catch((error) => {
+                    alert("Registration failed: " + error.message);
+                    submitBtn.innerText = "Register";
+                });
+            }
+        });
+
+        // 4. Edit & Delete Logic
+        function editExec(key, branch, name, passcode) {
+            document.getElementById("editId").value = key; 
+            setTimeout(() => { document.getElementById("branchSelect").value = branch; }, 100);
+            document.getElementById("execName").value = name;
+            document.getElementById("execPasscode").value = passcode;
+            
+            document.getElementById("submitBtn").innerText = "Update Details";
+            window.scrollTo({ top: 0, behavior: 'smooth' }); 
+        }
+
+        function deleteExec(key) {
+            if(confirm("Are you sure you want to permanently delete this executive?")) {
+                db.ref('executives/' + key).remove().catch((error) => alert("Delete failed: " + error.message));
+            }
+        }
+    </script>
+</body>
+</html>
