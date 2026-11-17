@@ -179,14 +179,21 @@
         const db = getDatabase(app);
         let branchEmployeeMap = {};
 
-        // 1. ADD EXECUTIVE (Uppercase path used)
+        // 1. ADD EXECUTIVE (100% Fixed & Safe)
         window.saveExecutive = function() {
-            const n = document.getElementById('exec-name').value, b = document.getElementById('exec-branch').value, p = document.getElementById('exec-passcode').value;
+            const n = document.getElementById('exec-name').value.trim();
+            const b = document.getElementById('exec-branch').value.trim();
+            const p = document.getElementById('exec-passcode').value.trim();
             if(n && b && p) {
-                push(ref(db, 'Executives'), { name: n, branch: b, passcode: p }).then(() => {
-                    alert("✅ Saved!"); document.getElementById('exec-name').value=''; document.getElementById('exec-passcode').value='';
-                }).catch(e => alert("Error: " + e.message));
-            }
+                push(ref(db, 'Executives'), { name: n, branch: b, passcode: p })
+                .then(() => {
+                    alert("✅ Executive Saved Successfully!"); 
+                    document.getElementById('exec-name').value=''; 
+                    document.getElementById('exec-branch').value=''; 
+                    document.getElementById('exec-passcode').value='';
+                })
+                .catch(e => alert("❌ Firebase Error: " + e.message));
+            } else { alert("Please fill all fields!"); }
         }
 
         onValue(ref(db, 'Executives'), (snap) => {
@@ -204,25 +211,35 @@
             let bOpts = '<option value="">--Select--</option>'; branches.forEach(b => bOpts+=`<option value="${b}">${b}</option>`); bSel.innerHTML=bOpts;
         });
 
-        window.deleteExec = k => { if(confirm("Delete?")) remove(ref(db, `Executives/${k}`)); }
+        window.deleteExec = k => { if(confirm("Delete this Executive?")) remove(ref(db, `Executives/${k}`)); }
 
-        // 2. ASSIGN ACCOUNTS (Uppercase Assignments path)
+        // 2. ASSIGN ACCOUNTS (100% Fixed & Safe multipath saving)
         window.submitAssignments = function() {
             const emp = document.getElementById('assign-emp-select').value, type = document.getElementById('assign-type').value;
             const c = parseInt(type==='REGULAR'?document.getElementById('reg-count').value:document.getElementById('mat-count').value);
             const ins = type==='REGULAR'?document.getElementById('reg-ins').value:document.getElementById('mat-ins').value;
             const yr = type==='MATURED'?document.getElementById('mat-year').value:null;
+            
             if(!emp) return alert("Select Employee");
 
-            const updates = {};
+            let promises = [];
             for(let i=1; i<=c; i++) {
-                const acc = document.getElementById(`dyn-acc-${i}`).value, amt = document.getElementById(`dyn-amt-${i}`).value;
+                const acc = document.getElementById(`dyn-acc-${i}`).value;
+                const amt = document.getElementById(`dyn-amt-${i}`).value;
                 if(acc && amt) {
-                    const newKey = push(ref(db, `Assignments/${emp}`)).key;
-                    updates[`Assignments/${emp}/${newKey}`] = { accountNo: acc, type: type, installments: ins, amount: parseFloat(amt), year: yr };
+                    const newRef = push(ref(db, `Assignments/${emp}`));
+                    promises.push(set(newRef, { 
+                        accountNo: acc, type: type, installments: ins, amount: parseFloat(amt), year: yr 
+                    }));
                 }
             }
-            set(ref(db), updates).then(()=> { alert("✅ Assigned!"); document.getElementById('dynamic-grid').style.display='none'; });
+            
+            if(promises.length === 0) return alert("Please enter at least one account details!");
+
+            Promise.all(promises).then(()=> { 
+                alert("✅ Accounts Assigned Successfully!"); 
+                document.getElementById('dynamic-grid').style.display='none'; 
+            }).catch(e => alert("❌ Error: " + e.message));
         }
 
         // 3. ASSIGN REPORT
@@ -250,7 +267,7 @@
             return ht+`<tr style="font-weight:bold;background:#f1f5f9;"><td>TOTAL</td><td>${tc}</td><td>${(ta/100000).toFixed(2)}</td></tr></tbody></table></div>`;
         }
 
-        // 4. DAILY GM REPORT (Added INS column, Uppercase DailyReports path)
+        // 4. DAILY GM REPORT
         window.fetchDailyReport = function() {
             const emp = document.getElementById('daily-emp-select').value, dt = document.getElementById('daily-date').value;
             if(!emp || !dt) return;
@@ -268,7 +285,6 @@
                         pSnap.forEach(ch => {
                             const d = ch.val(), k = ch.key, t = d.type==='REGULAR'?rC:mC;
                             t.c++; if(d.status==='LOCK')t.l++; else if(d.status==='PCR')t.p++; else if(d.status==='OP'||d.status==="OP'S")t.o++; else if(d.status==='SEEZING')t.s++;
-                            // INS Column Added Here
                             tbody.innerHTML+=`<tr><td><strong>${d.accountNo}</strong></td><td>${d.type}</td><td>${d.ins||'-'}</td><td><select id="s-${k}" class="dynamic-input"><option value="${d.status}">${d.status}</option><option value="LOCK">LOCK</option><option value="PCR">PCR</option><option value="OP">OP</option><option value="SEEZING">SEEZING</option></select></td><td><input type="number" id="a-${k}" class="dynamic-input" value="${d.amount}"></td><td class="no-print"><button class="btn btn-edit" onclick="upd('${dForm}','${emp}','${k}')">Save</button> <button class="btn btn-danger" onclick="del('${dForm}','${emp}','${k}')">X</button></td></tr>`;
                         });
                     }
