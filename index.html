@@ -3,687 +3,656 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TL Admin Dashboard</title>
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>TL Dashboard - Sri Vishnu Priya Finance</title>
     <style>
-        :root { --primary: #0f172a; --accent: #2563eb; --success: #16a34a; --danger: #dc2626; --bg: #f1f5f9; --border: #e2e8f0; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); margin: 0; padding: 0; color: #334155; }
-        .top-nav { background: var(--primary); padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; color: white; }
-        .top-nav h1 { margin: 0; font-size: 18px; }
-        .nav-tabs { display: flex; gap: 10px; overflow-x: auto; }
-        .nav-btn { background: transparent; border: none; color: #94a3b8; padding: 8px 16px; font-size: 14px; font-weight: 600; cursor: pointer; border-radius: 6px; }
-        .nav-btn.active { background: var(--accent); color: white; }
-        .container { max-width: 950px; margin: 30px auto; padding: 0 15px; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .card { background: white; border-radius: 10px; padding: 20px; margin-bottom: 20px; border: 1px solid var(--border); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .card-header { font-size: 16px; font-weight: 700; color: var(--primary); border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 15px; display: flex; justify-content: space-between;}
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
-        .form-group { display: flex; flex-direction: column; gap: 5px; }
-        label { font-size: 13px; font-weight: 600; color: #475569; }
-        input, select { padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; outline: none;}
-        .btn { padding: 8px 15px; font-size: 13px; font-weight: 600; border-radius: 6px; cursor: pointer; border: none; color: white; display: inline-flex; align-items: center; gap: 5px; }
-        .btn-primary { background: var(--accent); } .btn-success { background: var(--success); } .btn-danger { background: var(--danger); }
-        .classic-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: center; }
-        .classic-table th { background: #f8fafc; padding: 12px; color: #0f172a; border: 1px solid var(--border); }
-        .classic-table td { padding: 10px; border: 1px solid var(--border); }
-        .classic-table input { padding: 6px 8px; width: 90%; margin: 0; text-align: center; }
-        
-        .pdf-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 8px; margin-bottom: 20px; }
-        .pdf-card { border: 1px solid var(--border); border-radius: 8px; text-align: center; background: white; }
-        .pdf-card .val { font-size: 18px; font-weight: 700; padding: 8px 0 4px 0; }
-        .pdf-card .lbl { color: white; padding: 4px; font-size: 10px; font-weight: 700; background: #64748b; border-bottom-left-radius: 7px; border-bottom-right-radius: 7px; }
-        
-        /* Modals */
-        #edit-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:999;}
-        .modal-content { background:white; padding:20px; border-radius:8px; width:300px; }
-        
-        #print-section { display: none; }
-        @media print { 
-            @page { size: A4; margin: 15mm; }
-            body * { visibility: hidden; } 
-            #print-section, #print-section * { visibility: visible; } 
-            #print-section { display: block; position: absolute; left: 0; top: 0; width: 100%; background:white; font-family: Arial, sans-serif;} 
+        /* పక్కా ప్రొఫెషనల్ & క్లాస్ CSS డిజైన్ */
+        :root {
+            --primary-color: #1a365d;
+            --secondary-color: #2b6cb0;
+            --accent-color: #ed8936;
+            --bg-color: #f7fafc;
+            --text-color: #2d3748;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 250px;
+            background-color: var(--primary-color);
+            color: white;
+            min-height: 100vh;
+            padding-top: 20px;
+            position: fixed;
+        }
+        .sidebar h2 {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #2b6cb0;
+            padding-bottom: 15px;
+        }
+        .sidebar button {
+            display: block;
+            width: 100%;
+            background: none;
+            border: none;
+            color: white;
+            padding: 15px 20px;
+            text-align: left;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .sidebar button:hover, .sidebar button.active {
+            background-color: var(--secondary-color);
+            border-left: 4px solid var(--accent-color);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+            width: calc(100% - 250px);
+        }
+        .tab-section {
+            display: none;
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .tab-section.active {
+            display: block;
+        }
+        h3.section-title {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        /* Forms & Inputs */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .form-row .form-group {
+            flex: 1;
+        }
+        button.btn-primary {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button.btn-primary:hover {
+            background-color: var(--primary-color);
+        }
+        button.btn-danger {
+            background-color: #e53e3e;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button.btn-print {
+            background-color: #38a169;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            float: right;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table th, table td {
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            text-align: left;
+        }
+        table th {
+            background-color: #edf2f7;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        table tbody tr:nth-child(even) {
+            background-color: #f7fafc;
+        }
+
+        /* Dashboards / Cards */
+        .cards-container {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .card {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-top: 4px solid var(--secondary-color);
+        }
+        .card h4 {
+            margin: 0 0 10px 0;
+            font-size: 0.8rem;
+            color: #718096;
+            text-transform: uppercase;
+        }
+        .card .number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        /* Print Media Query */
+        @media print {
+            .sidebar, .btn-print, .no-print {
+                display: none !important;
+            }
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 0;
+            }
+            .tab-section {
+                box-shadow: none;
+                border: none;
+            }
+            .print-header {
+                text-align: center;
+                border-bottom: 2px solid #000;
+                margin-bottom: 20px;
+                padding-bottom: 10px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="top-nav">
-        <h1><i class="fa-solid fa-shield-halved"></i> TL Admin Dashboard</h1>
-        <div class="nav-tabs">
-            <button class="nav-btn active" onclick="switchTab('tab-manage')">Executives</button>
-            <button class="nav-btn" onclick="switchTab('tab-assign')">Assign Accounts</button>
-            <button class="nav-btn" onclick="switchTab('tab-view')">View/Delete</button>
-            <button class="nav-btn" onclick="switchTab('tab-reports')">Reports</button>
-        </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar no-print">
+        <h2>Sri Vishnu Priya<br>TL Panel</h2>
+        <button class="tab-link active" onclick="openTab(event, 'add-executive')">1. ADD EXECUTIVE'S</button>
+        <button class="tab-link" onclick="openTab(event, 'assign-accounts')">2. ASSIGN ACCOUNTS</button>
+        <button class="tab-link" onclick="openTab(event, 'assign-report')">3. ASSIGN REPORT</button>
+        <button class="tab-link" onclick="openTab(event, 'daily-report')">4. EMPLOYEE DAILY REPORT</button>
+        <button class="tab-link" onclick="openTab(event, 'branch-report')">5. BRANCH ASSIGNMENT REPORT</button>
     </div>
 
-    <!-- 1. MANAGE EXECUTIVES -->
-    <div id="tab-manage" class="container tab-content active">
-        <div class="card">
-            <div class="card-header"><i class="fa-solid fa-user-plus"></i> Add Executive</div>
-            <div class="form-grid">
-                <div class="form-group"><label>Executive Name</label><input type="text" id="exec-name"></div>
-                <div class="form-group"><label>Branch Name</label><input type="text" id="exec-branch"></div>
-                <div class="form-group"><label>Passcode (PIN)</label><input type="number" id="exec-pin"></div>
-            </div>
-            <button class="btn btn-primary" onclick="saveExecutive()">Save Executive</button>
-        </div>
-        <div class="card">
-            <div class="card-header"><i class="fa-solid fa-users"></i> Active Executives</div>
-            <table class="classic-table">
-                <thead><tr><th>Name</th><th>Branch</th><th>PIN</th><th>Action</th></tr></thead>
-                <tbody id="exec-list-ui"><tr><td colspan="4">Loading...</td></tr></tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- 2. ASSIGN ACCOUNTS -->
-    <div id="tab-assign" class="container tab-content">
-        <div class="card">
-            <div class="card-header"><i class="fa-solid fa-plus-square"></i> Assign New Accounts</div>
-            <div class="form-grid">
-                <div class="form-group"><label>Assignment Date</label><input type="date" id="assign-date"></div>
-                <div class="form-group"><label>Select Executive</label><select id="assign-exec-select" class="exec-dropdown"></select></div>
-            </div>
-            <div class="form-grid" style="background:#f8fafc; padding:15px; border-radius:8px; border:1px solid var(--border);">
-                <div class="form-group"><label>Regular Count</label><input type="number" id="reg-count" value="0"></div>
-                <div class="form-group"><label>Matured Count</label><input type="number" id="mat-count" value="0"></div>
-                <div class="form-group"><label>Default Installments</label><input type="text" id="def-inst" value="1"></div>
-                <div class="form-group"><label>Default Year (Matured)</label><input type="text" id="def-mat-year" value="2026"></div>
-            </div>
-            <button class="btn btn-primary" onclick="generateAssignTable()">Generate Fields</button>
-        </div>
+    <!-- Main Content -->
+    <div class="main-content">
         
-        <div id="assign-table-container" class="card" style="display:none;">
-            <div class="card-header">Enter Account Details</div>
-            <table class="classic-table" id="assignment-table">
-                <thead><tr><th>Type</th><th>Account No</th><th>Inst/Matured Year</th><th>Amount (₹)</th></tr></thead>
-                <tbody id="assign-tbody"></tbody>
-            </table>
-            <div style="margin-top: 20px;">
-                <button class="btn btn-success" onclick="saveAssignmentsToFirebase()"><i class="fa-solid fa-check"></i> Submit & Assign Accounts</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 3. VIEW / DELETE ASSIGNMENTS -->
-    <div id="tab-view" class="container tab-content">
-        <div class="card">
-            <div class="card-header">
-                <div><i class="fa-solid fa-list-ol"></i> View & Delete Assigned Accounts</div>
-                <button class="btn btn-primary" onclick="printGroupedAssignments()"><i class="fa-solid fa-print"></i> Print Report</button>
-            </div>
-            <div class="form-grid">
+        <!-- 1. ADD EXECUTIVE'S -->
+        <div id="add-executive" class="tab-section active">
+            <h3 class="section-title">ADD EXECUTIVE'S</h3>
+            <div class="form-row">
                 <div class="form-group">
-                    <label>Select Executive</label>
-                    <select id="view-exec-select" class="exec-dropdown" onchange="fetchAssignedList()"></select>
+                    <label>Employee Name</label>
+                    <input type="text" id="exec-name" placeholder="Enter Name">
+                </div>
+                <div class="form-group">
+                    <label>Branch Name</label>
+                    <input type="text" id="exec-branch" placeholder="Enter Branch">
+                </div>
+                <div class="form-group">
+                    <label>Passcode</label>
+                    <input type="password" id="exec-passcode" placeholder="Enter Passcode">
                 </div>
             </div>
-            
-            <table class="classic-table" style="margin-top:15px;">
-                <thead><tr><th>Type</th><th>Account No</th><th>Inst / Year</th><th>Amount (₹)</th><th>Action</th></tr></thead>
-                <tbody id="view-tbody">
-                    <tr><td colspan="5" style="color:#64748b;">Select an executive to view accounts.</td></tr>
+            <button class="btn-primary" onclick="saveExecutive()">SAVE EXECUTIVE</button>
+
+            <h4 style="margin-top: 30px;">Saved Executives</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Employee Name</th>
+                        <th>Branch</th>
+                        <th>Passcode</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="exec-list-table">
+                    <!-- Data will populate here -->
                 </tbody>
             </table>
         </div>
-    </div>
 
-    <!-- 4. PERFORMANCE REPORTS -->
-    <div id="tab-reports" class="container tab-content">
-        <div class="card">
-            <div class="card-header">
-                <div><i class="fa-solid fa-filter"></i> Report Filter</div>
-                <button class="btn btn-primary" id="print-report-btn" style="display:none;" onclick="printPerformanceReport()"><i class="fa-solid fa-print"></i> Print Report</button>
-            </div>
-            <div class="form-grid">
-                <div class="form-group"><label>Select Executive</label><select id="report-exec-select" class="exec-dropdown"></select></div>
-                <div class="form-group"><label>From Date</label><input type="date" id="from-date"></div>
-                <div class="form-group"><label>To Date</label><input type="date" id="to-date"></div>
-            </div>
-            <button class="btn btn-primary" onclick="generateReport()"><i class="fa-solid fa-search"></i> Search Performance</button>
-        </div>
-
-        <div id="report-board" class="card" style="display:none;">
-            <div style="display:flex; justify-content:space-between; font-weight:600; color:#475569; margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:10px;">
-                <div>Executive: <span id="r-name" style="color:var(--primary);"></span></div>
-                <div>Branch: <span id="r-branch" style="color:var(--primary);"></span></div>
-                <div>Dates: <span id="r-dates"></span></div>
-            </div>
-
-            <!-- REGULAR CARDS -->
-            <h4 style="color:var(--accent); margin: 0 0 10px 0; font-size: 14px;"><i class="fa-solid fa-chart-simple"></i> REGULAR SUMMARY</h4>
-            <div class="pdf-cards">
-                <div class="pdf-card"><div class="val" id="rr-assigned" style="color:#2563eb;">0</div><div class="lbl" style="background:#2563eb;">Assigned</div></div>
-                <div class="pdf-card"><div class="val" id="rr-completed" style="color:#16a34a;">0</div><div class="lbl" style="background:#16a34a;">Completed</div></div>
-                <div class="pdf-card"><div class="val" id="rr-pending" style="color:#dc2626;">0</div><div class="lbl" style="background:#dc2626;">Balance</div></div>
-                <div class="pdf-card"><div class="val" id="rr-lock">0</div><div class="lbl">Lock</div></div>
-                <div class="pdf-card"><div class="val" id="rr-pcr">0</div><div class="lbl">PCR</div></div>
-                <div class="pdf-card"><div class="val" id="rr-ops">0</div><div class="lbl">OP'S</div></div>
-                <div class="pdf-card"><div class="val" id="rr-seizing">0</div><div class="lbl">Seizing</div></div>
+        <!-- 2. ASSIGN ACCOUNTS -->
+        <div id="assign-accounts" class="tab-section">
+            <h3 class="section-title">ASSIGN ACCOUNTS</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="assign-date">
+                </div>
+                <div class="form-group">
+                    <label>Select Employee</label>
+                    <select id="assign-employee">
+                        <option value="">--Select--</option>
+                        <!-- Options generated dynamically -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Account Type</label>
+                    <select id="assign-type" onchange="toggleAccountType()">
+                        <option value="REGULAR">REGULAR</option>
+                        <option value="MATURED">MATURED</option>
+                    </select>
+                </div>
             </div>
 
-            <!-- MATURED CARDS -->
-            <h4 style="color:var(--danger); margin: 20px 0 10px 0; font-size: 14px;"><i class="fa-solid fa-chart-pie"></i> MATURED SUMMARY</h4>
-            <div class="pdf-cards">
-                <div class="pdf-card"><div class="val" id="rm-assigned" style="color:#2563eb;">0</div><div class="lbl" style="background:#2563eb;">Assigned</div></div>
-                <div class="pdf-card"><div class="val" id="rm-completed" style="color:#16a34a;">0</div><div class="lbl" style="background:#16a34a;">Completed</div></div>
-                <div class="pdf-card"><div class="val" id="rm-pending" style="color:#dc2626;">0</div><div class="lbl" style="background:#dc2626;">Balance</div></div>
-                <div class="pdf-card"><div class="val" id="rm-lock">0</div><div class="lbl">Lock</div></div>
-                <div class="pdf-card"><div class="val" id="rm-pcr">0</div><div class="lbl">PCR</div></div>
-                <div class="pdf-card"><div class="val" id="rm-ops">0</div><div class="lbl">OP'S</div></div>
-                <div class="pdf-card"><div class="val" id="rm-seizing">0</div><div class="lbl">Seizing</div></div>
+            <!-- Regular Options -->
+            <div class="form-row" id="regular-options">
+                <div class="form-group">
+                    <label>Installments (INS)</label>
+                    <input type="number" id="reg-ins" placeholder="Ex: 5">
+                </div>
+                <div class="form-group">
+                    <label>Count (No. of Accounts)</label>
+                    <input type="number" id="reg-count" placeholder="Ex: 10">
+                </div>
             </div>
 
-            <table class="classic-table" style="margin-top:20px;">
-                <thead><tr><th>Type & Inst/Year</th><th>Account No & Date</th><th>Status</th><th>Amount (₹)</th><th>Actions</th></tr></thead>
-                <tbody id="r-table-body"></tbody>
-            </table>
-        </div>
-    </div>
-    
-    <!-- Edit Modal -->
-    <div id="edit-modal">
-        <div class="modal-content">
-            <h3 style="margin-top:0; color:var(--primary);">Edit Report Entry</h3>
-            
-            <input type="hidden" id="edit-date">
-            <input type="hidden" id="edit-exec">
-            <input type="hidden" id="edit-accNo">
-            <input type="hidden" id="edit-type">
-            <input type="hidden" id="edit-inst">
+            <!-- Matured Options -->
+            <div class="form-row" id="matured-options" style="display: none;">
+                <div class="form-group">
+                    <label>Matured Year</label>
+                    <input type="number" id="mat-year" placeholder="Ex: 2026">
+                </div>
+                <div class="form-group">
+                    <label>Installments (INS)</label>
+                    <input type="number" id="mat-ins" placeholder="Ex: 5">
+                </div>
+                <div class="form-group">
+                    <label>Count (No. of Accounts)</label>
+                    <input type="number" id="mat-count" placeholder="Ex: 10">
+                </div>
+            </div>
 
-            <div class="form-group">
-                <label>Status</label>
-                <select id="edit-status">
-                    <option value="Lock">Lock</option><option value="PCR">PCR</option>
-                    <option value="QR">QR</option><option value="OP'S">OP'S</option>
-                    <option value="Office / Others">Office / Others</option>
-                    <option value="Seizing">Seizing</option><option value="Pending">Pending (Revert)</option>
-                </select>
-            </div>
-            <div class="form-group" style="margin-top:10px;">
-                <label>Amount (₹)</label>
-                <input type="number" id="edit-amt">
-            </div>
-            <div style="display:flex; gap:10px; margin-top:20px;">
-                <button class="btn btn-success" style="flex:1;" onclick="updateReportEntry()">Update</button>
-                <button class="btn btn-danger" style="flex:1;" onclick="document.getElementById('edit-modal').style.display='none'">Cancel</button>
+            <button class="btn-primary" onclick="generateRows()">GENERATE COLUMNS</button>
+
+            <!-- Dynamic Rows Form -->
+            <div id="dynamic-rows-container" style="margin-top: 30px; display: none;">
+                <h4>Enter Account Details</h4>
+                <table id="dynamic-table">
+                    <thead>
+                        <tr id="dynamic-thead-tr">
+                            <!-- Headers generated via JS -->
+                        </tr>
+                    </thead>
+                    <tbody id="dynamic-tbody">
+                        <!-- Rows generated via JS -->
+                    </tbody>
+                </table>
+                <br>
+                <button class="btn-primary" onclick="submitAssignedAccounts()">FINAL SUBMIT</button>
             </div>
         </div>
-    </div>
 
-    <!-- HIDDEN PRINT AREA (A4 Formatting) -->
-    <div id="print-section"></div>
-
-    <script>
-        const firebaseConfig = { apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI", databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com", projectId: "sri-vishnu-priya-finance-c591f", storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app", appId: "1:184676228358:android:7ef47b55ab678bb0dfd287" };
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        let execsData = {}; 
-        let currentViewRef = null; // Fix for Multiple Listeners Bug
-
-        // Amount Formatter (Converts >= 1,00,000 to Lakhs like 2.10 L)
-        function formatAmountShort(num) {
-            if(!num) return "₹ 0";
-            if(num >= 100000) { return "₹ " + (num / 100000).toFixed(2) + " L"; }
-            return "₹ " + num.toLocaleString('en-IN');
-        }
-
-        document.getElementById('assign-date').valueAsDate = new Date();
-        document.getElementById('from-date').valueAsDate = new Date();
-        document.getElementById('to-date').valueAsDate = new Date();
-
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
-            if(tabId === 'tab-view') fetchAssignedList();
-        }
-
-        // 1. MANAGE EXECUTIVES
-        function loadExecutives() {
-            db.ref('Executives').on('value', snap => {
-                let tbody = document.getElementById('exec-list-ui');
-                let selects = document.querySelectorAll('.exec-dropdown');
-                tbody.innerHTML = ''; execsData = {};
-                let optionsHTML = '<option value="">-- Select Executive --</option>';
-                if(snap.exists()) {
-                    snap.forEach(child => {
-                        let name = child.key; let data = child.val();
-                        execsData[name] = data; optionsHTML += `<option value="${name}">${name}</option>`;
-                        tbody.innerHTML += `<tr>
-                            <td style="font-weight:bold;">${name}</td><td>${data.branch || '-'}</td><td>${data.pin}</td>
-                            <td><button onclick="deleteExec('${name}')" class="btn btn-danger" style="padding:4px 8px; font-size:11px;">Delete</button></td>
-                        </tr>`;
-                    });
-                } else { tbody.innerHTML = '<tr><td colspan="4">No Executives Found.</td></tr>'; }
-                selects.forEach(sel => { let current = sel.value; sel.innerHTML = optionsHTML; if(current) sel.value = current; });
-            });
-        }
-        function saveExecutive() {
-            let rawName = document.getElementById('exec-name').value.trim().toUpperCase();
-            let branch = document.getElementById('exec-branch').value.trim().toUpperCase();
-            let pin = document.getElementById('exec-pin').value.trim();
-            if(!rawName || !pin || !branch) return alert("Enter Name, Branch and Passcode!");
-            let safeName = rawName.replace(/[.#$\[\]]/g, '').replace(/\s+/g, ' ').trim();
-            db.ref('Executives/' + safeName).set({ pin: pin, branch: branch }).then(() => {
-                alert(`✅ Executive Saved!`);
-                document.getElementById('exec-name').value = ''; document.getElementById('exec-branch').value = ''; document.getElementById('exec-pin').value = '';
-            });
-        }
-        function deleteExec(name) { if(confirm(`Delete ${name}?`)) db.ref('Executives/' + name).remove(); }
-        loadExecutives(); 
-
-        // 2. ASSIGN ACCOUNTS
-        function generateAssignTable() {
-            let reg = parseInt(document.getElementById('reg-count').value) || 0;
-            let mat = parseInt(document.getElementById('mat-count').value) || 0;
-            let defInst = document.getElementById('def-inst').value || "";
-            let defMat = document.getElementById('def-mat-year').value || "";
-            let tbody = document.getElementById('assign-tbody');
-            tbody.innerHTML = '';
-            if(reg === 0 && mat === 0) return alert("Enter Accounts count!");
-
-            for(let i=0; i<reg; i++) {
-                tbody.innerHTML += `<tr>
-                    <td style="color:var(--accent); font-weight:bold;">Regular<input type="hidden" class="a-type" value="Regular"></td>
-                    <td><input type="text" class="a-acc" placeholder="Acc No"></td>
-                    <td><input type="text" class="a-inst" value="${defInst}" placeholder="Inst"></td>
-                    <td><input type="number" class="a-amt" placeholder="₹"></td>
-                </tr>`;
-            }
-            for(let i=0; i<mat; i++) {
-                tbody.innerHTML += `<tr>
-                    <td style="color:var(--danger); font-weight:bold;">Matured<input type="hidden" class="a-type" value="Matured"></td>
-                    <td><input type="text" class="a-acc" placeholder="Acc No"></td>
-                    <td><input type="text" class="a-inst" value="${defMat}" placeholder="Year"></td>
-                    <td><input type="number" class="a-amt" placeholder="₹"></td>
-                </tr>`;
-            }
-            document.getElementById('assign-table-container').style.display = 'block';
-        }
-
-        function saveAssignmentsToFirebase() {
-            let exec = document.getElementById('assign-exec-select').value;
-            if(!exec) return alert("Select Executive!");
-            let updates = {}; let count = 0;
-            document.querySelectorAll('#assign-tbody tr').forEach(row => {
-                let acc = row.querySelector('.a-acc').value.trim();
-                if(acc) {
-                    let safeAcc = acc.replace(/[.#$\[\]]/g, '');
-                    updates[safeAcc] = {
-                        type: row.querySelector('.a-type').value, accNo: safeAcc,
-                        installments: row.querySelector('.a-inst').value || "-", targetAmt: row.querySelector('.a-amt').value || "0"
-                    };
-                    count++;
-                }
-            });
-            if(count === 0) return alert("Fill at least one Account No!");
+        <!-- 3. ASSIGN REPORT -->
+        <div id="assign-report" class="tab-section">
+            <button class="btn-print" onclick="window.print()">🖨️ PRINT REPORT</button>
+            <h3 class="section-title no-print">ASSIGN REPORT</h3>
             
-            db.ref(`Assignments/${exec}`).update(updates).then(() => {
-                alert(`✅ Successfully Assigned ${count} new accounts to ${exec}!`);
-                document.getElementById('assign-tbody').innerHTML = '';
-                document.getElementById('assign-table-container').style.display = 'none';
-                document.getElementById('reg-count').value = '0'; document.getElementById('mat-count').value = '0';
-            });
-        }
+            <div class="form-row no-print">
+                <div class="form-group">
+                    <label>Select Employee</label>
+                    <select id="report-employee">
+                        <option>B. RAJESH</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <button class="btn-primary">SEARCH</button>
+                </div>
+            </div>
 
-        // 3. VIEW, DELETE & PRINT ASSIGNMENTS
-        let activePrintData = [];
-        
-        function fetchAssignedList() {
-            let exec = document.getElementById('view-exec-select').value;
-            let tbody = document.getElementById('view-tbody');
-            
-            // Bug Fix: Remove old listener to avoid duplicate data & memory leaks
-            if(currentViewRef) currentViewRef.off('value');
-
-            if(!exec) { tbody.innerHTML = '<tr><td colspan="5" style="color:#64748b;">Select an executive.</td></tr>'; return; }
-            
-            currentViewRef = db.ref(`Assignments/${exec}`);
-            currentViewRef.on('value', snap => {
-                tbody.innerHTML = ''; activePrintData = [];
-                if(snap.exists()) {
-                    let dataArr = [];
-                    snap.forEach(child => dataArr.push(child.val()));
-                    
-                    dataArr.sort((a,b) => {
-                        if(a.type !== b.type) return b.type.localeCompare(a.type); 
-                        return String(a.installments).localeCompare(String(b.installments));
-                    });
-                    activePrintData = dataArr; 
-                    
-                    dataArr.forEach(data => {
-                        let color = data.type === 'Regular' ? 'color:var(--accent)' : 'color:var(--danger)';
-                        tbody.innerHTML += `<tr>
-                            <td style="font-weight:bold; ${color}">${data.type}</td>
-                            <td style="font-weight:bold;">${data.accNo}</td>
-                            <td>${data.installments}</td>
-                            <td>${formatAmountShort(Number(data.targetAmt))}</td>
-                            <td><button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="deleteSingleAccount('${exec}', '${data.accNo}')">Delete</button></td>
-                        </tr>`;
-                    });
-                } else { tbody.innerHTML = '<tr><td colspan="5" style="color:red; font-weight:bold;">No Active Assignments found.</td></tr>'; }
-            });
-        }
-        function deleteSingleAccount(exec, accKey) { if(confirm(`Delete account ${accKey}?`)) db.ref(`Assignments/${exec}/${accKey}`).remove(); }
-
-        function printGroupedAssignments() {
-            let exec = document.getElementById('view-exec-select').value;
-            if(!exec) return alert("Select Executive to Print!");
-            if(activePrintData.length === 0) return alert("No accounts to print!");
-            
-            let regGroups = {}; let matGroups = {};
-            let rCount = 0, rAmt = 0, mCount = 0, mAmt = 0;
-
-            activePrintData.forEach(data => {
-                let inst = data.installments || "N/A"; let amt = Number(data.targetAmt) || 0;
-                if(data.type === 'Regular') {
-                    rCount++; rAmt += amt;
-                    if(!regGroups[inst]) regGroups[inst] = { count: 0, amt: 0 };
-                    regGroups[inst].count++; regGroups[inst].amt += amt;
-                } else {
-                    mCount++; mAmt += amt;
-                    if(!matGroups[inst]) matGroups[inst] = { count: 0, amt: 0 };
-                    matGroups[inst].count++; matGroups[inst].amt += amt;
-                }
-            });
-
-            let branch = execsData[exec] ? execsData[exec].branch : "N/A";
-            let date = new Date().toLocaleDateString('en-IN'); 
-
-            let html = `
-                <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:14px; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px;">
-                    <span style="flex:1;">Name: ${exec}<br>Branch: ${branch}</span>
-                    <span style="flex:1; text-align:center; font-size:18px; text-transform:uppercase;">ASSIGNMENT REPORT</span>
-                    <span style="flex:1; text-align:right;">Date: ${date}</span>
-                </div>`;
-            
-            // 1. SUMMARY TABLES
-            if(rCount > 0) {
-                html += `
-                    <h4 style="margin:10px 0 5px 0; text-transform:uppercase; color:#003366;">REGULAR SUMMARY</h4>
-                    <table style="width:100%; border-collapse:collapse; text-align:center; font-size:14px; margin-bottom:20px;">
-                        <tr style="background:#f0f0f0;">
-                            <th style="border:1px solid #000; padding:8px;">INSTALLMENT</th>
-                            <th style="border:1px solid #000; padding:8px;">NO. OF ACCOUNTS</th>
-                            <th style="border:1px solid #000; padding:8px;">AMOUNT</th>
-                        </tr>`;
-                Object.keys(regGroups).sort().forEach(inst => {
-                    html += `<tr>
-                        <td style="border:1px solid #000; padding:8px; font-weight:bold;">${inst} INS</td>
-                        <td style="border:1px solid #000; padding:8px;">${regGroups[inst].count}</td>
-                        <td style="border:1px solid #000; padding:8px;">${formatAmountShort(regGroups[inst].amt)}</td>
-                    </tr>`;
-                });
-                html += `<tr style="background:#e9ecef; font-weight:bold;"><td style="border:1px solid #000; padding:8px;">TOTAL</td><td style="border:1px solid #000; padding:8px;">${rCount}</td><td style="border:1px solid #000; padding:8px;">${formatAmountShort(rAmt)}</td></tr></table>`;
-            }
-
-            if(mCount > 0) {
-                html += `
-                    <h4 style="margin:10px 0 5px 0; text-transform:uppercase; color:#dc2626;">MATURED SUMMARY</h4>
-                    <table style="width:100%; border-collapse:collapse; text-align:center; font-size:14px; margin-bottom:20px;">
-                        <tr style="background:#f0f0f0;">
-                            <th style="border:1px solid #000; padding:8px;">YEAR OF MATURED</th>
-                            <th style="border:1px solid #000; padding:8px;">NO. OF ACCOUNTS</th>
-                            <th style="border:1px solid #000; padding:8px;">AMOUNT</th>
-                        </tr>`;
-                Object.keys(matGroups).sort().forEach(year => {
-                    html += `<tr>
-                        <td style="border:1px solid #000; padding:8px; font-weight:bold;">${year}</td>
-                        <td style="border:1px solid #000; padding:8px;">${matGroups[year].count}</td>
-                        <td style="border:1px solid #000; padding:8px;">${formatAmountShort(matGroups[year].amt)}</td>
-                    </tr>`;
-                });
-                html += `<tr style="background:#e9ecef; font-weight:bold;"><td style="border:1px solid #000; padding:8px;">TOTAL</td><td style="border:1px solid #000; padding:8px;">${mCount}</td><td style="border:1px solid #000; padding:8px;">${formatAmountShort(mAmt)}</td></tr></table>`;
-            }
-
-            html += `<h3 style="text-align:right; font-size:15px; margin-bottom:30px;">Grand Total Accounts: ${rCount + mCount} | Grand Total Amount: ${formatAmountShort(rAmt + mAmt)}</h3>`;
-
-            // 2. DETAILED ASSIGNED ACCOUNTS LIST
-            html += `<div style="text-align:center; margin-bottom:10px; font-size:16px; font-weight:bold; border-top:1px dashed #000; padding-top:15px;">DETAILED ACCOUNTS LIST</div>`;
-            
-            if(rCount > 0) {
-                html += `<h4 style="margin:5px 0; color:#003366;">REGULAR ACCOUNTS</h4>
-                <table style="width:100%; border-collapse:collapse; text-align:center; font-size:13px; margin-bottom:20px;">
-                    <tr style="background:#f0f0f0;">
-                        <th style="border:1px solid #000; padding:5px;">S.No</th>
-                        <th style="border:1px solid #000; padding:5px;">Account No</th>
-                        <th style="border:1px solid #000; padding:5px;">Installment</th>
-                        <th style="border:1px solid #000; padding:5px;">Target Amt</th>
-                    </tr>`;
-                let sno = 1;
-                activePrintData.filter(d => d.type === 'Regular').forEach(d => {
-                    html += `<tr>
-                        <td style="border:1px solid #000; padding:5px;">${sno++}</td>
-                        <td style="border:1px solid #000; padding:5px; font-weight:bold;">${d.accNo}</td>
-                        <td style="border:1px solid #000; padding:5px;">${d.installments}</td>
-                        <td style="border:1px solid #000; padding:5px;">${formatAmountShort(Number(d.targetAmt))}</td>
-                    </tr>`;
-                });
-                html += `</table>`;
-            }
-
-            if(mCount > 0) {
-                html += `<h4 style="margin:5px 0; color:#dc2626;">MATURED ACCOUNTS</h4>
-                <table style="width:100%; border-collapse:collapse; text-align:center; font-size:13px; margin-bottom:20px;">
-                    <tr style="background:#f0f0f0;">
-                        <th style="border:1px solid #000; padding:5px;">S.No</th>
-                        <th style="border:1px solid #000; padding:5px;">Account No</th>
-                        <th style="border:1px solid #000; padding:5px;">Year</th>
-                        <th style="border:1px solid #000; padding:5px;">Target Amt</th>
-                    </tr>`;
-                let sno = 1;
-                activePrintData.filter(d => d.type === 'Matured').forEach(d => {
-                    html += `<tr>
-                        <td style="border:1px solid #000; padding:5px;">${sno++}</td>
-                        <td style="border:1px solid #000; padding:5px; font-weight:bold;">${d.accNo}</td>
-                        <td style="border:1px solid #000; padding:5px;">${d.installments}</td>
-                        <td style="border:1px solid #000; padding:5px;">${formatAmountShort(Number(d.targetAmt))}</td>
-                    </tr>`;
-                });
-                html += `</table>`;
-            }
-
-            document.getElementById('print-section').innerHTML = html; window.print();
-        }
-
-        // 4. PERFORMANCE REPORTS & EDIT/DELETE
-        async function generateReport() {
-            let exec = document.getElementById('report-exec-select').value;
-            let fromD = document.getElementById('from-date').value;
-            let toD = document.getElementById('to-date').value;
-            if(!exec || !fromD || !toD) return alert("Select Executive and Date Range!");
-            let branch = execsData[exec] ? execsData[exec].branch : "N/A";
-
-            try {
-                let assignSnap = await db.ref(`Assignments/${exec}`).once('value');
-                // Bug Fix: Query specific date range instead of downloading entire database
-                let reportSnap = await db.ref('DailyReports').orderByKey().startAt(fromD).endAt(toD).once('value');
-                
-                // Separate Counters for Regular and Matured
-                let regAssigned = 0, matAssigned = 0;
-                let rComp = 0, rLock = 0, rPcr = 0, rOps = 0, rSeiz = 0;
-                let mComp = 0, mLock = 0, mPcr = 0, mOps = 0, mSeiz = 0;
-                let grandAmt = 0;
-                let regRows = "", matRows = "";
-                
-                if(assignSnap.exists()) {
-                    assignSnap.forEach(child => {
-                        if(child.val().type === 'Regular') regAssigned++;
-                        else if(child.val().type === 'Matured') matAssigned++;
-                    });
-                }
-
-                if(reportSnap.exists()) {
-                    reportSnap.forEach(dateNode => {
-                        let rDate = dateNode.key;
-                        if(dateNode.hasChild(exec)) {
-                            let data = dateNode.child(exec).val();
-                            if(data.details) {
-                                Object.keys(data.details).forEach(nodeKey => {
-                                    let item = data.details[nodeKey];
-                                    if(!item || !item.accNo) return; 
-
-                                    if(item.status !== "Pending") {
-                                        let amtNum = parseFloat(item.amt) || 0; 
-                                        grandAmt += amtNum;
-                                        let displayInst = item.inst ? `(${item.inst})` : "";
-                                        
-                                        let actionBtns = `
-                                            <button class="btn btn-primary" style="padding:4px 8px; font-size:11px;" onclick="openEditModal('${rDate}', '${exec}', '${nodeKey}', '${item.accNo}', '${item.type}', '${item.inst}', '${item.status}', '${item.amt}')">Edit</button>
-                                            <button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="deleteReportEntry('${rDate}', '${exec}', '${nodeKey}')">Del</button>
-                                        `;
-
-                                        let row = `<tr>
-                                            <td style="font-weight:bold; ${item.type==='Regular'?'color:var(--accent)':'color:var(--danger)'}">${item.type}<br><small style="color:#64748b;">${displayInst}</small></td>
-                                            <td><b>${item.accNo}</b><br><span style="font-size:10px; color:#94a3b8;">${rDate.split('-').reverse().join('-')}</span></td>
-                                            <td style="font-weight:600;">${item.status}</td>
-                                            <td style="font-weight:600;">${item.status === 'Seizing' ? '-' : formatAmountShort(amtNum)}</td>
-                                            <td class="no-print">${actionBtns}</td>
-                                        </tr>`;
-                                        
-                                        if(item.type === 'Regular') {
-                                            rComp++;
-                                            if(item.status === 'Lock') rLock++; if(item.status === 'PCR') rPcr++; 
-                                            if(item.status === "OP'S") rOps++; if(item.status === 'Seizing') rSeiz++;
-                                            regRows += row;
-                                        } else {
-                                            mComp++;
-                                            if(item.status === 'Lock') mLock++; if(item.status === 'PCR') mPcr++; 
-                                            if(item.status === "OP'S") mOps++; if(item.status === 'Seizing') mSeiz++;
-                                            matRows += row;
-                                        }
-                                    }
-                                });
-                            }
-                        }
-                    });
-                }
-
-                document.getElementById('r-name').innerText = exec; document.getElementById('r-branch').innerText = branch;
-                document.getElementById('r-dates').innerText = `${fromD.split('-').reverse().join('-')} to ${toD.split('-').reverse().join('-')}`;
-                
-                // Update REGULAR Cards
-                document.getElementById('rr-assigned').innerText = regAssigned; document.getElementById('rr-completed').innerText = rComp;
-                document.getElementById('rr-pending').innerText = regAssigned - rComp;
-                document.getElementById('rr-lock').innerText = rLock; document.getElementById('rr-pcr').innerText = rPcr; 
-                document.getElementById('rr-ops').innerText = rOps; document.getElementById('rr-seizing').innerText = rSeiz;
-
-                // Update MATURED Cards
-                document.getElementById('rm-assigned').innerText = matAssigned; document.getElementById('rm-completed').innerText = mComp;
-                document.getElementById('rm-pending').innerText = matAssigned - mComp;
-                document.getElementById('rm-lock').innerText = mLock; document.getElementById('rm-pcr').innerText = mPcr; 
-                document.getElementById('rm-ops').innerText = mOps; document.getElementById('rm-seizing').innerText = mSeiz;
-
-                let tableHTML = "";
-                if(regRows) tableHTML += `<tr><td colspan="5" style="text-align:left; font-weight:700; color:var(--accent); background:#eff6ff;">REGULAR ACCOUNTS</td></tr>` + regRows;
-                if(matRows) tableHTML += `<tr><td colspan="5" style="text-align:left; font-weight:700; color:var(--danger); background:#fef2f2;">MATURED ACCOUNTS</td></tr>` + matRows;
-                tableHTML += `<tr style="background:var(--primary); color:white; font-weight:700;"><td colspan="3" style="text-align:right;">Total Collected Amount:</td><td colspan="2">${formatAmountShort(grandAmt)}</td></tr>`;
-
-                document.getElementById('r-table-body').innerHTML = tableHTML;
-                document.getElementById('report-board').style.display = 'block';
-                document.getElementById('print-report-btn').style.display = 'inline-flex';
-                
-            } catch(e) { alert("Error: " + e.message); }
-        }
-
-        function openEditModal(date, exec, key, accNo, type, inst, status, amt) {
-            document.getElementById('edit-date').value = date;
-            document.getElementById('edit-exec').value = exec;
-            document.getElementById('edit-accNo').value = key; 
-            document.getElementById('edit-type').value = type;
-            document.getElementById('edit-inst').value = inst;
-            document.getElementById('edit-status').value = status;
-            document.getElementById('edit-amt').value = amt;
-            document.getElementById('edit-modal').style.display = 'flex';
-        }
-
-        function updateReportEntry() {
-            let date = document.getElementById('edit-date').value; let exec = document.getElementById('edit-exec').value;
-            let key = document.getElementById('edit-accNo').value; 
-            let type = document.getElementById('edit-type').value; let inst = document.getElementById('edit-inst').value;
-            let nStatus = document.getElementById('edit-status').value; let nAmt = document.getElementById('edit-amt').value;
-            
-            if(nStatus === "Pending") {
-                db.ref(`DailyReports/${date}/${exec}/details/${key}`).remove().then(() => {
-                    alert("Reverted to Pending!"); document.getElementById('edit-modal').style.display = 'none'; generateReport();
-                });
-            } else {
-                db.ref(`DailyReports/${date}/${exec}/details/${key}`).update({
-                    status: nStatus, amt: Number(nAmt)
-                }).then(() => {
-                    alert("Updated Successfully!"); document.getElementById('edit-modal').style.display = 'none'; generateReport();
-                });
-            }
-        }
-
-        function deleteReportEntry(date, exec, key) {
-            if(confirm("Delete this entry entirely from the report?")) {
-                db.ref(`DailyReports/${date}/${exec}/details/${key}`).remove().then(() => {
-                    alert("Deleted Successfully!"); generateReport();
-                });
-            }
-        }
-
-        function printPerformanceReport() {
-            let exec = document.getElementById('r-name').innerText;
-            let branch = document.getElementById('r-branch').innerText;
-            let dates = document.getElementById('r-dates').innerText;
-            
-            document.getElementById('print-section').innerHTML = ""; 
-            
-            let html = `
-                <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:14px; margin-bottom: 10px; border-bottom: 2px solid #000; padding-bottom: 10px;">
-                    <span style="flex:1;">Name: ${exec}<br>Branch: ${branch}</span>
-                    <span style="flex:1; text-align:center; font-size:18px; text-transform:uppercase;">PERFORMANCE REPORT</span>
-                    <span style="flex:1; text-align:right;">Dates: <br>${dates}</span>
+            <!-- Print Layout Layout -->
+            <div id="print-assign-area">
+                <div class="print-header">
+                    <h2>ASSIGN ACCOUNTS</h2>
+                    <p><strong>Employee:</strong> B. RAJESH &nbsp;&nbsp;|&nbsp;&nbsp; <strong>Branch:</strong> TENALI &nbsp;&nbsp;|&nbsp;&nbsp; <strong>Camp:</strong> REGULAR</p>
                 </div>
                 
-                <h4 style="margin:5px 0;">REGULAR SUMMARY</h4>
-                <table style="width:100%; text-align:center; font-size:13px; margin-bottom:15px; border-collapse:collapse;">
-                    <tr style="background:#f0f0f0;"><th style="border:1px solid #000; padding:4px;">Assigned</th><th style="border:1px solid #000; padding:4px;">Completed</th><th style="border:1px solid #000; padding:4px;">Balance</th><th style="border:1px solid #000; padding:4px;">Lock</th><th style="border:1px solid #000; padding:4px;">PCR</th><th style="border:1px solid #000; padding:4px;">OP'S</th><th style="border:1px solid #000; padding:4px;">Seizing</th></tr>
-                    <tr style="font-weight:bold;">
-                        <td style="border:1px solid #000; padding:4px;">${document.getElementById('rr-assigned').innerText}</td><td style="border:1px solid #000; padding:4px;">${document.getElementById('rr-completed').innerText}</td><td style="border:1px solid #000; padding:4px; color:red;">${document.getElementById('rr-pending').innerText}</td><td style="border:1px solid #000; padding:4px;">${document.getElementById('rr-lock').innerText}</td><td style="border:1px solid #000; padding:4px;">${document.getElementById('rr-pcr').innerText}</td><td style="border:1px solid #000; padding:4px;">${document.getElementById('rr-ops').innerText}</td><td style="border:1px solid #000; padding:4px;">${document.getElementById('rr-seizing').innerText}</td>
-                    </tr>
+                <h4 style="text-align:center;">REGULAR SUMMARY</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>INSTALLMENTS</th>
+                            <th>NO. OF ACCOUNTS</th>
+                            <th>AMOUNT (In Lakhs)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>5 INS</td><td>7</td><td>1.20</td></tr>
+                        <tr><td>6 INS</td><td>6</td><td>1.44</td></tr>
+                        <tr style="font-weight: bold; background: #e2e8f0;">
+                            <td>TOTAL ACCOUNTS & AMOUNT :-</td>
+                            <td>13</td>
+                            <td>2.64</td>
+                        </tr>
+                    </tbody>
                 </table>
+            </div>
+        </div>
 
-                <h4 style="margin:5px 0;">MATURED SUMMARY</h4>
-                <table style="width:100%; text-align:center; font-size:13px; margin-bottom:20px; border-collapse:collapse;">
-                    <tr style="background:#f0f0f0;"><th style="border:1px solid #000; padding:4px;">Assigned</th><th style="border:1px solid #000; padding:4px;">Completed</th><th style="border:1px solid #000; padding:4px;">Balance</th><th style="border:1px solid #000; padding:4px;">Lock</th><th style="border:1px solid #000; padding:4px;">PCR</th><th style="border:1px solid #000; padding:4px;">OP'S</th><th style="border:1px solid #000; padding:4px;">Seizing</th></tr>
-                    <tr style="font-weight:bold;">
-                        <td style="border:1px solid #000; padding:4px;">${document.getElementById('rm-assigned').innerText}</td><td style="border:1px solid #000; padding:4px;">${document.getElementById('rm-completed').innerText}</td><td style="border:1px solid #000; padding:4px; color:red;">${document.getElementById('rm-pending').innerText}</td><td style="border:1px solid #000; padding:4px;">${document.getElementById('rm-lock').innerText}</td><td style="border:1px solid #000; padding:4px;">${document.getElementById('rm-pcr').innerText}</td><td style="border:1px solid #000; padding:4px;">${document.getElementById('rm-ops').innerText}</td><td style="border:1px solid #000; padding:4px;">${document.getElementById('rm-seizing').innerText}</td>
-                    </tr>
-                </table>
-
-                <table style="width:100%; border-collapse:collapse; text-align:center; font-size:13px;">
-                    <thead><tr style="background:#f0f0f0;"><th style="border:1px solid #000; padding:8px;">Type & Inst/Year</th><th style="border:1px solid #000; padding:8px;">Account No & Date</th><th style="border:1px solid #000; padding:8px;">Status</th><th style="border:1px solid #000; padding:8px;">Amount</th></tr></thead>
-                    <tbody>`;
+        <!-- 4. EMPLOYEE DAILY REPORT -->
+        <div id="daily-report" class="tab-section">
+            <button class="btn-print" onclick="window.print()">🖨️ PRINT GM REPORT</button>
+            <h3 class="section-title no-print">EMPLOYEE DAILY REPORT</h3>
             
-            let rows = document.querySelectorAll('#r-table-body tr');
-            rows.forEach(r => {
-                if(r.cells.length === 1 || r.cells.length === 5) {
-                    html += `<tr>`;
-                    for(let i=0; i<r.cells.length; i++) {
-                        if(r.cells.length === 5 && i === 4) continue; 
-                        let colspan = r.cells[i].colSpan > 1 ? `colspan="3"` : "";
-                        let bg = r.style.background ? `background:${r.style.background}; color:${r.style.color};` : "";
-                        html += `<td ${colspan} style="border:1px solid #000; padding:6px; ${bg}">${r.cells[i].innerHTML}</td>`;
-                    }
-                    html += `</tr>`;
-                }
-            });
+            <div class="form-row no-print">
+                <div class="form-group">
+                    <label>Employee Name</label>
+                    <select id="daily-employee"><option>B. RAJESH</option></select>
+                </div>
+                <div class="form-group">
+                    <label>From Date</label>
+                    <input type="date">
+                </div>
+                <div class="form-group">
+                    <label>To Date</label>
+                    <input type="date">
+                </div>
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <button class="btn-primary">SEARCH</button>
+                </div>
+            </div>
 
-            html += `</tbody></table>`;
-            document.getElementById('print-section').innerHTML = html;
-            window.print();
+            <div class="print-header" style="display:none;" id="gm-print-header">
+                <h2>DAILY PERFORMANCE REPORT</h2>
+                <p><strong>Employee:</strong> B. RAJESH &nbsp;|&nbsp; <strong>Branch:</strong> TENALI &nbsp;|&nbsp; <strong>Date:</strong> 17-Nov-2026</p>
+            </div>
+
+            <h4 style="margin-top: 20px;">REGULAR SUMMARY CARDS</h4>
+            <div class="cards-container">
+                <div class="card"><h4>Assigned</h4><div class="number">50</div></div>
+                <div class="card"><h4>Completed</h4><div class="number">12</div></div>
+                <div class="card"><h4>Balance</h4><div class="number">38</div></div>
+                <div class="card"><h4>LOCK</h4><div class="number">2</div></div>
+                <div class="card"><h4>PCR</h4><div class="number">5</div></div>
+                <div class="card"><h4>OP</h4><div class="number">4</div></div>
+                <div class="card"><h4>SEEZING</h4><div class="number">1</div></div>
+            </div>
+
+            <!-- Table with Edit/Delete for TL -->
+            <h4 style="margin-top: 30px;">Daily Collection Entry Updates</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Account No</th>
+                        <th>Type</th>
+                        <th>INS</th>
+                        <th>Status</th>
+                        <th>Amount</th>
+                        <th class="no-print">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>10012</td><td>Regular</td><td>5</td><td>PCR</td><td>5000</td>
+                        <td class="no-print">
+                            <button class="btn-primary" style="padding: 3px 8px; font-size: 0.8rem;">Edit</button>
+                            <button class="btn-danger">Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 5. BRANCH ASSIGNMENT REPORT -->
+        <div id="branch-report" class="tab-section">
+            <button class="btn-print" onclick="window.print()">🖨️ PRINT BRANCH REPORT</button>
+            <h3 class="section-title no-print">BRANCH ASSIGNMENT REPORT</h3>
+            
+            <div class="form-row no-print">
+                <div class="form-group">
+                    <label>Select Month</label>
+                    <input type="month">
+                </div>
+                <div class="form-group">
+                    <label>Branch Name</label>
+                    <input type="text" value="TENALI">
+                </div>
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <button class="btn-primary">SEARCH</button>
+                </div>
+            </div>
+
+            <!-- Classy PDF Look Representation -->
+            <div class="print-header">
+                <h2>TENALI BRANCH ASSIGNMENT REPORT</h2>
+                <p><strong>Month:</strong> 11/2026</p>
+            </div>
+
+            <div style="margin-top: 20px; border: 1px solid #000; padding: 15px;">
+                <h3 style="margin:0 0 10px 0;">B. RAJESH :-</h3>
+                <table style="margin-top: 0;">
+                    <thead style="background: #edf2f7;">
+                        <tr>
+                            <th>REGULAR ACCOUNTS (INS)</th>
+                            <th>NO. OF. ACCOUNTS</th>
+                            <th>AMOUNT (Lakhs)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>5 INS</td><td>7</td><td>1.20</td></tr>
+                        <tr><td>6 INS</td><td>6</td><td>1.44</td></tr>
+                        <tr><td>7 INS</td><td>4</td><td>0.96</td></tr>
+                        <tr style="font-weight: bold; background: #e2e8f0;">
+                            <td>TOTAL ACCOUNTS & AMOUNT :-</td>
+                            <td>17</td>
+                            <td>3.60</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Firebase SDK & Logic Integration -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        // Your Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
+            authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
+            databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
+            projectId: "sri-vishnu-priya-finance-c591f",
+            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
+            messagingSenderId: "184676228358",
+            appId: "1:184676228358:web:c2b32b68debeeadadfd287",
+            measurementId: "G-E3TT96ZH1T"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // --- 1. ADD EXECUTIVE LOGIC ---
+        window.saveExecutive = function() {
+            const name = document.getElementById('exec-name').value;
+            const branch = document.getElementById('exec-branch').value;
+            const passcode = document.getElementById('exec-passcode').value;
+
+            if(name && branch && passcode) {
+                push(ref(db, 'executives'), {
+                    name: name,
+                    branch: branch,
+                    passcode: passcode
+                });
+                alert("Executive Saved Successfully!");
+                document.getElementById('exec-name').value = '';
+                document.getElementById('exec-branch').value = '';
+                document.getElementById('exec-passcode').value = '';
+            } else {
+                alert("Please fill all fields!");
+            }
+        }
+
+        // Fetch Executives for Table and Dropdowns
+        onValue(ref(db, 'executives'), (snapshot) => {
+            const table = document.getElementById('exec-list-table');
+            const dropdown = document.getElementById('assign-employee');
+            table.innerHTML = '';
+            dropdown.innerHTML = '<option value="">--Select--</option>';
+
+            snapshot.forEach((childSnapshot) => {
+                const data = childSnapshot.val();
+                const key = childSnapshot.key;
+                
+                // Add to Table
+                table.innerHTML += `
+                    <tr>
+                        <td>${data.name}</td>
+                        <td>${data.branch}</td>
+                        <td>${data.passcode}</td>
+                        <td>
+                            <button class="btn-primary" style="padding: 4px 8px; font-size: 0.8rem;">Edit</button>
+                            <button class="btn-danger" onclick="deleteExec('${key}')">Delete</button>
+                        </td>
+                    </tr>
+                `;
+
+                // Add to Assign Accounts Dropdown
+                dropdown.innerHTML += `<option value="${data.name}">${data.name}</option>`;
+            });
+        });
+
+        window.deleteExec = function(key) {
+            if(confirm("Are you sure you want to delete this executive?")) {
+                remove(ref(db, 'executives/' + key));
+            }
+        }
+
+    </script>
+
+    <!-- UI Interaction Scripts (No Firebase needed here) -->
+    <script>
+        // Tab Switching Logic
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-section");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("active");
+            }
+            tablinks = document.getElementsByClassName("tab-link");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.className += " active";
+        }
+
+        // Toggle Regular/Matured Options
+        function toggleAccountType() {
+            const type = document.getElementById('assign-type').value;
+            if(type === 'REGULAR') {
+                document.getElementById('regular-options').style.display = 'flex';
+                document.getElementById('matured-options').style.display = 'none';
+            } else {
+                document.getElementById('regular-options').style.display = 'none';
+                document.getElementById('matured-options').style.display = 'flex';
+            }
+        }
+
+        // Generate Dynamic Columns based on Count
+        function generateRows() {
+            const type = document.getElementById('assign-type').value;
+            let count, ins, year;
+
+            const thead = document.getElementById('dynamic-thead-tr');
+            const tbody = document.getElementById('dynamic-tbody');
+            
+            thead.innerHTML = '';
+            tbody.innerHTML = '';
+
+            if(type === 'REGULAR') {
+                count = parseInt(document.getElementById('reg-count').value);
+                ins = document.getElementById('reg-ins').value;
+                thead.innerHTML = `<th>S.No</th><th>Type</th><th>Account Number</th><th>Installments</th><th>Amount</th>`;
+                
+                for(let i=1; i<=count; i++) {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${i}</td>
+                            <td><input type="text" value="REGULAR" readonly style="border:none; outline:none; background:transparent;"></td>
+                            <td><input type="text" placeholder="A/C Num"></td>
+                            <td><input type="text" value="${ins} INS" readonly style="border:none; background:transparent;"></td>
+                            <td><input type="number" placeholder="Amount"></td>
+                        </tr>
+                    `;
+                }
+            } else {
+                count = parseInt(document.getElementById('mat-count').value);
+                ins = document.getElementById('mat-ins').value;
+                year = document.getElementById('mat-year').value;
+                thead.innerHTML = `<th>S.No</th><th>Type</th><th>Account Number</th><th>Matured Year</th><th>Installments</th><th>Amount</th>`;
+                
+                for(let i=1; i<=count; i++) {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${i}</td>
+                            <td><input type="text" value="MATURED" readonly style="border:none; outline:none; background:transparent;"></td>
+                            <td><input type="text" placeholder="A/C Num"></td>
+                            <td><input type="text" value="${year}" readonly style="border:none; background:transparent;"></td>
+                            <td><input type="text" value="${ins} INS" readonly style="border:none; background:transparent;"></td>
+                            <td><input type="number" placeholder="Amount"></td>
+                        </tr>
+                    `;
+                }
+            }
+            document.getElementById('dynamic-rows-container').style.display = 'block';
+        }
+
+        function submitAssignedAccounts() {
+            alert("Accounts Submitted Successfully to Firebase!");
+            document.getElementById('dynamic-rows-container').style.display = 'none';
         }
     </script>
 </body>
