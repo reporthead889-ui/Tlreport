@@ -53,6 +53,7 @@
             align-items: center;
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 20px 30px;
             border-radius: 20px;
@@ -98,6 +99,7 @@
         .option-card {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 30px 20px;
             border-radius: 20px;
@@ -193,16 +195,14 @@
         </div>
     </div>
 
-    <!-- JavaScript Functions -->
+    <!-- Final Working JavaScript Functions -->
     <script>
-        // Redirect to respective pages when an option is clicked
+        // Redirect direct ga page ki vellutundi, elanti alerts undavu
         function openPage(pageName) {
-            // alert message teesi mee page links add chesukovachu
-            alert("Redirecting to: " + pageName);
-            // window.location.href = pageName; 
+            window.location.href = pageName; 
         }
 
-        // Logout function
+        // Logout function - Index (Login) page ki velthundi
         function logout() {
             if(confirm("Are you sure you want to logout?")) {
                 window.location.href = "index.html";
