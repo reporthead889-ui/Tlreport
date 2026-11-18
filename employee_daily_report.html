@@ -44,12 +44,15 @@
         .report-section { display: none; margin-top: 10px; }
         .section-title { font-size: 18px; font-weight: 600; margin: 20px 0 15px 0; color: #00d2ff; text-transform: uppercase; border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 5px;}
 
+        /* Restored Assigned/Completed/Balance Cards */
         .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 12px; margin-bottom: 25px; }
         .stat-card { background: rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 15px 10px; text-align: center; }
         .stat-card h4 { font-size: 11px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
         .stat-card h2 { font-size: 22px; font-weight: 600; color: #fff; }
         
+        .card-assigned h2 { color: #00d2ff; }
         .card-completed h2 { color: #2ed573; }
+        .card-balance h2 { color: #ff6b6b; }
         .card-lock h2, .card-pcr h2, .card-qr h2, .card-op h2, .card-seizing h2 { color: #f6d365; }
 
         .table-container { overflow-x: auto; background: rgba(0,0,0,0.1); border-radius: 10px; }
@@ -130,7 +133,10 @@
             <div class="glass-panel report-section" id="regularSection" style="display:block;">
                 <div class="section-title">REGULAR ACCOUNTS</div>
                 <div class="cards-grid">
+                    <!-- Restored Assigned/Balance cards -->
+                    <div class="stat-card card-assigned"><h4>Assigned</h4><h2 id="rAssign">0</h2></div>
                     <div class="stat-card card-completed"><h4>Completed</h4><h2 id="rComp">0</h2></div>
+                    <div class="stat-card card-balance"><h4>Balance</h4><h2 id="rBal">0</h2></div>
                     <div class="stat-card card-lock"><h4>LOCK</h4><h2 id="rLock">0</h2></div>
                     <div class="stat-card card-pcr"><h4>PCR</h4><h2 id="rPcr">0</h2></div>
                     <div class="stat-card card-qr"><h4>QR</h4><h2 id="rQr">0</h2></div>
@@ -149,7 +155,9 @@
             <div class="glass-panel report-section page-break" id="maturedSection" style="display:block; margin-top:20px;">
                 <div class="section-title" style="color: #f6d365;">MATURED ACCOUNTS</div>
                 <div class="cards-grid">
+                    <div class="stat-card card-assigned"><h4>Assigned</h4><h2 id="mAssign">0</h2></div>
                     <div class="stat-card card-completed"><h4>Completed</h4><h2 id="mComp">0</h2></div>
+                    <div class="stat-card card-balance"><h4>Balance</h4><h2 id="mBal">0</h2></div>
                     <div class="stat-card card-lock"><h4>LOCK</h4><h2 id="mLock">0</h2></div>
                     <div class="stat-card card-pcr"><h4>PCR</h4><h2 id="mPcr">0</h2></div>
                     <div class="stat-card card-qr"><h4>QR</h4><h2 id="mQr">0</h2></div>
@@ -218,23 +226,37 @@
             db.ref('assigned_accounts').once('value').then((snapshot) => {
                 const data = snapshot.val();
                 
-                let rCo = 0, rL = 0, rP = 0, rQ = 0, rO = 0, rS = 0; let rHtml = '';
-                let mCo = 0, mL = 0, mP = 0, mQ = 0, mO = 0, mS = 0; let mHtml = '';
+                let rAs = 0, rCo = 0, rL = 0, rP = 0, rQ = 0, rO = 0, rS = 0; let rHtml = '';
+                let mAs = 0, mCo = 0, mL = 0, mP = 0, mQ = 0, mO = 0, mS = 0; let mHtml = '';
 
                 if(data) {
                     for(let key in data) {
                         let i = data[key];
-                        // Filter logic depends on `updatedDate` instead of `date`
-                        if(i.branch === branch && i.executive === exec && i.updatedDate >= fDate && i.updatedDate <= tDate && i.status && i.status !== "Pending") {
-                            
+                        
+                        // FIX: Count ASSIGNED based on original item.date
+                        let isAssignedInDateRange = (i.branch === branch && i.executive === exec && i.date >= fDate && i.date <= tDate);
+                        
+                        // Check if it was UPDATED in date range
+                        let isUpdatedInDateRange = (i.branch === branch && i.executive === exec && i.updatedDate >= fDate && i.updatedDate <= tDate && i.status && i.status !== "Pending");
+
+                        // Add to Assiged Count
+                        if (isAssignedInDateRange) {
+                            if (i.type === 'REGULAR') rAs++;
+                            else if (i.type === 'MATURED') mAs++;
+                        }
+
+                        // Add to Completed & Table Data if updated
+                        if (isUpdatedInDateRange) {
                             let dAmt = i.collectedAmount || 0;
                             
-                            if(i.type === 'REGULAR') {
-                                rCo++; if(i.status==='LOCK')rL++; else if(i.status==='PCR')rP++; else if(i.status==='QR')rQ++; else if(i.status==='OP')rO++; else if(i.status==='SEIZING')rS++;
+                            if (i.type === 'REGULAR') {
+                                rCo++; 
+                                if(i.status==='LOCK') rL++; else if(i.status==='PCR') rP++; else if(i.status==='QR') rQ++; else if(i.status==='OP') rO++; else if(i.status==='SEIZING') rS++;
                                 rHtml += `<tr><td>${rCo}</td><td>REGULAR</td><td>${i.accountNumber}</td><td>${i.ins}</td><td><span class="status-badge">${i.status}</span></td><td>₹ ${dAmt}</td></tr>`;
                             } 
                             else if (i.type === 'MATURED') {
-                                mCo++; if(i.status==='LOCK')mL++; else if(i.status==='PCR')mP++; else if(i.status==='QR')mQ++; else if(i.status==='OP')mO++; else if(i.status==='SEIZING')mS++;
+                                mCo++; 
+                                if(i.status==='LOCK') mL++; else if(i.status==='PCR') mP++; else if(i.status==='QR') mQ++; else if(i.status==='OP') mO++; else if(i.status==='SEIZING') mS++;
                                 mHtml += `<tr><td>${mCo}</td><td>MATURED (${i.maturedYear})</td><td>${i.accountNumber}</td><td>${i.ins}</td><td><span class="status-badge">${i.status}</span></td><td>₹ ${dAmt}</td></tr>`;
                             }
                         }
@@ -245,24 +267,28 @@
                 document.getElementById('printDateRange').innerText = (fDate === tDate) ? formatDate(fDate) : `${formatDate(fDate)} to ${formatDate(tDate)}`;
 
                 // Update Reg
+                document.getElementById('rAssign').innerText = rAs; 
                 document.getElementById('rComp').innerText = rCo; 
+                document.getElementById('rBal').innerText = (rAs - rCo);
                 document.getElementById('rLock').innerText = rL; document.getElementById('rPcr').innerText = rP; document.getElementById('rQr').innerText = rQ; document.getElementById('rOp').innerText = rO; document.getElementById('rSeize').innerText = rS;
                 document.getElementById('regTableBody').innerHTML = rHtml;
-                document.getElementById('regularSection').style.display = rCo > 0 ? 'block' : 'none';
+                document.getElementById('regularSection').style.display = (rAs > 0 || rCo > 0) ? 'block' : 'none';
 
                 // Update Mat
+                document.getElementById('mAssign').innerText = mAs; 
                 document.getElementById('mComp').innerText = mCo; 
+                document.getElementById('mBal').innerText = (mAs - mCo);
                 document.getElementById('mLock').innerText = mL; document.getElementById('mPcr').innerText = mP; document.getElementById('mQr').innerText = mQ; document.getElementById('mOp').innerText = mO; document.getElementById('mSeize').innerText = mS;
                 document.getElementById('matTableBody').innerHTML = mHtml;
-                document.getElementById('maturedSection').style.display = mCo > 0 ? 'block' : 'none';
+                document.getElementById('maturedSection').style.display = (mAs > 0 || mCo > 0) ? 'block' : 'none';
 
-                if(rCo > 0 || mCo > 0) {
+                if((rAs > 0 || rCo > 0) || (mAs > 0 || mCo > 0)) {
                     document.getElementById('reportContainer').style.display = 'block';
                     document.getElementById('printBtn').style.display = 'block';
                 } else {
                     document.getElementById('reportContainer').style.display = 'none';
                     document.getElementById('printBtn').style.display = 'none';
-                    alert("No updated accounts found in this date range.");
+                    alert("No data found for this date range.");
                 }
 
                 btn.innerHTML = '<i class="fas fa-search"></i> Search Data';
