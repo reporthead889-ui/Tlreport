@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Branch Assignment Report - Sri Vishnu Priya</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- FIREBASE DIRECT SCRIPTS -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); min-height: 100vh; color: white; display: flex; flex-direction: column; align-items: center; padding: 30px 15px; }
+        
+        .circle { position: fixed; border-radius: 50%; background: linear-gradient(135deg, #00d2ff, #3a7bd5); filter: blur(80px); z-index: 0; }
+        .circle1 { width: 300px; height: 300px; top: -50px; left: -50px; opacity: 0.4; }
+        .circle2 { width: 400px; height: 400px; bottom: -100px; right: -50px; opacity: 0.3; }
+
+        .container { position: relative; z-index: 1; width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 25px; }
+        .glass-panel { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 15px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); }
+        
+        .header { display: flex; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 15px; }
+        .back-btn { color: #00d2ff; font-size: 20px; text-decoration: none; margin-right: 15px; transition: 0.3s; }
+        .back-btn:hover { transform: translateX(-5px); }
+        .header h2 { font-size: 20px; font-weight: 600; }
+
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
+        .input-group { display: flex; flex-direction: column; gap: 6px; }
+        .input-group label { font-size: 12px; color: rgba(255,255,255,0.7); font-weight: 500; text-transform: uppercase;}
+        
+        .input-group input, .input-group select { width: 100%; padding: 10px 12px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: #fff; outline: none; font-size: 14px; }
+        .input-group select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px;}
+        .input-group select option { background: #1f363d; color: white; padding: 10px; }
+        .input-group input:focus, .input-group select:focus { border-color: #00d2ff; }
+
+        .btn-group { display: flex; gap: 15px; margin-top: 10px; }
+        .search-btn, .print-btn { flex: 1; padding: 12px; border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .search-btn { background: linear-gradient(135deg, #00d2ff, #3a7bd5); }
+        .search-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 210, 255, 0.3); }
+        .print-btn { background: linear-gradient(135deg, #f6d365, #fda085); display: none; }
+        .print-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(253, 160, 133, 0.3); }
+
+        /* Report View Styles (Web) */
+        #reportContainer { display: none; width: 100%; }
+        .print-main-header { display: none; }
+        
+        .exec-block { margin-top: 25px; padding: 20px; background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); }
+        .exec-title { font-size: 18px; font-weight: 700; color: #00d2ff; text-transform: uppercase; margin-bottom: 15px; border-bottom: 1px dashed rgba(0, 210, 255, 0.3); padding-bottom: 8px;}
+        .table-title { font-size: 14px; font-weight: 600; color: #f6d365; margin: 15px 0 10px 0; text-transform: uppercase; }
+        
+        table { width: 100%; border-collapse: collapse; text-align: left; margin-bottom: 5px; }
+        th, td { padding: 10px 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); font-size: 14px; }
+        th { font-weight: 600; color: rgba(255,255,255,0.8); text-transform: uppercase; background: rgba(255, 255, 255, 0.05); }
+        .total-row td { font-weight: 700; color: #2ed573; background: rgba(46, 213, 115, 0.1); border-top: 2px solid rgba(46, 213, 115, 0.3); border-bottom: none;}
+
+        /* ================= PRINT STYLES ================= */
+        @media print {
+            @page { margin: 15mm; size: A4; }
+            body { background: #fff; color: #000; padding: 0; margin: 0; }
+            .circle, .glass-panel#searchPanel, .back-btn { display: none !important; }
+            .container { max-width: 100%; gap: 0; }
+            
+            /* Print Header exactly like PDF */
+            .print-main-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 15px; margin-bottom: 20px; font-size: 18px; font-weight: bold; text-transform: uppercase; }
+            
+            .exec-block { background: transparent; border: none; padding: 0; margin-bottom: 30px; page-break-inside: avoid; }
+            .exec-title { color: #000; border-bottom: none; font-size: 16px; margin-bottom: 10px; }
+            .table-title { color: #000; font-size: 14px; margin: 10px 0 5px 0; }
+            
+            table { border: 1px solid transparent; margin-bottom: 5px; }
+            th, td { border: 1px solid transparent; color: #000; padding: 6px 10px; font-size: 13px; }
+            th { background: transparent; border-bottom: 1px solid #000; }
+            .total-row td { background: transparent; color: #000; border-top: 2px solid #000; border-bottom: 1px solid #000; }
+        }
+    </style>
+</head>
+<body>
+    <div class="circle circle1"></div>
+    <div class="circle circle2"></div>
+
+    <div class="container">
+        
+        <!-- Search Form -->
+        <div class="glass-panel" id="searchPanel">
+            <div class="header">
+                <a href="dashboard.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+                <h2>Branch Assignment Report</h2>
+            </div>
+            
+            <div class="form-row">
+                <div class="input-group">
+                    <label>Select Month</label>
+                    <input type="month" id="reportMonth" required>
+                </div>
+                <div class="input-group">
+                    <label>Select Branch</label>
+                    <select id="branchSelect" required>
+                        <option value="">Loading Branches...</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button onclick="generateReport()" class="search-btn" id="searchBtn"><i class="fas fa-search"></i> Search Data</button>
+                <button onclick="window.print()" class="print-btn" id="printBtn"><i class="fas fa-print"></i> Print Report</button>
+            </div>
+        </div>
+
+        <!-- PRINT HEADER (Top of A4) -->
+        <div class="print-main-header" id="printHeaderMain">
+            <div id="printBranchName">BRANCH ASSIGNMENT REPORT</div>
+            <div id="printMonthYear">MM/YYYY</div>
+        </div>
+
+        <!-- REPORT DISPLAY AREA -->
+        <div id="reportContainer">
+            <!-- Data injected here via JS -->
+        </div>
+
+    </div>
+
+    <script>
+        // Set Default Month (Current Month)
+        const d = new Date();
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        document.getElementById('reportMonth').value = `${yyyy}-${mm}`;
+
+        // Firebase Setup
+        const firebaseConfig = {
+            apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
+            authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
+            databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
+            projectId: "sri-vishnu-priya-finance-c591f",
+            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
+            messagingSenderId: "184676228358",
+            appId: "1:184676228358:web:c2b32b68debeeadadfd287"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Fetch Branches
+        db.ref('branches').on('value', (snapshot) => {
+            const branchSelect = document.getElementById('branchSelect');
+            branchSelect.innerHTML = '<option value="">-- Select Branch --</option>'; 
+            const data = snapshot.val();
+            if (data) {
+                for (let key in data) {
+                    branchSelect.innerHTML += `<option value="${data[key].branchName}">${data[key].branchName}</option>`;
+                }
+            }
+        });
+
+        // Convert to Points format (Lakhs)
+        function toPoints(amount) {
+            let num = parseFloat(amount) || 0;
+            return (num / 100000).toFixed(2) + "/-";
+        }
+
+        // Generate Report Logic
+        function generateReport() {
+            const monthVal = document.getElementById('reportMonth').value; // "YYYY-MM"
+            const branch = document.getElementById('branchSelect').value;
+
+            if(!monthVal || !branch) {
+                alert("Please select both Month and Branch!");
+                return;
+            }
+
+            const searchBtn = document.getElementById('searchBtn');
+            searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+
+            db.ref('assigned_accounts').once('value').then((snapshot) => {
+                const data = snapshot.val();
+                let execData = {}; 
+
+                if(data) {
+                    for(let key in data) {
+                        let item = data[key];
+                        // Filter by Branch & Month (item.date is "YYYY-MM-DD")
+                        if(item.branch === branch && item.date && item.date.startsWith(monthVal)) {
+                            let exec = item.executive.toUpperCase();
+                            
+                            if(!execData[exec]) {
+                                execData[exec] = { regular: {}, matured: {} };
+                            }
+
+                            let amt = parseFloat(item.amount) || 0;
+
+                            if(item.type === 'REGULAR') {
+                                let insKey = item.ins + " INS";
+                                if(!execData[exec].regular[insKey]) {
+                                    execData[exec].regular[insKey] = { count: 0, amount: 0 };
+                                }
+                                execData[exec].regular[insKey].count += 1;
+                                execData[exec].regular[insKey].amount += amt;
+                            } 
+                            else if (item.type === 'MATURED') {
+                                let yrKey = item.maturedYear;
+                                if(!execData[exec].matured[yrKey]) {
+                                    execData[exec].matured[yrKey] = { count: 0, amount: 0 };
+                                }
+                                execData[exec].matured[yrKey].count += 1;
+                                execData[exec].matured[yrKey].amount += amt;
+                            }
+                        }
+                    }
+                }
+
+                // Update Print Headers
+                const [y, m] = monthVal.split('-');
+                document.getElementById('printBranchName').innerText = `${branch.toUpperCase()} BRANCH ASSIGNMENT REPORT`;
+                document.getElementById('printMonthYear').innerText = `${m}/${y}`;
+
+                const container = document.getElementById('reportContainer');
+                container.innerHTML = '';
+                
+                let hasData = false;
+
+                // Render HTML for each Executive
+                for(let execName in execData) {
+                    hasData = true;
+                    let regKeys = Object.keys(execData[execName].regular);
+                    let matKeys = Object.keys(execData[execName].matured);
+
+                    if(regKeys.length === 0 && matKeys.length === 0) continue;
+
+                    let html = `<div class="exec-block"><div class="exec-title">${execName} :-</div>`;
+
+                    // Render REGULAR Block
+                    if(regKeys.length > 0) {
+                        html += `<div class="table-title">REGULAR ACCOUNTS</div>
+                        <table>
+                            <thead><tr><th>INS</th><th>NO. OF. ACCOUNTS</th><th>AMOUNT</th></tr></thead>
+                            <tbody>`;
+                        
+                        let totalCount = 0;
+                        let totalAmt = 0;
+
+                        // Reverse sort to show 9 INS, 8 INS downwards generally
+                        regKeys.sort().reverse().forEach(ins => {
+                            let c = execData[execName].regular[ins].count;
+                            let a = execData[execName].regular[ins].amount;
+                            totalCount += c;
+                            totalAmt += a;
+                            html += `<tr><td>${ins}</td><td>${c}</td><td>${toPoints(a)}</td></tr>`;
+                        });
+
+                        html += `<tr class="total-row"><td>TOTAL ACCOUNTS & AMOUNT :-</td><td>${totalCount}</td><td>${toPoints(totalAmt)}</td></tr>
+                            </tbody></table>`;
+                    }
+
+                    // Render MATURED Block
+                    if(matKeys.length > 0) {
+                        html += `<div class="table-title">MATURED ACCOUNTS</div>
+                        <table>
+                            <thead><tr><th>YEAR</th><th>NO. OF. ACCOUNTS</th><th>AMOUNT</th></tr></thead>
+                            <tbody>`;
+                        
+                        let totalCount = 0;
+                        let totalAmt = 0;
+
+                        matKeys.sort().forEach(yr => {
+                            let c = execData[execName].matured[yr].count;
+                            let a = execData[execName].matured[yr].amount;
+                            totalCount += c;
+                            totalAmt += a;
+                            html += `<tr><td>${yr}</td><td>${c}</td><td>${toPoints(a)}</td></tr>`;
+                        });
+
+                        html += `<tr class="total-row"><td>TOTAL ACCOUNTS & AMOUNT :-</td><td>${totalCount}</td><td>${toPoints(totalAmt)}</td></tr>
+                            </tbody></table>`;
+                    }
+
+                    html += `</div>`; // Close exec-block
+                    container.innerHTML += html;
+                }
+
+                if(hasData) {
+                    container.style.display = 'block';
+                    document.getElementById('printBtn').style.display = 'block';
+                } else {
+                    container.style.display = 'none';
+                    document.getElementById('printBtn').style.display = 'none';
+                    alert(`No assignment data found for ${branch} in ${m}/${y}`);
+                }
+
+                searchBtn.innerHTML = '<i class="fas fa-search"></i> Search Data';
+
+            }).catch(error => {
+                alert("Error fetching data: " + error.message);
+                searchBtn.innerHTML = '<i class="fas fa-search"></i> Search Data';
+            });
+        }
+    </script>
+</body>
+</html>
