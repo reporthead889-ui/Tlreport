@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- FIREBASE DIRECT SCRIPTS -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
@@ -30,9 +29,10 @@
         .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
         .input-group { display: flex; flex-direction: column; gap: 6px; }
         .input-group label { font-size: 12px; color: rgba(255,255,255,0.7); font-weight: 500; text-transform: uppercase;}
-        .input-group select { width: 100%; padding: 10px 12px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: #fff; outline: none; font-size: 14px; cursor: pointer; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px;}
+        .input-group select, .input-group input { width: 100%; padding: 10px 12px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: #fff; outline: none; font-size: 14px; }
+        .input-group select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px;}
         .input-group select option { background: #1f363d; color: white; padding: 10px; }
-        .input-group select:focus { border-color: #00d2ff; box-shadow: 0 0 10px rgba(0,210,255,0.2); }
+        .input-group select:focus, .input-group input:focus { border-color: #00d2ff; box-shadow: 0 0 10px rgba(0,210,255,0.2); }
 
         .btn-group { display: flex; gap: 15px; margin-top: 10px; }
         .search-btn, .print-btn { flex: 1; padding: 12px; border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; transition: 0.3s; }
@@ -52,28 +52,43 @@
 
         .summary-table th { background: rgba(0, 210, 255, 0.15); color: #00d2ff; }
 
+        /* Action Buttons styling */
+        .action-btns button { border: none; padding: 6px 10px; border-radius: 5px; cursor: pointer; font-size: 12px; transition: 0.3s; margin-right: 5px; }
+        .btn-edit { background: rgba(0, 210, 255, 0.2); color: #00d2ff; }
+        .btn-edit:hover { background: #00d2ff; color: #fff; }
+        .btn-delete { background: rgba(255, 107, 107, 0.2); color: #ff6b6b; }
+        .btn-delete:hover { background: #ff6b6b; color: #fff; }
+
+        /* Modal Styles */
+        #editModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        .modal-content { background: #1f363d; padding: 25px; border-radius: 15px; width: 90%; max-width: 400px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5); border: 1px solid rgba(255,255,255,0.1); }
+        .modal-content h3 { color: #00d2ff; margin-bottom: 20px; font-size: 18px; border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 10px; }
+
         /* Print Header - Hidden in normal view */
         .print-header { display: none; }
 
         /* ================= PRINT STYLES ================= */
         @media print {
+            @page { margin: 10mm; size: A4; }
             body { background: #fff; color: #000; padding: 0; margin: 0; }
-            .circle, .glass-panel#searchPanel, .back-btn { display: none !important; }
+            .circle, .glass-panel#searchPanel, .back-btn, #editModal { display: none !important; }
+            
+            /* Hide elements not needed in print */
+            .hide-print { display: none !important; }
+            
             .glass-panel { background: none; border: none; box-shadow: none; padding: 0; }
             .container { max-width: 100%; gap: 0; }
             
-            table { border: 1px solid #ccc; background: transparent; margin-bottom: 30px; }
-            th, td { border: 1px solid #ccc; color: #000; padding: 8px; }
-            th { background: #f0f0f0; color: #000; }
-            .section-title { display: none; } /* Replaced by custom print header */
+            /* Fit 40+ accounts by reducing padding and font size */
+            table { border: 1px solid #aaa; background: transparent; margin-bottom: 15px; }
+            th, td { border: 1px solid #aaa; color: #000; padding: 4px 6px; font-size: 11px; line-height: 1.2; }
+            th { background: #e0e0e0; color: #000; font-weight: bold; }
+            .section-title { display: none; } 
 
-            /* Display custom print headers */
             .print-header { 
                 display: flex; justify-content: space-between; align-items: center; 
-                border-bottom: 2px solid #000; padding-bottom: 10px; margin: 20px 0; font-size: 16px; 
+                border-bottom: 2px solid #000; padding-bottom: 8px; margin: 15px 0 10px 0; font-size: 14px; 
             }
-            
-            /* Page Break between Regular and Matured */
             .page-break { page-break-before: always; }
         }
     </style>
@@ -114,24 +129,29 @@
 
         <!-- REGULAR SECTION -->
         <div class="glass-panel report-section" id="regularSection">
-            <!-- Custom Print Header -->
             <div class="print-header">
                 <div>Executive: <strong id="printExecReg"></strong></div>
                 <div><strong>ASSIGN ACCOUNTS</strong></div>
                 <div><strong>REGULAR</strong></div>
             </div>
-
             <div class="section-title">Regular Accounts</div>
-            
             <div style="overflow-x: auto;">
                 <table>
-                    <thead><tr><th>S.No</th><th>A/C Number</th><th>INS</th><th>Amount (₹)</th><th>Date</th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>A/C Number</th>
+                            <th>INS</th>
+                            <th>Amount (₹)</th>
+                            <th class="hide-print">Date</th>
+                            <th class="hide-print">Action</th>
+                        </tr>
+                    </thead>
                     <tbody id="regTableBody"></tbody>
                 </table>
             </div>
-
-            <div class="section-title" style="font-size:15px; color:#fff;">Regular Summary</div>
-            <div style="overflow-x: auto;">
+            <div class="section-title hide-print" style="font-size:15px; color:#fff;">Regular Summary</div>
+            <div style="overflow-x: auto;" class="hide-print">
                 <table class="summary-table">
                     <thead><tr><th>INSTALLMENTS</th><th>NO. OF ACCOUNTS</th><th>AMOUNT (Points)</th></tr></thead>
                     <tbody id="regSummaryBody"></tbody>
@@ -141,24 +161,30 @@
 
         <!-- MATURED SECTION -->
         <div class="glass-panel report-section page-break" id="maturedSection">
-            <!-- Custom Print Header -->
             <div class="print-header">
                 <div>Executive: <strong id="printExecMat"></strong></div>
                 <div><strong>ASSIGN ACCOUNTS</strong></div>
                 <div><strong>MATURED</strong></div>
             </div>
-
             <div class="section-title" style="color: #f6d365;">Matured Accounts</div>
-            
             <div style="overflow-x: auto;">
                 <table>
-                    <thead><tr><th>S.No</th><th>A/C Number</th><th>Matured Year</th><th>INS</th><th>Amount (₹)</th><th>Date</th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>A/C Number</th>
+                            <th>Matured Year</th>
+                            <th>INS</th>
+                            <th>Amount (₹)</th>
+                            <th class="hide-print">Date</th>
+                            <th class="hide-print">Action</th>
+                        </tr>
+                    </thead>
                     <tbody id="matTableBody"></tbody>
                 </table>
             </div>
-
-            <div class="section-title" style="font-size:15px; color:#fff;">Matured Summary</div>
-            <div style="overflow-x: auto;">
+            <div class="section-title hide-print" style="font-size:15px; color:#fff;">Matured Summary</div>
+            <div style="overflow-x: auto;" class="hide-print">
                 <table class="summary-table">
                     <thead><tr><th>YEAR OF MATURED</th><th>NO. OF ACCOUNTS</th><th>AMOUNT (Points)</th></tr></thead>
                     <tbody id="matSummaryBody"></tbody>
@@ -166,6 +192,39 @@
             </div>
         </div>
 
+    </div>
+
+    <!-- EDIT MODAL (Hidden Default) -->
+    <div id="editModal">
+        <div class="modal-content">
+            <h3>Edit Account Details</h3>
+            <input type="hidden" id="editKey">
+            <input type="hidden" id="editType">
+
+            <div class="input-group">
+                <label>A/C Number</label>
+                <input type="text" id="editAccNo" required>
+            </div>
+            
+            <div class="input-group" id="editMaturedDiv" style="display:none;">
+                <label>Matured Year</label>
+                <input type="text" id="editMaturedYear">
+            </div>
+
+            <div class="input-group">
+                <label>INS</label>
+                <input type="text" id="editIns" required>
+            </div>
+            <div class="input-group">
+                <label>Amount (₹)</label>
+                <input type="number" id="editAmt" required>
+            </div>
+            
+            <div class="btn-group" style="margin-top: 20px;">
+                <button onclick="saveEdit()" class="search-btn" id="saveEditBtn">Save Update</button>
+                <button onclick="closeModal()" class="print-btn" style="display:block; background:rgba(255,255,255,0.1); color:#fff; border:1px solid rgba(255,255,255,0.3);">Cancel</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -193,7 +252,7 @@
             }
         });
 
-        // 2. Fetch Executives on Branch change
+        // 2. Fetch Executives
         document.getElementById('branchSelect').addEventListener('change', function() {
             const selectedBranch = this.value;
             const execSelect = document.getElementById('execSelect');
@@ -212,21 +271,20 @@
             });
         });
 
-        // Points Converter Function (Lakhs format -> 70000 = 0.70)
         function toPoints(amount) {
             let num = parseFloat(amount) || 0;
             return (num / 100000).toFixed(2);
         }
+
+        // Global variable to keep accounts in memory for quick edit reference
+        let loadedAccounts = {}; 
 
         // 3. Fetch Report Data
         function fetchReport() {
             const branch = document.getElementById('branchSelect').value;
             const exec = document.getElementById('execSelect').value;
 
-            if(!branch || !exec) {
-                alert("Please select both Branch and Executive!");
-                return;
-            }
+            if(!branch || !exec) return alert("Please select both Branch and Executive!");
 
             const searchBtn = document.getElementById('searchBtn');
             searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
@@ -236,17 +294,17 @@
                 
                 let regularAccounts = [];
                 let maturedAccounts = [];
+                loadedAccounts = {}; // reset
 
                 if(data) {
                     for(let key in data) {
                         let item = data[key];
-                        // Filter matching branch and executive
                         if(item.branch === branch && item.executive === exec) {
-                            if(item.type === 'REGULAR') {
-                                regularAccounts.push(item);
-                            } else if (item.type === 'MATURED') {
-                                maturedAccounts.push(item);
-                            }
+                            item.firebaseKey = key; // Save key for edit/delete
+                            loadedAccounts[key] = item; 
+
+                            if(item.type === 'REGULAR') regularAccounts.push(item);
+                            else if (item.type === 'MATURED') maturedAccounts.push(item);
                         }
                     }
                 }
@@ -257,12 +315,21 @@
                     document.getElementById('printExecReg').innerText = exec.toUpperCase();
                     
                     let rHtml = '';
-                    let rSummaryData = {}; // To group by INS
+                    let rSummaryData = {};
 
                     regularAccounts.forEach((acc, i) => {
-                        rHtml += `<tr><td>${i+1}</td><td>${acc.accountNumber}</td><td>${acc.ins}</td><td>₹ ${acc.amount}</td><td>${acc.date}</td></tr>`;
+                        rHtml += `<tr>
+                            <td>${i+1}</td>
+                            <td>${acc.accountNumber}</td>
+                            <td>${acc.ins}</td>
+                            <td>₹ ${acc.amount}</td>
+                            <td class="hide-print">${acc.date}</td>
+                            <td class="hide-print action-btns">
+                                <button class="btn-edit" onclick="openEditModal('${acc.firebaseKey}')"><i class="fas fa-edit"></i></button>
+                                <button class="btn-delete" onclick="deleteAccount('${acc.firebaseKey}')"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>`;
                         
-                        // Summary logic
                         let insKey = acc.ins + " INS";
                         if(!rSummaryData[insKey]) rSummaryData[insKey] = { count: 0, amount: 0 };
                         rSummaryData[insKey].count += 1;
@@ -270,17 +337,11 @@
                     });
                     document.getElementById('regTableBody').innerHTML = rHtml;
 
-                    // Render Regular Summary
                     let rSumHtml = '';
                     for(let ins in rSummaryData) {
-                        rSumHtml += `<tr>
-                            <td>${ins}</td>
-                            <td>${rSummaryData[ins].count}</td>
-                            <td style="font-weight:bold;">${toPoints(rSummaryData[ins].amount)}</td>
-                        </tr>`;
+                        rSumHtml += `<tr><td>${ins}</td><td>${rSummaryData[ins].count}</td><td style="font-weight:bold;">${toPoints(rSummaryData[ins].amount)}</td></tr>`;
                     }
                     document.getElementById('regSummaryBody').innerHTML = rSumHtml;
-
                 } else {
                     document.getElementById('regularSection').style.display = 'none';
                 }
@@ -291,12 +352,22 @@
                     document.getElementById('printExecMat').innerText = exec.toUpperCase();
                     
                     let mHtml = '';
-                    let mSummaryData = {}; // To group by Year
+                    let mSummaryData = {}; 
 
                     maturedAccounts.forEach((acc, i) => {
-                        mHtml += `<tr><td>${i+1}</td><td>${acc.accountNumber}</td><td>${acc.maturedYear}</td><td>${acc.ins}</td><td>₹ ${acc.amount}</td><td>${acc.date}</td></tr>`;
+                        mHtml += `<tr>
+                            <td>${i+1}</td>
+                            <td>${acc.accountNumber}</td>
+                            <td>${acc.maturedYear}</td>
+                            <td>${acc.ins}</td>
+                            <td>₹ ${acc.amount}</td>
+                            <td class="hide-print">${acc.date}</td>
+                            <td class="hide-print action-btns">
+                                <button class="btn-edit" onclick="openEditModal('${acc.firebaseKey}')"><i class="fas fa-edit"></i></button>
+                                <button class="btn-delete" onclick="deleteAccount('${acc.firebaseKey}')"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>`;
                         
-                        // Summary logic
                         let yearKey = acc.maturedYear;
                         if(!mSummaryData[yearKey]) mSummaryData[yearKey] = { count: 0, amount: 0 };
                         mSummaryData[yearKey].count += 1;
@@ -304,36 +375,95 @@
                     });
                     document.getElementById('matTableBody').innerHTML = mHtml;
 
-                    // Render Matured Summary
                     let mSumHtml = '';
                     for(let yr in mSummaryData) {
-                        mSumHtml += `<tr>
-                            <td>${yr}</td>
-                            <td>${mSummaryData[yr].count}</td>
-                            <td style="font-weight:bold; color:#f6d365;">${toPoints(mSummaryData[yr].amount)}</td>
-                        </tr>`;
+                        mSumHtml += `<tr><td>${yr}</td><td>${mSummaryData[yr].count}</td><td style="font-weight:bold; color:#f6d365;">${toPoints(mSummaryData[yr].amount)}</td></tr>`;
                     }
                     document.getElementById('matSummaryBody').innerHTML = mSumHtml;
-
                 } else {
                     document.getElementById('maturedSection').style.display = 'none';
                 }
 
-                // Show Print button if any data exists
                 if(regularAccounts.length > 0 || maturedAccounts.length > 0) {
                     document.getElementById('printBtn').style.display = 'block';
                 } else {
                     document.getElementById('printBtn').style.display = 'none';
                     alert("No accounts found for this Executive!");
                 }
-
                 searchBtn.innerHTML = '<i class="fas fa-search"></i> Search Data';
-
             }).catch(error => {
                 alert("Error fetching data: " + error.message);
                 searchBtn.innerHTML = '<i class="fas fa-search"></i> Search Data';
             });
         }
+
+        // ================= DELETE ACCOUNT =================
+        window.deleteAccount = function(key) {
+            if(confirm("Are you sure you want to completely DELETE this account? (Employee app lo nundi kuda delete aipothundi)")) {
+                db.ref('assigned_accounts/' + key).remove().then(() => {
+                    fetchReport(); // Reload automatically
+                }).catch(e => alert("Delete Error: " + e.message));
+            }
+        };
+
+        // ================= EDIT ACCOUNT (MODAL) =================
+        window.openEditModal = function(key) {
+            const acc = loadedAccounts[key];
+            if(!acc) return;
+
+            document.getElementById('editKey').value = key;
+            document.getElementById('editType').value = acc.type;
+            document.getElementById('editAccNo').value = acc.accountNumber;
+            document.getElementById('editIns').value = acc.ins;
+            document.getElementById('editAmt').value = acc.amount;
+
+            if(acc.type === 'MATURED') {
+                document.getElementById('editMaturedDiv').style.display = 'flex';
+                document.getElementById('editMaturedYear').value = acc.maturedYear;
+            } else {
+                document.getElementById('editMaturedDiv').style.display = 'none';
+            }
+
+            document.getElementById('editModal').style.display = 'flex';
+        };
+
+        window.closeModal = function() {
+            document.getElementById('editModal').style.display = 'none';
+        };
+
+        window.saveEdit = function() {
+            const key = document.getElementById('editKey').value;
+            const type = document.getElementById('editType').value;
+            const newAccNo = document.getElementById('editAccNo').value.trim();
+            const newIns = document.getElementById('editIns').value.trim();
+            const newAmt = document.getElementById('editAmt').value.trim();
+            const saveBtn = document.getElementById('saveEditBtn');
+
+            if(!newAccNo || !newIns || !newAmt) return alert("Fields cannot be empty!");
+
+            let updateData = {
+                accountNumber: newAccNo,
+                ins: newIns,
+                amount: newAmt
+            };
+
+            if(type === 'MATURED') {
+                const newYr = document.getElementById('editMaturedYear').value.trim();
+                if(!newYr) return alert("Matured Year cannot be empty!");
+                updateData.maturedYear = newYr;
+            }
+
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            
+            db.ref('assigned_accounts/' + key).update(updateData).then(() => {
+                saveBtn.innerHTML = 'Save Update';
+                closeModal();
+                fetchReport(); // Reload data with new values
+            }).catch(e => {
+                alert("Update Error: " + e.message);
+                saveBtn.innerHTML = 'Save Update';
+            });
+        };
     </script>
 </body>
 </html>
