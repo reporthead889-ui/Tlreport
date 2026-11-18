@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- FIREBASE DIRECT SCRIPTS -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
@@ -42,23 +41,17 @@
         .print-btn { background: linear-gradient(135deg, #f6d365, #fda085); display: none; }
         .print-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(253, 160, 133, 0.3); }
 
-        /* Report Sections */
         .report-section { display: none; margin-top: 10px; }
         .section-title { font-size: 18px; font-weight: 600; margin: 20px 0 15px 0; color: #00d2ff; text-transform: uppercase; border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 5px;}
 
-        /* Summary Cards Grid */
         .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 12px; margin-bottom: 25px; }
         .stat-card { background: rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 15px 10px; text-align: center; }
         .stat-card h4 { font-size: 11px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
         .stat-card h2 { font-size: 22px; font-weight: 600; color: #fff; }
         
-        /* Specific Card Colors */
-        .card-assigned h2 { color: #00d2ff; }
         .card-completed h2 { color: #2ed573; }
-        .card-balance h2 { color: #ff6b6b; }
         .card-lock h2, .card-pcr h2, .card-qr h2, .card-op h2, .card-seizing h2 { color: #f6d365; }
 
-        /* Table */
         .table-container { overflow-x: auto; background: rgba(0,0,0,0.1); border-radius: 10px; }
         table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
         th, td { padding: 12px 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
@@ -67,7 +60,6 @@
         tbody tr:hover { background: rgba(255, 255, 255, 0.08); }
         .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; background: rgba(255,255,255,0.1); }
 
-        /* Print Layout Rules */
         .print-header { display: none; }
 
         @media print {
@@ -75,27 +67,16 @@
             .circle, .glass-panel#searchPanel, .back-btn { display: none !important; }
             .glass-panel { background: none; border: none; box-shadow: none; padding: 0; }
             .container { max-width: 100%; gap: 0; }
-            
             .section-title { color: #000 !important; border-bottom: 1px solid #000; margin-top: 30px; }
-            
-            /* Table Print */
             .table-container { background: transparent; }
             table { border: 1px solid #000; margin-bottom: 20px; }
             th, td { border: 1px solid #000; color: #000; padding: 8px; }
             th { background: #eee; }
-            
-            /* Cards Print */
             .cards-grid { grid-template-columns: repeat(4, 1fr); gap: 5px; }
             .stat-card { border: 1px solid #000; background: #fff; padding: 10px; }
             .stat-card h4 { color: #333; font-size: 10px; }
             .stat-card h2 { color: #000 !important; font-size: 18px; }
-
-            /* Specific Header Format for Print */
-            .print-header { 
-                display: flex; justify-content: space-between; align-items: center; 
-                border-bottom: 2px solid #000; padding-bottom: 10px; margin: 15px 0 25px 0; 
-                font-size: 14px; text-transform: uppercase; font-weight: bold;
-            }
+            .print-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin: 15px 0 25px 0; font-size: 14px; text-transform: uppercase; font-weight: bold;}
             .page-break { page-break-before: always; }
         }
     </style>
@@ -106,33 +87,28 @@
 
     <div class="container">
         
-        <!-- Search Form -->
         <div class="glass-panel" id="searchPanel">
             <div class="header">
                 <a href="dashboard.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
-                <h2>Employee Daily Performance</h2>
+                <h2>Admin: Employee Daily Report</h2>
             </div>
             
             <div class="form-row">
                 <div class="input-group">
-                    <label>From Date</label>
+                    <label>Collection From Date</label>
                     <input type="date" id="fromDate" required>
                 </div>
                 <div class="input-group">
-                    <label>To Date</label>
+                    <label>Collection To Date</label>
                     <input type="date" id="toDate" required>
                 </div>
                 <div class="input-group">
                     <label>Select Branch</label>
-                    <select id="branchSelect">
-                        <option value="">Loading...</option>
-                    </select>
+                    <select id="branchSelect"><option value="">Loading...</option></select>
                 </div>
                 <div class="input-group">
                     <label>Select Executive</label>
-                    <select id="execSelect">
-                        <option value="">Select Branch First...</option>
-                    </select>
+                    <select id="execSelect"><option value="">Select Branch First...</option></select>
                 </div>
             </div>
 
@@ -142,36 +118,28 @@
             </div>
         </div>
 
-        <!-- PRINT HEADER (Only visible during print) -->
         <div class="print-header" id="printHeaderMain">
             <div style="flex:1; text-align:left;">Executive: <span id="printExecName"></span></div>
             <div style="flex:1; text-align:center; font-size: 16px;">DAILY PERFORMANCE REPORT</div>
             <div style="flex:1; text-align:right;">Date: <span id="printDateRange"></span></div>
         </div>
 
-        <!-- REPORT DISPLAY AREA -->
         <div id="reportContainer" style="display:none; width: 100%;">
             
             <!-- REGULAR SECTION -->
             <div class="glass-panel report-section" id="regularSection" style="display:block;">
                 <div class="section-title">REGULAR ACCOUNTS</div>
-                
-                <!-- Regular Summary Cards -->
                 <div class="cards-grid">
-                    <div class="stat-card card-assigned"><h4>Assigned</h4><h2 id="rAssign">0</h2></div>
                     <div class="stat-card card-completed"><h4>Completed</h4><h2 id="rComp">0</h2></div>
-                    <div class="stat-card card-balance"><h4>Balance</h4><h2 id="rBal">0</h2></div>
                     <div class="stat-card card-lock"><h4>LOCK</h4><h2 id="rLock">0</h2></div>
                     <div class="stat-card card-pcr"><h4>PCR</h4><h2 id="rPcr">0</h2></div>
                     <div class="stat-card card-qr"><h4>QR</h4><h2 id="rQr">0</h2></div>
                     <div class="stat-card card-op"><h4>OP</h4><h2 id="rOp">0</h2></div>
                     <div class="stat-card card-seizing"><h4>SEIZING</h4><h2 id="rSeize">0</h2></div>
                 </div>
-
-                <!-- Regular Detail Table -->
                 <div class="table-container">
                     <table>
-                        <thead><tr><th>S.No</th><th>Type</th><th>A/C Number</th><th>INS</th><th>Payment Type</th><th>Amount (₹)</th></tr></thead>
+                        <thead><tr><th>S.No</th><th>Type</th><th>A/C No</th><th>INS</th><th>Payment Type</th><th>Amount (₹)</th></tr></thead>
                         <tbody id="regTableBody"></tbody>
                     </table>
                 </div>
@@ -180,23 +148,17 @@
             <!-- MATURED SECTION -->
             <div class="glass-panel report-section page-break" id="maturedSection" style="display:block; margin-top:20px;">
                 <div class="section-title" style="color: #f6d365;">MATURED ACCOUNTS</div>
-                
-                <!-- Matured Summary Cards -->
                 <div class="cards-grid">
-                    <div class="stat-card card-assigned"><h4>Assigned</h4><h2 id="mAssign">0</h2></div>
                     <div class="stat-card card-completed"><h4>Completed</h4><h2 id="mComp">0</h2></div>
-                    <div class="stat-card card-balance"><h4>Balance</h4><h2 id="mBal">0</h2></div>
                     <div class="stat-card card-lock"><h4>LOCK</h4><h2 id="mLock">0</h2></div>
                     <div class="stat-card card-pcr"><h4>PCR</h4><h2 id="mPcr">0</h2></div>
                     <div class="stat-card card-qr"><h4>QR</h4><h2 id="mQr">0</h2></div>
                     <div class="stat-card card-op"><h4>OP</h4><h2 id="mOp">0</h2></div>
                     <div class="stat-card card-seizing"><h4>SEIZING</h4><h2 id="mSeize">0</h2></div>
                 </div>
-
-                <!-- Matured Detail Table -->
                 <div class="table-container">
                     <table>
-                        <thead><tr><th>S.No</th><th>Type</th><th>A/C Number</th><th>INS</th><th>Payment Type</th><th>Amount (₹)</th></tr></thead>
+                        <thead><tr><th>S.No</th><th>Type</th><th>A/C No</th><th>INS</th><th>Payment Type</th><th>Amount (₹)</th></tr></thead>
                         <tbody id="matTableBody"></tbody>
                     </table>
                 </div>
@@ -207,12 +169,10 @@
     </div>
 
     <script>
-        // Set Default Dates (Today)
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('fromDate').value = today;
         document.getElementById('toDate').value = today;
 
-        // Firebase Setup
         const firebaseConfig = {
             apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
             authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
@@ -225,179 +185,91 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // 1. Fetch Branches
         db.ref('branches').on('value', (snapshot) => {
-            const branchSelect = document.getElementById('branchSelect');
-            branchSelect.innerHTML = '<option value="">-- Select Branch --</option>'; 
+            const b = document.getElementById('branchSelect');
+            b.innerHTML = '<option value="">-- Select Branch --</option>'; 
             const data = snapshot.val();
-            if (data) {
-                for (let key in data) {
-                    branchSelect.innerHTML += `<option value="${data[key].branchName}">${data[key].branchName}</option>`;
-                }
-            }
+            if (data) { for (let k in data) b.innerHTML += `<option value="${data[k].branchName}">${data[k].branchName}</option>`; }
         });
 
-        // 2. Fetch Executives based on Branch
         document.getElementById('branchSelect').addEventListener('change', function() {
-            const selectedBranch = this.value;
-            const execSelect = document.getElementById('execSelect');
-            execSelect.innerHTML = '<option value="">Loading...</option>';
+            const b = this.value; const e = document.getElementById('execSelect');
+            e.innerHTML = '<option value="">Loading...</option>';
             db.ref('executives').once('value').then((snapshot) => {
-                execSelect.innerHTML = '<option value="">-- Select Executive --</option>';
+                e.innerHTML = '<option value="">-- Select Executive --</option>';
                 const data = snapshot.val();
-                if (data) {
-                    for (let key in data) {
-                        if(data[key].branch === selectedBranch) {
-                            execSelect.innerHTML += `<option value="${data[key].name}">${data[key].name}</option>`;
-                        }
-                    }
-                }
+                if (data) { for (let k in data) { if(data[k].branch === b) e.innerHTML += `<option value="${data[k].name}">${data[k].name}</option>`; } }
             });
         });
 
-        // Format date string for Print Header (DD-MM-YYYY)
-        function formatDate(dateStr) {
-            if(!dateStr) return "";
-            let p = dateStr.split('-');
-            return `${p[2]}-${p[1]}-${p[0]}`;
-        }
+        function formatDate(dStr) { if(!dStr)return""; let p = dStr.split('-'); return `${p[2]}-${p[1]}-${p[0]}`; }
 
-        // 3. Fetch and Calculate Performance Report
         function fetchPerformance() {
             const branch = document.getElementById('branchSelect').value;
             const exec = document.getElementById('execSelect').value;
-            const fromDate = document.getElementById('fromDate').value;
-            const toDate = document.getElementById('toDate').value;
+            const fDate = document.getElementById('fromDate').value;
+            const tDate = document.getElementById('toDate').value;
 
-            if(!branch || !exec || !fromDate || !toDate) {
-                alert("Please select Date Range, Branch, and Executive!");
-                return;
-            }
+            if(!branch || !exec || !fDate || !tDate) return alert("Select Date Range, Branch, and Executive!");
 
-            const searchBtn = document.getElementById('searchBtn');
-            searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
+            const btn = document.getElementById('searchBtn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
 
             db.ref('assigned_accounts').once('value').then((snapshot) => {
                 const data = snapshot.val();
                 
-                // Initialize counters for Regular
-                let rAs = 0, rCo = 0, rL = 0, rP = 0, rQ = 0, rO = 0, rS = 0;
-                let rHtml = '';
-
-                // Initialize counters for Matured
-                let mAs = 0, mCo = 0, mL = 0, mP = 0, mQ = 0, mO = 0, mS = 0;
-                let mHtml = '';
+                let rCo = 0, rL = 0, rP = 0, rQ = 0, rO = 0, rS = 0; let rHtml = '';
+                let mCo = 0, mL = 0, mP = 0, mQ = 0, mO = 0, mS = 0; let mHtml = '';
 
                 if(data) {
                     for(let key in data) {
-                        let item = data[key];
-                        
-                        // Check Filters: Branch, Exec, Date Range
-                        if(item.branch === branch && item.executive === exec && item.date >= fromDate && item.date <= toDate) {
+                        let i = data[key];
+                        // Filter logic depends on `updatedDate` instead of `date`
+                        if(i.branch === branch && i.executive === exec && i.updatedDate >= fDate && i.updatedDate <= tDate && i.status && i.status !== "Pending") {
                             
-                            // Check if Employee updated it (Status != Pending)
-                            // Mundu mundu employee app chesetappudu aah app nundi item.status loki "LOCK", "PCR" etc save cheyistham
-                            let statusText = item.status && item.status !== "Pending" ? item.status : "Pending";
-                            let displayAmount = item.collectedAmount || item.amount; // Use collected amount if available
+                            let dAmt = i.collectedAmount || 0;
                             
-                            if(item.type === 'REGULAR') {
-                                rAs++;
-                                if(statusText !== "Pending") {
-                                    rCo++;
-                                    if(statusText === 'LOCK') rL++;
-                                    else if(statusText === 'PCR') rP++;
-                                    else if(statusText === 'QR') rQ++;
-                                    else if(statusText === 'OP') rO++;
-                                    else if(statusText === 'SEIZING') rS++;
-                                }
-                                
-                                rHtml += `<tr>
-                                    <td>${rAs}</td>
-                                    <td>REGULAR</td>
-                                    <td>${item.accountNumber}</td>
-                                    <td>${item.ins}</td>
-                                    <td><span class="status-badge">${statusText}</span></td>
-                                    <td>₹ ${displayAmount}</td>
-                                </tr>`;
+                            if(i.type === 'REGULAR') {
+                                rCo++; if(i.status==='LOCK')rL++; else if(i.status==='PCR')rP++; else if(i.status==='QR')rQ++; else if(i.status==='OP')rO++; else if(i.status==='SEIZING')rS++;
+                                rHtml += `<tr><td>${rCo}</td><td>REGULAR</td><td>${i.accountNumber}</td><td>${i.ins}</td><td><span class="status-badge">${i.status}</span></td><td>₹ ${dAmt}</td></tr>`;
                             } 
-                            else if (item.type === 'MATURED') {
-                                mAs++;
-                                if(statusText !== "Pending") {
-                                    mCo++;
-                                    if(statusText === 'LOCK') mL++;
-                                    else if(statusText === 'PCR') mP++;
-                                    else if(statusText === 'QR') mQ++;
-                                    else if(statusText === 'OP') mO++;
-                                    else if(statusText === 'SEIZING') mS++;
-                                }
-                                
-                                mHtml += `<tr>
-                                    <td>${mAs}</td>
-                                    <td>MATURED (${item.maturedYear})</td>
-                                    <td>${item.accountNumber}</td>
-                                    <td>${item.ins}</td>
-                                    <td><span class="status-badge">${statusText}</span></td>
-                                    <td>₹ ${displayAmount}</td>
-                                </tr>`;
+                            else if (i.type === 'MATURED') {
+                                mCo++; if(i.status==='LOCK')mL++; else if(i.status==='PCR')mP++; else if(i.status==='QR')mQ++; else if(i.status==='OP')mO++; else if(i.status==='SEIZING')mS++;
+                                mHtml += `<tr><td>${mCo}</td><td>MATURED (${i.maturedYear})</td><td>${i.accountNumber}</td><td>${i.ins}</td><td><span class="status-badge">${i.status}</span></td><td>₹ ${dAmt}</td></tr>`;
                             }
                         }
                     }
                 }
 
-                // Update Print Header Details
                 document.getElementById('printExecName').innerText = exec.toUpperCase();
-                document.getElementById('printDateRange').innerText = (fromDate === toDate) ? formatDate(fromDate) : `${formatDate(fromDate)} to ${formatDate(toDate)}`;
+                document.getElementById('printDateRange').innerText = (fDate === tDate) ? formatDate(fDate) : `${formatDate(fDate)} to ${formatDate(tDate)}`;
 
-                // Render REGULAR Data
-                document.getElementById('rAssign').innerText = rAs;
-                document.getElementById('rComp').innerText = rCo;
-                document.getElementById('rBal').innerText = (rAs - rCo);
-                document.getElementById('rLock').innerText = rL;
-                document.getElementById('rPcr').innerText = rP;
-                document.getElementById('rQr').innerText = rQ;
-                document.getElementById('rOp').innerText = rO;
-                document.getElementById('rSeize').innerText = rS;
-                
-                if(rAs > 0) {
-                    document.getElementById('regTableBody').innerHTML = rHtml;
-                    document.getElementById('regularSection').style.display = 'block';
-                } else {
-                    document.getElementById('regularSection').style.display = 'none';
-                }
+                // Update Reg
+                document.getElementById('rComp').innerText = rCo; 
+                document.getElementById('rLock').innerText = rL; document.getElementById('rPcr').innerText = rP; document.getElementById('rQr').innerText = rQ; document.getElementById('rOp').innerText = rO; document.getElementById('rSeize').innerText = rS;
+                document.getElementById('regTableBody').innerHTML = rHtml;
+                document.getElementById('regularSection').style.display = rCo > 0 ? 'block' : 'none';
 
-                // Render MATURED Data
-                document.getElementById('mAssign').innerText = mAs;
-                document.getElementById('mComp').innerText = mCo;
-                document.getElementById('mBal').innerText = (mAs - mCo);
-                document.getElementById('mLock').innerText = mL;
-                document.getElementById('mPcr').innerText = mP;
-                document.getElementById('mQr').innerText = mQ;
-                document.getElementById('mOp').innerText = mO;
-                document.getElementById('mSeize').innerText = mS;
+                // Update Mat
+                document.getElementById('mComp').innerText = mCo; 
+                document.getElementById('mLock').innerText = mL; document.getElementById('mPcr').innerText = mP; document.getElementById('mQr').innerText = mQ; document.getElementById('mOp').innerText = mO; document.getElementById('mSeize').innerText = mS;
+                document.getElementById('matTableBody').innerHTML = mHtml;
+                document.getElementById('maturedSection').style.display = mCo > 0 ? 'block' : 'none';
 
-                if(mAs > 0) {
-                    document.getElementById('matTableBody').innerHTML = mHtml;
-                    document.getElementById('maturedSection').style.display = 'block';
-                } else {
-                    document.getElementById('maturedSection').style.display = 'none';
-                }
-
-                // Show main container and print button if data exists
-                if(rAs > 0 || mAs > 0) {
+                if(rCo > 0 || mCo > 0) {
                     document.getElementById('reportContainer').style.display = 'block';
                     document.getElementById('printBtn').style.display = 'block';
-                    document.getElementById('printHeaderMain').style.display = ''; // Available for @media print
                 } else {
                     document.getElementById('reportContainer').style.display = 'none';
                     document.getElementById('printBtn').style.display = 'none';
-                    alert("No accounts found for this Date Range and Executive.");
+                    alert("No updated accounts found in this date range.");
                 }
 
-                searchBtn.innerHTML = '<i class="fas fa-search"></i> Search Data';
+                btn.innerHTML = '<i class="fas fa-search"></i> Search Data';
 
             }).catch(error => {
                 alert("Error fetching data: " + error.message);
-                searchBtn.innerHTML = '<i class="fas fa-search"></i> Search Data';
+                btn.innerHTML = '<i class="fas fa-search"></i> Search Data';
             });
         }
     </script>
