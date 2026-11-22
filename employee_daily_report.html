@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Daily Report - Sri Vishnu Priya</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); min-height: 100vh; color: white; display: flex; flex-direction: column; align-items: center; padding: 30px 15px; }
+        
+        .circle { position: fixed; border-radius: 50%; background: linear-gradient(135deg, #00d2ff, #3a7bd5); filter: blur(80px); z-index: 0; }
+        .circle1 { width: 300px; height: 300px; top: -50px; left: -50px; opacity: 0.4; }
+        .circle2 { width: 400px; height: 400px; bottom: -100px; right: -50px; opacity: 0.3; }
+
+        .container { position: relative; z-index: 1; width: 100%; max-width: 1100px; display: flex; flex-direction: column; gap: 25px; }
+        .glass-panel { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 15px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); }
+        
+        .header { display: flex; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 15px; }
+        .back-btn { color: #00d2ff; font-size: 20px; text-decoration: none; margin-right: 15px; transition: 0.3s; }
+        .back-btn:hover { transform: translateX(-5px); }
+        .header h2 { font-size: 20px; font-weight: 600; }
+
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
+        .input-group { display: flex; flex-direction: column; gap: 6px; }
+        .input-group label { font-size: 12px; color: rgba(255,255,255,0.7); font-weight: 500; text-transform: uppercase;}
+        .input-group input, .input-group select { width: 100%; padding: 10px 12px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: #fff; outline: none; font-size: 14px; }
+        .input-group select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; }
+        .input-group select option { background: #1f363d; color: white; padding: 10px; }
+        .input-group input:focus, .input-group select:focus { border-color: #00d2ff; }
+
+        .btn-group { display: flex; gap: 15px; margin-top: 10px; }
+        .search-btn, .print-btn { flex: 1; padding: 12px; border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .search-btn { background: linear-gradient(135deg, #00d2ff, #3a7bd5); }
+        .search-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 210, 255, 0.3); }
+        .print-btn { background: linear-gradient(135deg, #f6d365, #fda085); display: none; }
+        .print-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(253, 160, 133, 0.3); }
+
+        .report-section { display: none; margin-top: 10px; }
+        .section-title { font-size: 18px; font-weight: 600; margin: 20px 0 15px 0; color: #00d2ff; text-transform: uppercase; border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 5px;}
+
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 12px; margin-bottom: 25px; }
+        .stat-card { background: rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 15px 10px; text-align: center; }
+        .stat-card h4 { font-size: 11px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+        .stat-card h2 { font-size: 22px; font-weight: 600; color: #fff; }
+        
+        .card-assigned h2 { color: #00d2ff; }
+        .card-completed h2 { color: #2ed573; }
+        .card-balance h2 { color: #ff6b6b; }
+        .card-lock h2, .card-pcr h2, .card-qr h2, .card-op h2, .card-seizing h2 { color: #f6d365; }
+
+        .table-container { overflow-x: auto; background: rgba(0,0,0,0.1); border-radius: 10px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
+        th, td { padding: 12px 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        th { font-size: 12px; color: rgba(255,255,255,0.7); text-transform: uppercase; background: rgba(255, 255, 255, 0.08); }
+        td { font-size: 13px; }
+        tbody tr:hover { background: rgba(255, 255, 255, 0.08); }
+        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; background: rgba(255,255,255,0.1); }
+
+        .print-header { display: none; }
+
+        @media print {
+            body { background: #fff; color: #000; padding: 0; margin: 0; }
+            .circle, .glass-panel#searchPanel, .back-btn { display: none !important; }
+            .glass-panel { background: none; border: none; box-shadow: none; padding: 0; }
+            .container { max-width: 100%; gap: 0; }
+            .section-title { color: #000 !important; border-bottom: 1px solid #000; margin-top: 30px; }
+            .table-container { background: transparent; }
+            table { border: 1px solid #000; margin-bottom: 20px; }
+            th, td { border: 1px solid #000; color: #000; padding: 8px; }
+            th { background: #eee; }
+            .cards-grid { grid-template-columns: repeat(4, 1fr); gap: 5px; }
+            .stat-card { border: 1px solid #000; background: #fff; padding: 10px; }
+            .stat-card h4 { color: #333; font-size: 10px; }
+            .stat-card h2 { color: #000 !important; font-size: 18px; }
+            .print-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin: 15px 0 25px 0; font-size: 14px; text-transform: uppercase; font-weight: bold;}
+            .page-break { page-break-before: always; }
+        }
+    </style>
+</head>
+<body>
+    <div class="circle circle1"></div>
+    <div class="circle circle2"></div>
+
+    <div class="container">
+        
+        <div class="glass-panel" id="searchPanel">
+            <div class="header">
+                <a href="dashboard.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+                <h2>Admin: Employee Daily Report</h2>
+            </div>
+            
+            <div class="form-row">
+                <div class="input-group">
+                    <label>Collection From Date</label>
+                    <input type="date" id="fromDate" required>
+                </div>
+                <div class="input-group">
+                    <label>Collection To Date</label>
+                    <input type="date" id="toDate" required>
+                </div>
+                <div class="input-group">
+                    <label>Select Branch</label>
+                    <select id="branchSelect"><option value="">Loading...</option></select>
+                </div>
+                <div class="input-group">
+                    <label>Select Executive</label>
+                    <select id="execSelect"><option value="">Select Branch First...</option></select>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button onclick="fetchPerformance()" class="search-btn" id="searchBtn"><i class="fas fa-search"></i> Search Data</button>
+                <button onclick="window.print()" class="print-btn" id="printBtn"><i class="fas fa-print"></i> Print Report</button>
+            </div>
+        </div>
+
+        <div class="print-header" id="printHeaderMain">
+            <div style="flex:1; text-align:left;">Executive: <span id="printExecName"></span></div>
+            <div style="flex:1; text-align:center; font-size: 16px;">DAILY PERFORMANCE REPORT</div>
+            <div style="flex:1; text-align:right;">Date: <span id="printDateRange"></span></div>
+        </div>
+
+        <div id="reportContainer" style="display:none; width: 100%;">
+            
+            <div class="glass-panel report-section" id="regularSection" style="display:block;">
+                <div class="section-title">REGULAR ACCOUNTS</div>
+                <div class="cards-grid">
+                    <div class="stat-card card-assigned"><h4>Assigned</h4><h2 id="rAssign">0</h2></div>
+                    <div class="stat-card card-completed"><h4>Completed</h4><h2 id="rComp">0</h2></div>
+                    <div class="stat-card card-balance"><h4>Balance</h4><h2 id="rBal">0</h2></div>
+                    <div class="stat-card card-lock"><h4>LOCK</h4><h2 id="rLock">0</h2></div>
+                    <div class="stat-card card-pcr"><h4>PCR</h4><h2 id="rPcr">0</h2></div>
+                    <div class="stat-card card-qr"><h4>QR</h4><h2 id="rQr">0</h2></div>
+                    <div class="stat-card card-op"><h4>OP</h4><h2 id="rOp">0</h2></div>
+                    <div class="stat-card card-seizing"><h4>SEIZING</h4><h2 id="rSeize">0</h2></div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>S.No</th><th>Type</th><th>A/C No</th><th>INS</th><th>Payment Type</th><th>Amount (₹)</th></tr></thead>
+                        <tbody id="regTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="glass-panel report-section page-break" id="maturedSection" style="display:block; margin-top:20px;">
+                <div class="section-title" style="color: #f6d365;">MATURED ACCOUNTS</div>
+                <div class="cards-grid">
+                    <div class="stat-card card-assigned"><h4>Assigned</h4><h2 id="mAssign">0</h2></div>
+                    <div class="stat-card card-completed"><h4>Completed</h4><h2 id="mComp">0</h2></div>
+                    <div class="stat-card card-balance"><h4>Balance</h4><h2 id="mBal">0</h2></div>
+                    <div class="stat-card card-lock"><h4>LOCK</h4><h2 id="mLock">0</h2></div>
+                    <div class="stat-card card-pcr"><h4>PCR</h4><h2 id="mPcr">0</h2></div>
+                    <div class="stat-card card-qr"><h4>QR</h4><h2 id="mQr">0</h2></div>
+                    <div class="stat-card card-op"><h4>OP</h4><h2 id="mOp">0</h2></div>
+                    <div class="stat-card card-seizing"><h4>SEIZING</h4><h2 id="mSeize">0</h2></div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>S.No</th><th>Type</th><th>A/C No</th><th>INS</th><th>Payment Type</th><th>Amount (₹)</th></tr></thead>
+                        <tbody id="matTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('fromDate').value = today;
+        document.getElementById('toDate').value = today;
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
+            authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
+            databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
+            projectId: "sri-vishnu-priya-finance-c591f",
+            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
+            messagingSenderId: "184676228358",
+            appId: "1:184676228358:web:c2b32b68debeeadadfd287"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        db.ref('branches').on('value', (snapshot) => {
+            const b = document.getElementById('branchSelect');
+            b.innerHTML = '<option value="">-- Select Branch --</option>'; 
+            const data = snapshot.val();
+            if (data) { for (let k in data) b.innerHTML += `<option value="${data[k].branchName}">${data[k].branchName}</option>`; }
+        });
+
+        document.getElementById('branchSelect').addEventListener('change', function() {
+            const b = this.value; const e = document.getElementById('execSelect');
+            e.innerHTML = '<option value="">Loading...</option>';
+            db.ref('executives').once('value').then((snapshot) => {
+                e.innerHTML = '<option value="">-- Select Executive --</option>';
+                const data = snapshot.val();
+                if (data) { for (let k in data) { if(data[k].branch === b) e.innerHTML += `<option value="${data[k].name}">${data[k].name}</option>`; } }
+            });
+        });
+
+        function formatDate(dStr) { if(!dStr)return""; let p = dStr.split('-'); return `${p[2]}-${p[1]}-${p[0]}`; }
+
+        function fetchPerformance() {
+            const branch = document.getElementById('branchSelect').value;
+            const exec = document.getElementById('execSelect').value;
+            const fDate = document.getElementById('fromDate').value;
+            const tDate = document.getElementById('toDate').value;
+
+            if(!branch || !exec || !fDate || !tDate) return alert("Select Date Range, Branch, and Executive!");
+
+            const btn = document.getElementById('searchBtn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
+            document.title = exec.toUpperCase() + " - DAILY PERFORMANCE REPORT";
+
+            db.ref('assigned_accounts').once('value').then((snapshot) => {
+                const data = snapshot.val();
+                
+                // Overall counts (Assigned, Overall Completed, Overall Balance)
+                let rAs = 0, rTotalComp = 0, rPending = 0;
+                let mAs = 0, mTotalComp = 0, mPending = 0;
+
+                // Selected date-range counts (Daily Performance)
+                let rDateCo = 0, rL = 0, rP = 0, rQ = 0, rO = 0, rS = 0; let rHtml = '';
+                let mDateCo = 0, mL = 0, mP = 0, mQ = 0, mO = 0, mS = 0; let mHtml = '';
+
+                if(data) {
+                    for(let key in data) {
+                        let i = data[key];
+                        
+                        if(i.branch === branch && i.executive === exec) {
+                            
+                            // 1. Overall Assigned, Completed, Balance
+                            if (i.type === 'REGULAR') {
+                                rAs++;
+                                if (!i.status || i.status === "Pending") rPending++;
+                                else rTotalComp++;
+                            } else if (i.type === 'MATURED') {
+                                mAs++;
+                                if (!i.status || i.status === "Pending") mPending++;
+                                else mTotalComp++;
+                            }
+
+                            // 2. Date-range Performance (LOCK, PCR, QR, OP, SEIZING & Table)
+                            if (i.updatedDate >= fDate && i.updatedDate <= tDate && i.status && i.status !== "Pending") {
+                                let dAmt = i.collectedAmount || 0;
+                                
+                                if (i.type === 'REGULAR') {
+                                    rDateCo++; 
+                                    if(i.status==='LOCK') rL++; else if(i.status==='PCR') rP++; else if(i.status==='QR') rQ++; else if(i.status==='OP') rO++; else if(i.status==='SEIZING') rS++;
+                                    rHtml += `<tr><td>${rDateCo}</td><td>REGULAR</td><td>${i.accountNumber}</td><td>${i.ins}</td><td><span class="status-badge">${i.status}</span></td><td>₹ ${dAmt}</td></tr>`;
+                                } 
+                                else if (i.type === 'MATURED') {
+                                    mDateCo++; 
+                                    if(i.status==='LOCK') mL++; else if(i.status==='PCR') mP++; else if(i.status==='QR') mQ++; else if(i.status==='OP') mO++; else if(i.status==='SEIZING') mS++;
+                                    mHtml += `<tr><td>${mDateCo}</td><td>MATURED (${i.maturedYear})</td><td>${i.accountNumber}</td><td>${i.ins}</td><td><span class="status-badge">${i.status}</span></td><td>₹ ${dAmt}</td></tr>`;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                document.getElementById('printExecName').innerText = exec.toUpperCase();
+                document.getElementById('printDateRange').innerText = (fDate === tDate) ? formatDate(fDate) : `${formatDate(fDate)} to ${formatDate(tDate)}`;
+
+                // Update Regular Cards & Table
+                document.getElementById('rAssign').innerText = rAs; 
+                document.getElementById('rComp').innerText = rTotalComp; 
+                document.getElementById('rBal').innerText = rPending;
+                document.getElementById('rLock').innerText = rL; document.getElementById('rPcr').innerText = rP; document.getElementById('rQr').innerText = rQ; document.getElementById('rOp').innerText = rO; document.getElementById('rSeize').innerText = rS;
+                document.getElementById('regTableBody').innerHTML = rHtml;
+                document.getElementById('regularSection').style.display = (rAs > 0 || rDateCo > 0) ? 'block' : 'none';
+
+                // Update Matured Cards & Table
+                document.getElementById('mAssign').innerText = mAs; 
+                document.getElementById('mComp').innerText = mTotalComp; 
+                document.getElementById('mBal').innerText = mPending;
+                document.getElementById('mLock').innerText = mL; document.getElementById('mPcr').innerText = mP; document.getElementById('mQr').innerText = mQ; document.getElementById('mOp').innerText = mO; document.getElementById('mSeize').innerText = mS;
+                document.getElementById('matTableBody').innerHTML = mHtml;
+                document.getElementById('maturedSection').style.display = (mAs > 0 || mDateCo > 0) ? 'block' : 'none';
+
+                if(rAs > 0 || mAs > 0) {
+                    document.getElementById('reportContainer').style.display = 'block';
+                    document.getElementById('printBtn').style.display = 'block';
+                } else {
+                    document.getElementById('reportContainer').style.display = 'none';
+                    document.getElementById('printBtn').style.display = 'none';
+                    alert("No data found for this Executive.");
+                }
+
+                btn.innerHTML = '<i class="fas fa-search"></i> Search Data';
+
+            }).catch(error => {
+                alert("Error fetching data: " + error.message);
+                btn.innerHTML = '<i class="fas fa-search"></i> Search Data';
+            });
+        }
+    </script>
+</body>
+</html>
